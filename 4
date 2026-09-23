@@ -1,0 +1,1011 @@
+*正在请求专家建议，优化解决方案，该过程耗时可能较长，请耐心等待...*
+
+
+The user has given a very sharp critique. Let me carefully work through each point.
+
+## 一、审计守恒律 K·R ≥ log|A|
+
+The user is right. Let me check.
+
+My claim: k ≥ sep(A,Π), and if all fields have value space V, then |A| ≤ |V|^k, so k·log|V| ≥ log|A|.
+
+But with heterogeneous value spaces V_i, the correct bound is:
+|A| ≤ Π_{i∈I} |V_i|
+so log|A| ≤ Σ_{i∈I} log|V_i|.
+
+So the correct statement is **log|A| ≤ Σ_{i∈I} log|V_i|**, NOT k·min_i log|V_i| ≥ log|A|.
+
+And indeed k·min_i log|V_i| ≤ Σ_i log|V_i|, so my version is **strictly weaker** (it's implied by the correct one, not equivalent). Actually wait — is it implied? k·min_i log|V_i| ≤ Σ log|V_i|. And Σ log|V_i| ≥ log|A|. Does that imply k·min log|V_i| ≥ log|A|? No! It doesn't. So my inequality **does not follow**. It's a genuinely wrong claim — the correct one is Σ-based.
+
+Hmm, wait. Let me re-derive. My derivation was: |A| ≤ |V|^k where V is the common value space. That's correct only for uniform V. With heterogeneous V_i, |A| ≤ Π|V_i|. So the "K·R" product form is only valid in the uniform case.
+
+But also — importantly — the "K·R is invariant" claim (iv) is then **wrong**, because the correct invariant is Σ_i log|V_i| ≥ log|A|, which is not a product. So the "conservation law" as a product is invalid. The user is right to demand retraction.
+
+Let me define the four distinct quantities properly:
+
+- **uniform observer resolution**: all V_i = V, R_uni = log|V|.
+- **maximum observer resolution**: R_max = max_i log|V_i|.
+- **average information per observer**: R_avg = (1/k) Σ_{i∈I} log|V_i|.
+- **total observation capacity**: T = Σ_{i∈I} log|V_i|.
+
+Correct theorem: **log|A| ≤ T** (total observation capacity must be at least the address entropy).
+
+And: T = k · R_avg. So **k · R_avg ≥ log|A|** — that's the correct product form, but with *average*, not minimum!
+
+So the corrected conservation law is: **K · R_avg ≥ log|A|**, where R_avg is the average (over the used observers) of log|V_i|.
+
+Let me double-check: T = Σ_{i∈I} log|V_i| = k · R_avg. And T ≥ log|A|. So k·R_avg ≥ log|A|. ✓ Correct.
+
+And my old form k·min_i log|V_i| ≥ log|A| is **wrong** — because min ≤ avg, so k·min ≤ k·avg, and k·avg ≥ log|A| does NOT imply k·min ≥ log|A|.
+
+Concrete counterexample to my old claim: A = {0,1}^{100}, Π = {π_1: A→{0,1}^100 (identity), π_2,...,π_101: A→{0,1} (bits)}. Take I = {1}: k=1, min log|V_i| = 100, so k·min = 100 ≥ log|A| = 100. ✓ holds here.
+
+Try: A = {0,1}^{100}, Π = {π_1: A→{0,1}^{50} (first half), π_2: A→{0,1}^{50} (second half)}. I={1,2}: k=2, min log|V| = 50, k·min = 100 ≥ 100 ✓.
+
+Hmm. Let me find a real counterexample. Need k·min log|V_i| < log|A| but Σ log|V_i| ≥ log|A|. So need heterogeneous: one large, many small. E.g., A = {0,1}^{100}. Π = {π_0: A → {0,1}^{99} (first 99 bits), π_1..π_99: A→{0,1} (each of bits 1..99? no)}. Hmm, need to separate A.
+
+Let A = {0,1}^n. Π = {α: A→{0,1}^{n-1} (drop bit 1), β_1: A→{0,1} (bit 1), β_2: A→{0,1} (bit 1)}. Hmm, then {α, β_1} separates with k=2, Σ = (n-1)+1 = n ≥ n ✓. min = 1, k·min = 2 < n. **Counterexample!** ✓
+
+So with k=2: Σ log|V_i| = n ≥ log|A| = n ✓, but k·min = 2·1 = 2 < n. **My old claim fails.** Good, concrete counterexample.
+
+So: retract, replace with Σ-form / k·R_avg form.
+
+Also note: **the "invariant" is Σ_i log|V_i|, not a product.** And it's not even an invariant of the algebra — it's a lower bound on the *used* observers.
+
+Also — important nuance — is T ≥ log|A| even tight? It's a *necessary* condition for the used observers to separate A. And separation is necessary for F to be injective-in-each-argument. So yes, T ≥ log|A| is necessary. But is it an "invariant"? No — T depends on which observers you use, and you can use more/richer observers. So the honest statement: **T is a lower bound that must be met; it is not conserved.** The user is right that "K·R invariant" is unproven. Retract.
+
+## 二、审计 "B but not C" 反例
+
+The user is right: A_w = {0,1}^w is **finite**, and a finite set cannot carry a closed structure-preserving representation of T_Σ(X) which is infinite. Specifically:
+- ρ: T_Σ(X) ↪ A_w requires |T_Σ(X)| ≤ |A_w| = 2^w. So T_Σ(X) must be finite, i.e., bounded term depth.
+- F: A_w × A_w → A_w injective in each argument. Is that possible? F injective in each argument means for fixed y, x ↦ F(x,y) injective, so |A_w| ≤ |A_w| ✓ fine. And injective overall requires |A_w|² ≤ |A_w| ✗ impossible.
+- But do we need F injective overall? We need F = ρ∘g∘(ρ^{-1}×ρ^{-1}) restricted to im ρ. On im ρ, F must be injective (since g injective). So |im ρ|² ≤ |im ρ|, impossible for |im ρ| ≥ 2.
+
+**So indeed: if ρ is injective and F is structure-preserving with F = ρ∘g∘(ρ^{-1}×ρ^{-1}), then F|_im ρ is injective, requiring |im ρ| ≤ 1.** 
+
+Wait, that's the pigeonhole again. But hold on — the issue is that F must map into A_w, and ρ(g(x,y)) ∈ A_w. So F restricted to im ρ × im ρ lands in im ρ, and is injective. So |im ρ|² ≤ |im ρ|. So |im ρ| = 1.
+
+**So there is NO finite A_w admitting a structure-preserving injective representation with closure.** My counterexample is invalid on two counts: (a) finite A_w can't be closed, (b) injective-in-each-argument + closure fails.
+
+Hmm, but I said "F injective in each argument" not "injective overall". Let me recheck: is F injective in each argument enough for the conservation argument? Yes — Theorem L only used injective-in-each-argument. And injective-in-each-argument IS achievable on finite sets: F(x,y) = ... for fixed y, injective in x. E.g., A = {0,1}, F(x,y) = x. That's injective in x. But then F is not structure-preserving (it's not injective overall, so it can't equal ρ∘g∘...).
+
+So: for the counterexample to work as "B holds", I need F to actually be structure-preserving, i.e., F(ρ(x),ρ(y)) = ρ(g(x,y)). That forces F|_imρ×imρ injective. On finite A_w that's impossible.
+
+**So the correct construction must use an infinite address domain with growing lengths.** The user suggests A = {0,1}^*.
+
+Let me construct properly:
+
+- Σ = {f/2}, X = {a}. T_Σ(X) = all binary trees with leaves a.
+- A = {0,1}^*.
+- ρ: T → A injective, e.g., Gödel-style: encode tree as bitstring. Length grows with term size: |ρ(t)| = Θ(size(t))? Or can be O(log size)? Hmm — a bitstring can encode an arbitrary tree in O(size) bits (natural), or can it be shorter? By counting: trees of size n number ~Catalan(n) ~ 4^n/n^{3/2}, so need Ω(n) bits. So |ρ(t)| = Θ(n). Good.
+- F: A×A → A, F(ρ(x),ρ(y)) = ρ(f(x,y)). This is well-defined on im ρ; extend arbitrarily outside. F is injective on im ρ × im ρ (since ρ and f injective). ✓
+- Closure: F(im ρ × im ρ) ⊆ im ρ ✓ (that's the point of structure preservation).
+- Address length: |F(u,v)| = Θ(|u| + |v|) for u,v ∈ im ρ. So output length grows. **This is the output cost issue.**
+
+Now: is this B but not C? 
+- B: yes, F is a homomorphism. ✓
+- C: F(u,v) must be computed from K observers of u and v with fixed h of complexity independent of |u|,|v|. 
+- By Theorem L: k ≥ sep(A,Π) where sep is over im ρ. Since im ρ is infinite with unbounded lengths, and Π = bit projections, sep is unbounded. So k unbounded. ✓
+
+**So the correct example is A = {0,1}^* (or better: A = im ρ, the image, to avoid junk).** And crucially the address length grows, which brings in the output cost issue (part 三).
+
+Also I should note: **there's an additional subtlety** — if Π includes an observer that maps A to A (e.g., "the whole address"), sep = 1. So the observer vocabulary must be restricted. The user demands: observer vocabulary fixed before comparison. Good.
+
+Let me also note the important point: **on a growing-length domain, "reading the whole address" costs Θ(length), and the output costs Θ(output length).** So the total cost of any F is Ω(output length) = Ω(n) regardless of locality. **This is a lower bound that has nothing to do with locality** — it's just the cost of writing the answer. So locality must be measured *after* subtracting output cost.
+
+**This is a crucial point the user is making in part 三**, and it's correct and important. Let me handle it properly.
+
+## 三、Output cost
+
+Materialized address: the address value contains all data. Computing F(x,y) and writing it out costs Ω(|F(x,y)|).
+
+Pointer/handle address: the address is a reference; the structure lives in a heap. Then "F(x,y) = alloc(f,x,y)" costs O(1) but the *structure* isn't in the address.
+
+**The user's key question**: is "O(1) compose in the pointer model" only because the structure is NOT in the address?
+
+**Answer: YES, exactly.** And I should prove it cleanly.
+
+**Proposition.** In the pointer model, define the *content* of a handle h as the set of heap cells reachable from h. Then:
+- The handle's representation size is O(1).
+- The content size is Θ(size of represented term).
+- Any task that depends on the content must pay Ω(content) — because the content is not in the handle, and must be traversed.
+
+So: **the pointer model's O(1) composition is an artifact of charging only for representation, not for content.** Equivalently: **the pointer model externalizes the structure.** Hence: "Address 本身具有 O(1) 可计算的内部结构" is FALSE for the pointer model — the address has no internal structure at all; it's a bare reference.
+
+Formally I can state a clean theorem:
+
+**Theorem (content-charge).** Let M be an access model where (i) the cost of producing an address equals its representation length, (ii) the cost of a query equals the representation length of the answer, and (iii) no unbounded external store is free. Then for any injective structure-preserving ρ with unbounded address length, the total cost of computing F(x,y) is Ω(|ρ(g(x,y))|), i.e., Ω(term size).
+
+That's just: you must write the output. It's trivially true and it dominates everything.
+
+So: **locality must be defined as a cost measured in a model where output is charged, and then compared against the trivial lower bound Ω(output length).** The interesting question is whether F's cost is O(output length) + O(1), i.e., **output-linear**, or worse.
+
+**Reframed**: the right question isn't "is F O(1)?" (impossible, since output is long). It's "**is F output-linear?**", i.e., can F be computed in time O(|output|) without reading the whole input?
+
+Hmm, but reading the whole input is also Θ(|input|), and |input| ≈ |output| for a binary constructor (|output| = |input| + O(1)). So even reading all inputs is O(output). So locality gives nothing?!
+
+**This is the sharpest form of the problem.** Let me think.
+
+For a binary constructor f: |ρ(f(x,y))| ≈ |ρ(x)| + |ρ(y)| + O(1). So output length ≈ input length. So "reading all inputs" is already O(output length). So **there's no room for locality to help** in the materialized model — the trivial algorithm (decode both, compose, encode) is already output-linear.
+
+**UNLESS**: the task is not "compute F" but "compute some query about F(x,y)". Then locality could help: e.g., "what is the root tag of F(x,y)?" — answer is O(1) bits, but output of F is Θ(n). So: **the interesting locality question is about queries, not about full composition.**
+
+So: **the right formulation of "structural locality" is: can a *local query* about the composed address be answered without materializing the whole composed address?**
+
+Formally: given u, v and a query q, can q(F(u,v)) be answered in time O(|q's answer| + polylog) without computing F(u,v) in full?
+
+**This is a genuinely well-posed and meaningful question.** And it's exactly what makes "structure participates in computation" meaningful: the structure lets you *navigate* the composed object without building it.
+
+**And this is precisely the "lazy/persistent data structure" question in CS!** Persistent data structures, path copying, "rope" structures, etc. So it maps to a known area.
+
+Let me define:
+
+**Definition (query locality).** Given the model M, the *query complexity* of a query q (a predicate/function on addresses) at a composed address F(u,v) is the cost of computing q(F(u,v)) given u, v.
+
+**The meaningful claim of "structural locality"** is: there exist queries q with |q's answer| = O(1) such that q(F(u,v)) costs O(1) (or polylog) in M, whereas in an opaque encoding it costs Θ(n).
+
+**Is that achievable?** Yes! Example: q = "root constructor". In a pointer model, q(F(u,v)) = read the tag field of the newly allocated node = O(1). In a Gödel integer encoding, q requires locating the root in the integer = depends on encoding, but with a *sensible* encoding (tag in low bits) it's also O(1).
+
+Hmm. So again the separation depends on encoding.
+
+**But now the key constraint the user imposes: observer vocabulary fixed before comparison, and no pointer/heap escape.** So:
+
+Fixed M = (A, Rep, Π, C, Cost) with A = {0,1}^*, Rep = flat materialized bitstring, Π = {bit_i} (or {prefix, suffix, length}?), C = word-RAM, Cost = per-bit or per-word.
+
+Then: two encodings ρ_1, ρ_2 : T → A. Same Π, same C, same Cost. Query q = "root constructor".
+- With ρ_1 (tag in low bits): q(ρ_1(t)) = O(1).
+- With ρ_2 (tag spread): q(ρ_2(t)) = Θ(n).
+
+**Separation exists, but it's a property of the encoding, not of "structure".** So: **representation-dependent**, not "algebraically invariant".
+
+**And the user's requirement: "如果只是换名字 / 换编码，不能让复杂度虚假改变"** — this says we should NOT count the ρ_1 vs ρ_2 difference as meaningful. So the honest answer: under a fixed interface, locality IS representation-dependent, and since representations are freely choosable, locality is NOT an invariant of the concept space.
+
+**So the honest conclusion**: the only way to get a non-trivial notion is to fix the *interface* (Π and C) and ask: for a *given* representation, is the composition operation output-linear / query-local? That's a well-defined property of (Rep, Π, C), and it's a property of the *data structure*, i.e., a CS property, not a new algebraic property.
+
+**And then the killer**: with Π = bit projections and flat representation, is there ANY ρ making F query-local for non-trivial queries? Yes, ρ_1. So the answer is "yes, but it's a data-structure design question".
+
+Hmm, so what's the residual mathematical content? Let me think about whether there's a *lower bound* that's representation-independent.
+
+**Representation-independent lower bound candidate**: For any ρ, any Π that is *symmetric* (e.g., Π = all bit projections, and the cost model is uniform), the *worst-case* over ρ of query complexity... no, we can choose ρ.
+
+Let me think differently. The user wants: **is there a notion of structural locality that is (a) not movable by re-encoding, (b) not requiring a new observer vocabulary?**
+
+Candidate: **fix Π to be "the observers that are computable in O(1) time on the flat representation"**, i.e., Π = {single-word reads at O(1) offsets}. Then any ρ is a bijection A→A... no, ρ is T→A.
+
+Hmm. Let's think about it as: the "structure" is a *function* on A. The claim "the address has internal structure" means: there's a decomposition A ≅ Σ × A^k (roughly). But for a flat A = {0,1}^*, any decomposition is available by choosing ρ.
+
+**So the honest verdict: under a fixed flat interface, "internal structure" is a representation choice, and hence locality is representation-dependent. It becomes access-model-dependent if you allow Π to vary. It becomes machine-model-dependent if you allow C/Cost to vary. It is NEVER algebraically invariant** — because the algebra (T_Σ(X), g) is isomorphic to itself under any re-encoding, so no algebraic property can distinguish ρ_1 from ρ_2.
+
+**That's a clean theorem!** Let me state it:
+
+**Theorem (no algebraic invariant).** Let ρ_1, ρ_2: T_Σ(X) → A be two injective encodings. Then (T_Σ(X), g) ≅ (im ρ_1, F_1) ≅ (im ρ_2, F_2) as Σ-algebras, where F_i = ρ_i ∘ g ∘ (ρ_i^{-1} × ρ_i^{-1}). Hence no property of the Σ-algebra (A, F) can distinguish them. Therefore "structural locality", if it exists, is not a property of (A,F) — it is a property of (Rep, Π, C, Cost).
+
+**This is decisive**: it proves that structural locality is **NOT algebraically invariant**, and the user's suspicion is confirmed. But it's not a *pseudo*-distinction either — it's a genuine property of the *computational model*, which is a legitimate object of study (like "is this data structure output-linear?").
+
+**So the answer to part 八 (生死判断)**:
+
+Given: no pointer/heap escape, no whole-address observer, Π fixed, no decode-compose-encode in h, output cost counted.
+
+Then:
+1. Infinite concept space: possible ✓ (A = {0,1}^*, |A| = ℵ₀)
+2. Unique representation: possible ✓ (ρ injective)
+3. Binary composition: possible ✓
+4. Non-trivial internal address structure: **meaning depends on Π**. If Π = bit projections, then "internal structure" is just "the bits have a pattern", which is trivially true but not useful.
+5. **Truly sub-"read-all" local computation**: 
+   - For computing F in full: **impossible** — output length = Θ(input length), so no saving.
+   - For *queries* on F(u,v): **possible** — this is the real content. E.g., "root tag" is O(1) in a well-designed ρ.
+   - But: is it sub-linear? Query q with O(1)-bit answer: can it be computed in o(n)? Only if the encoding places the answer in a bounded region. Which is a data-structure design choice.
+
+**So: 取决于计算模型** — and I must state the boundary precisely.
+
+The boundary: **locality is achievable exactly to the extent that the encoding is "direct-addressable" for the query at hand.** And the question "for which queries is a given encoding direct-addressable" is the *succinct data structure* question.
+
+**AH — succinct data structures!** That's the precise existing theory. A succinct data structure stores a combinatorial object in near-information-theoretic space while supporting queries in O(1) or O(polylog). So:
+
+**"Structural locality" = "the address is a succinct data structure for terms, supporting the composition query and its derived queries."**
+
+That's the precise correspondence. And it's a well-studied area: **succinct data structures / rank-select / navigation in trees / balanced parentheses representation**. E.g., there are representations of trees in 2n+o(n) bits supporting O(1) navigation. That's EXACTLY the kind of thing the user is after.
+
+**This is a much better correspondence than cell-probe/FO^k.** Let me use it.
+
+And then the honest answer: 
+- The composition F itself can't be O(1) (output cost).
+- But navigation queries on F(u,v) can be O(1) in a succinct representation.
+- And there's a real theory of lower bounds for succinct data structures.
+
+**So the residual open problem** is: does the *term algebra composition* admit a succinct representation where (a) composition is output-linear and (b) a specified query class is O(1)? And is there a lower bound?
+
+Hmm, but this is just "design a succinct data structure for terms" — a CS engineering/research question, well-covered by existing theory.
+
+## 六、重新审计已有理论名称
+
+The user demands: distinguish analogy / reduction / formal equivalence.
+
+Let me go through:
+1. **cell-probe model**: A model where memory is an array of cells, queries are cell reads at arbitrary indices, cost = number of probes. Our Π = bit projections, query = read bit at position i. **This IS a formal specialization**: cell-probe with cells = bits and *non-adaptive* probes. So: **formal equivalence** (a special case). But: cell-probe usually allows adaptive probing and measures only probes (not computation). Our model counts h's time too. So: **formal special case, with a different cost accounting**.
+   - Verdict: **reduction** (our model is an instance of cell-probe, with output cost added).
+
+2. **pointer machine**: A model where memory is a linked structure, access only via pointers, no arithmetic on addresses. Our pointer model (part 三) is exactly this. **Formal equivalence** for that sub-model.
+   - Verdict: **formal equivalence for the pointer sub-model**.
+
+3. **FO^k / quantifier-free FO**: FO^k = first-order logic with at most k distinct variables, allowing quantifiers. "Quantifier-free FO^k" = a Boolean combination of atomic formulas over k variables. Our C says: F is computed by a *fixed function h* of k observers. 
+   - Is h = a quantifier-free formula? **No.** h is an arbitrary function V^k → A. A quantifier-free FO formula outputs a Boolean, not an element of A. So: **NOT formally equivalent**.
+   - To get formal equivalence, h must be restricted to a *fixed finite basis* of operations, and the output must be Boolean (a query, not an address). 
+   - **Verdict: analogy, not equivalence.** Must retract "precisely".
+
+4. **Gaifman locality / Hanf**: These are theorems about FO-definable properties being local *in the graph distance sense*. They give: any FO sentence is equivalent to a Boolean combination of local sentences. **This is about FO, not about fixed-k observer circuits.** Related in spirit (locality), but not the same.
+   - **Verdict: analogy.**
+
+5. **EF games**: characterize FO^k equivalence. Relevant if we're studying FO^k. Since we're not formally in FO^k, it's an **analogy / a possible tool**.
+
+6. **decision-tree counting bound**: For a decision tree over Π, the number of leaves needed to separate A is ≥ |A| / (max class size). Our k ≥ sep(A,Π) is exactly the depth needed for a *non-adaptive* decision tree to separate A. **This IS a formal instance** of the non-adaptive decision tree lower bound.
+   - **Verdict: reduction** (our bound is an instance of a standard non-adaptive decision-tree lower bound).
+
+7. **succinct data structures**: (new correspondence) — **formal equivalence** for the query-locality notion.
+
+Good. So: 3 formal equivalences/reductions (cell-probe, pointer machine, decision tree), 1 new (succinct DS), and several mere analogies (FO^k, Gaifman, Hanf, EF).
+
+## 四、完整计算模型 M = (A, Rep, Π, C, Cost)
+
+Let me define it properly.
+
+**M = (A, Rep, Π, C, Cost)**
+- A: address domain (a set).
+- Rep: representation/storage model. Specifies: how elements of A are stored (flat string? heap cells + handles?), and what the memory looks like.
+- Π: primitive observers = the interface. {π_i : A → V_i}.
+- C: primitive computation basis — the allowed O(1) operations.
+- Cost: (a) access cost (per observer call), (b) computation cost (per C-operation), (c) output cost (per unit of written output).
+
+**Requirement (interface-fixed comparison)**: to compare Rep_1 vs Rep_2, Π, C, Cost must be **identical**. Then the only difference is how A's elements are laid out.
+
+**Question**: when do Rep_1, Rep_2 represent the same concept set and the same algebraic structure but have different access complexity under the *same* M?
+
+**Answer**: This is possible only if Π is *representation-sensitive*, i.e., Π's elements are defined relative to Rep. If Π is defined *abstractly* on A (e.g., "the i-th field of the canonical decomposition"), then it's Rep-independent and the answer is: **no difference possible** — same Π, same A, same Cost ⟹ same complexity.
+
+So: **differences arise only when Π is Rep-relative.** And that's the crux: with a flat Rep, Π = bit/word reads at offsets. Two different ρ's put different data at different offsets, so the same Π gives different complexities.
+
+**So: under a truly fixed abstract interface, no separation. Under a fixed flat interface, separation exists but is a layout question.**
+
+**Therefore**: "representation structure participates in computation" is meaningful only in the second setting, and in that setting it is precisely the question "**is this layout a good data structure for these queries**" — a CS question.
+
+## 五、重新定义 Structural Locality
+
+The user demands: representation + fixed interface, and re-encoding must not spuriously change complexity.
+
+**Candidate definition (fixed-interface structural locality).**
+
+Fix M = (A, Rep, Π, C, Cost). Let ρ: T_Σ(X) ↪ A. Define:
+- **composition cost** cc(ρ, M) = cost of computing F(u,v) = ρ(g(ρ^{-1}u, ρ^{-1}v)) from u, v under M.
+- **query cost** qc(ρ, M, Q) = for a query class Q, the max cost of q(F(u,v)) over q ∈ Q.
+
+**Trivial lower bound**: cc(ρ,M) ≥ Ω(|F(u,v)|) — output cost. And qc ≥ Ω(|answer|).
+
+**Definition.** ρ is **output-optimal** if cc(ρ,M) = Θ(|F(u,v)|).
+ρ is **Q-local** if qc(ρ,M,Q) = O(|answer| + polylog |u|).
+
+**Now the crucial constraint**: this is a property of (ρ, M). To make it a property of the *representation* rather than the *encoding*, we must fix a canonical map between Rep and A. In practice: **Rep determines ρ** (the representation *is* the encoding).
+
+So: **"structural locality" is a property of (Rep, Π, C, Cost) — i.e., of the data structure and its interface.** And it is:
+- **representation-dependent** (changing the layout changes it),
+- **access-model-dependent** (changing Π changes it),
+- **machine-model-dependent** (changing C, Cost changes it),
+- **NOT algebraically invariant** (Theorem: no Σ-algebra property can distinguish two encodings).
+
+**But** there's a genuine invariant: **the information-theoretic lower bound** log|A| ≤ Σ_i log|V_i| (the corrected conservation law). That's the one thing that survives.
+
+Hmm, but that's about separating A, not about locality per se.
+
+Let me think about whether there's a meaningful *representation-independent* locality notion... 
+
+**Candidate: query-optimality relative to a fixed query class, under all representations.** I.e., for a given query class Q and a given *information-theoretic space budget*, what's the minimum possible query cost over all representations? That's **succinct data structures lower bounds** — and there ARE real lower bounds there (e.g., you can't support rank in o(1) time in n bits; you need n + n/log n bits for O(1) rank). **So representation-independent lower bounds DO exist in the succinct DS setting.**
+
+**So the honest answer to part 五**: structural locality has a **representation-independent core** — namely the *succinct data structure lower bounds* (space vs query time tradeoffs) — but that core is about *space*, not about "internal structure".
+
+OK. I think I have all the pieces. Let me now also do part 八 carefully.
+
+## 八、生死判断
+
+Conditions: no pointer/heap, no whole-address observer, Π fixed, no decode-compose-encode in h, output cost counted.
+
+1. Infinite concept space: ✓ possible (A = {0,1}^*).
+2. Unique representation: ✓ possible.
+3. Binary composition: ✓ possible.
+4. Non-trivial internal address structure: ✓ possible (e.g., a succinct tree representation).
+5. **Truly sub-"read-all" local computation**: 
+   - For computing F in full: **NO** — output cost Θ(n) forces reading/writing Θ(n). Trivial algorithm is already optimal. **Impossible.**
+   - For queries q on F(u,v) with |answer| = O(1): **YES, possible**, and this is the real content. E.g., balanced-parentheses tree representation: root tag is O(1).
+   - So: **可能，但只在 query 层面，且必须在"输出成本已计入"的框架下重新表述。**
+
+**So the verdict is "取决于" — and the boundary is exactly:**
+> **局部性只能存在于 query 层，不能存在于 composition 层。** 因为 composition 的输出长度是 Θ(n)，输出成本本身就把任何 locality 抹平了。
+
+**That's the strongest impossibility theorem I can give:**
+
+**Theorem (composition-locality impossibility).**
+In any model M with output cost charged and ρ injective with unbounded address length, and g a binary constructor with |ρ(g(x,y))| ≥ |ρ(x)| + |ρ(y)| - O(1), the cost of computing F(x,y) is Θ(|F(x,y)|) = Θ(n), and the trivial algorithm (decode-compose-encode) achieves it. Hence **no representation can make full composition sub-linear**, and therefore "structural locality of composition" is vacuous in the materialized model.
+
+**Corollary.** In the materialized model, "representation structure participates in composition" cannot be exhibited by composition cost. It can only be exhibited by **query cost on the composed address without materializing it**.
+
+**So the honest reframing**: the user's original question ("can the address's internal structure directly be the operating structure of composition?") must be **reformulated** as:
+> "Can a query on the composed concept be answered in time depending only on the query's answer size, not on the size of the composed concept?"
+
+**That is the correct, non-vacuous version.** And it has a name: **navigation queries on succinctly-encoded trees**.
+
+Now part 九 output. Let me write it.
+
+Also part 七: what property really means "representation structure participates directly in computation" rather than "stores enough to reconstruct"?
+
+**Answer**: The distinction is: 
+- **Reconstruct**: cost of answering q(F(u,v)) is Ω(|F(u,v)|) (must build it).
+- **Participate**: cost of answering q(F(u,v)) is O(|answer| + polylog).
+
+So: **"participates" = the composed address supports O(1)-time navigation queries without materialization.**
+
+Precisely: ρ is **navigation-local** for a query class Q if for all q ∈ Q, u, v:
+cost(q(F(u,v))) = O(|q(·)| + polylog(|u|+|v|))
+with no term of the form |F(u,v)|.
+
+That's the definition. It's clean.
+
+## 九、下一定理
+
+**Candidate**: A representation-independent lower bound or a construction.
+
+The decisive next theorem should be:
+**"Does there exist an injective encoding ρ: T_Σ(X) → {0,1}^* and a fixed query class Q such that ρ supports O(1)-time navigation queries for Q in space (1+o(1))·log|{t : |t| ≤ n}| bits?"**
+
+That's the succinct DS question. And the answer for trees is known (balanced parentheses: 2n+o(n) bits, O(1) navigation). So it's **possible** — which means... the answer to the user's question is YES, and it's existing theory.
+
+Hmm. So maybe the honest next theorem is the **impossibility** at the composition level (which I derived), plus a characterization of the query level.
+
+Let me formulate the single most critical next theorem as:
+
+**定理（合成局部性的不可能性与查询局部性的可能边界）**
+In any model M = (A, Rep, Π, C, Cost) satisfying the five constraints:
+(i) [composition] For any injective ρ with unbounded length, cost(F) = Θ(|F(x,y)|); no representation improves it. **Composition-locality is impossible.**
+(ii) [query] There exist ρ and Q with cost(q(F(u,v))) = O(|answer| + polylog) — constructively (balanced parentheses / tree succinct representation).
+(iii) [boundary] The boundary is exactly: locality is achievable iff the query's answer is determined by O(1) *locally-addressed* parts of the encoding; and the necessary space is the information-theoretic minimum for the object class.
+
+And the decisive question: **is (ii) achievable for the specific query class derived from Σ (root, i-th child, depth, subtree equality)?** For trees: yes. So the answer is positive and it's known theory.
+
+Hmm, but then what's left? The residual is: for the *specific* query class that a concept system needs (which is not just tree navigation but *semantic* queries), is it achievable? That's empirical again.
+
+Let me be honest and structure the final theorem as the **dichotomy**: composition-locality impossible, query-locality possible and equivalent to succinct DS, and the residual question is which query class matters.
+
+I think that's the right answer. Let me write it.
+
+Let me also be careful about the widget. Should I render one? The user wants a clean technical audit. A diagram showing the cost decomposition (access + computation + output) and where locality can/can't live might help. Or the corrected conservation law with the four resolution notions.
+
+Let me do a compact diagram: the cost decomposition of F, showing that output cost Θ(n) dominates and kills composition-locality, while query-locality survives. That's the core finding.
+
+Actually, let me do a diagram showing the three-layer distinction: Materialized vs Pointer, and the cost bars. Hmm.
+
+Let me do: a "cost stack" comparison showing:
+- Materialized: access Θ(n) + compute + output Θ(n) → total Θ(n)
+- Pointer: access O(1) + compute O(1) + output O(1) BUT content Θ(n) hidden → total Θ(n) when content is needed
+- Query on composed (succinct): O(1)
+
+That's a good visual. Let me make it a horizontal bar comparison.
+
+Let me design:
+Three rows, each with a bar decomposed into segments.
+Row 1: Materialized composition — [read Θ(n)][compute][write Θ(n)] total Θ(n)
+Row 2: Pointer composition — [O(1)][O(1)][O(1)] = O(1) representation, but hidden [content Θ(n)] → 真实成本 Θ(n)
+Row 3: Query on composed (succinct) — [O(1)] total O(1), answer size O(1)
+
+Let me build it.
+
+viewBox 720 x H.
+
+Rows at y = 70, 150, 230. Bar height 34.
+
+Actually let me make it cleaner: label on left (140px), bar from x=160 to x=660.
+
+Row 1 "Materialized 合成":
+ segments: read Θ(n) [160-380], compute [380-440], write Θ(n) [440-660]
+Row 2 "Pointer 合成":
+ segments: O(1) [160-200], O(1) [200-240], O(1) [240-280], then hidden content Θ(n) [280-660] dashed
+Row 3 "查询（succinct 编码）":
+ segments: O(1) [160-200]
+
+Plus a note: 真实成本相同.
+
+Let me add a vertical dashed line at x=660 labeled "输出成本下界".
+
+Hmm, let me simplify. Let me do:
+
+Row 1: [读取 Θ(n) | 计算 O(1) | 写出 Θ(n)] — 总计 Θ(n)
+Row 2: [O(1) | O(1) | O(1)] 表象 O(1) ，+ 虚线 [隐藏内容 Θ(n)] — 实际 Θ(n)
+Row 3: [O(1)] 查询层：不物化合成结果
+
+Good. Let me write coordinates.
+
+x from 160 to 660 = 500 width.
+Row1: read 160-370 (210), compute 370-410 (40), write 410-660 (250)
+Row2: 160-200, 200-240, 240-280 (three O(1) blocks of 40), then dashed 280-660 (380) "隐藏：内容 Θ(n)"
+Row3: 160-200 (40)
+
+Labels at x=150 anchor=end, 12px.
+Row titles: "Materialized 合成" — 14px, might be ~120px. anchor=end at x=150 → starts at 30. OK.
+
+Right side annotation at x=672: "总计 Θ(n)" etc. But 672+ is beyond 660... viewBox 720, safe area 40 → up to 680. Let me put annotations at x=668 anchor=start, 12px. "Θ(n)" is short. OK.
+
+Hmm, "总计 Θ(n)" is 8 chars ≈ 60px → 668+60 = 728 > 720. Too wide. Let me put annotations below each row instead, or shorten.
+
+Let me restructure: put the total annotation inside/right of the bar but shorten to "Θ(n)" / "O(1)". 4 chars ≈ 30px → 668+30 = 698. Fits.
+
+And add row explanation in the text, not the widget.
+
+Let me finalize:
+H: rows at 76, 156, 236 (height 34), so bottom 270. Plus a caption/legend at 300. H = 330.
+
+Let me add a legend for the dashed "隐藏成本".
+
+Actually, let me add a small caption line under row 2: "表象 O(1)，实际 Θ(n)（内容不在地址中）". Hmm, might clutter. Let me put it as a text at x=160, y=200 (below row 2 which ends at 190).
+
+Row2: y=156..190. Caption at y=206.
+Row3: y=236..270.
+
+OK:
+- Row1: y=76, h=34 → 76..110
+- Row2: y=156, h=34 → 156..190
+- Row2 caption at y=206
+- Row3: y=236, h=34 → 236..270
+- H = 300
+
+Labels vertically centered: row1 text at y=97, row2 at y=177, row3 at y=257.
+
+Let me write.
+
+Colors: 
+- Row1 segments: --chart-series-1, --chart-series-3, --chart-series-1
+  Hmm, tokens say use chart-series for peer categories. Let me use: read = --chart-series-1, compute = --chart-series-3, write = --chart-series-1. Or simpler: use --brand for the dominant cost (output) and neutral for others. 
+  
+  Let me use: access = --chart-series-1, compute = --chart-series-2, output = --chart-series-3. Hmm, but they're not "categories of data", they're cost components. The skill says "Color must encode focus, category, status, intensity, or hierarchy." Cost components = categories. OK, chart-series is fine.
+
+  Simpler and cleaner: use --brand for "output cost" (the dominant/blocking factor) and --surface-muted with border for the others. That encodes focus. Let me do:
+  - Row1: read = muted, compute = muted, write = brand
+  - Row2: three O(1) blocks = muted, hidden content = brand-dashed (border only, dashed)
+  - Row3: O(1) = muted
+
+  Hmm, then row3's point (that it's cheap) is lost. Let me add a checkmark-ish distinction via the total annotation.
+
+  Let me just do: all cost blocks = muted fill + border; the "output / hidden content" blocks = brand fill (these are the blocking costs). Totals annotated on the right.
+
+Good. Let me write the SVG.
+
+Let me write the code.
+
+text sizes: row labels 13px (Chinese), block labels 12px, totals 13px.
+
+Block labels: "读取 Θ(n)" ~ 7 chars mixed ≈ 55px. In a 210px block, fine.
+"计算" in a 40px block — 2 Chinese chars at 12px = 24px. Fits with 8px margin each side. Tight but OK.
+Let me widen compute to 50: read 160-360 (200), compute 360-410 (50), write 410-660 (250). Good.
+
+Row2 blocks of 40px each: labels "O(1)" ≈ 30px at 12px. Fits in 40 with 5px margin. OK.
+Actually let me make them 45px: 160-205, 205-250, 250-295, then dashed 295-660.
+Labels "O(1)" centered in each.
+
+Row3 block: 160-205, label "O(1)".
+
+Let me write.
+
+Total annotations at x=668, anchor=start:
+- Row1: "Θ(n)"
+- Row2: "Θ(n)"
+- Row3: "O(1)"
+
+Good. Let me write it all.
+
+Now the text. Let me be organized per the user's 9 required outputs.
+
+Let me write it now, carefully.
+
+One more check on part 一. Let me make sure the corrected statement is right.
+
+Theorem L: if F(x,y) = h(π_{i_1}(x),...,π_{i_k}(x),π_{j_1}(y),...) with fixed indices, and F injective in first argument, then x ↦ (π_{i_1}(x),...,π_{i_k}(x)) injective on A. 
+
+Hmm — is that right? If x,x' agree on the I-indices, then F(x,y) = F(x',y) for all y. Injectivity in first argument: F(x,y)=F(x',y) ⟹ x=x'. ✓ So yes.
+
+So |A| ≤ Π_{i∈I} |V_i|, i.e., log|A| ≤ Σ_{i∈I} log|V_i| =: T. ✓
+
+Corrected conservation law: **T ≥ log|A|**, where T = Σ log|V_i| = k·R_avg.
+
+And my old K·min R ≥ log|A| is WRONG (counterexample above).
+
+Is there any invariant? T is not invariant (depends on I). The only thing: **for ANY separating family, T ≥ log|A|**. That's a lower bound on T for any valid I. And that's not "conserved" — it's just necessary.
+
+Hmm, is there a form that IS invariant? Consider the *minimum* over separating families: T_min = min_{I separating} Σ_{i∈I} log|V_i|. Then T_min ≥ log|A|, and T_min is a property of (A, Π) alone. So **T_min is the right invariant-ish quantity** — it's a property of the interface, and it lower-bounds the information needed.
+
+And note: T_min ≥ log|A| always, with equality iff the family is "information-optimal". So T_min is a genuine measure of the interface's efficiency. And it's Π-dependent (not algebraically invariant).
+
+OK good. So: the corrected "conservation" is: **any separating family must have total capacity ≥ log|A|**; and the interface's efficiency is T_min − log|A| ≥ 0.
+
+Let me write.
+
+Also — one subtlety: the four notions the user asks to distinguish:
+- uniform observer resolution: R_uni = log|V| when all V_i = V.
+- average information per observer: R_avg = T/k.
+- maximum observer resolution: R_max = max_i log|V_i|.
+- total observation capacity: T = Σ_i log|V_i|.
+
+Correct law: **T ≥ log|A|**, i.e., k·R_avg ≥ log|A|.
+Wrong law: k·R_min ≥ log|A| (R_min = min_i log|V_i|).
+Also wrong: k·R_max ≥ log|A| — this is trivially implied by T ≥ log|A|? No: k·R_max ≥ T ≥ log|A| ✓. So k·R_max ≥ log|A| IS valid (weaker than T). But not sharp.
+
+So: valid but non-sharp: k·R_max ≥ log|A|. Sharp: T ≥ log|A| ⟺ k·R_avg ≥ log|A|. Invalid: k·R_min.
+
+Good, that's a clean table.
+
+Now write.
+
+I'll skip AdvisorTool? No — policy says mandatory when user expresses criticism/correction. The user's message is heavily corrective ("你上一轮的守恒律...请严格重新检查", "请撤回", "请严格验证", "请撤回这个 finite-family counterexample"). That's clearly correction/distrust. **Mandatory.** Let me call it.
+
+Hmm, but I called it last turn too. Limit is once per turn. So I can call again this turn.
+
+Let me call it alone.
+
+Actually — I've been calling it every turn and the user hasn't objected. The policy mandates it. Let me call it, alone, before writing.
+
+Wait, but I already need to be efficient. Let me just call it once, alone, then write.
+
+Let me do that.
+正在请求专家建议..........
+
+已获取专家建议
+
+Now let me write the answer. Let me render one widget showing the trilemma / cost decomposition.
+
+Let me design the widget: the cost stack comparison showing where the Θ(n) cost is hidden.
+
+Then the text with the 9 outputs.
+
+Let me write the SVG.
+
+Rows:
+- Row 1 "Materialized 合成": [读取 Θ(n) 160-360][计算 360-410][写出 Θ(n) 410-660] → Θ(n)
+- Row 2 "Pointer 合成": [O(1) 160-205][O(1) 205-250][O(1) 250-295] then dashed [隐藏内容 Θ(n) 295-660] → Θ(n)
+- Row 3 "查询（不物化）": [O(1) 160-205] → O(1)
+
+y: row1 = 76, row2 = 156, row3 = 236. h = 34.
+Row2 caption at y = 206: "表象 O(1)；实际 Θ(n)（结构在 heap 中，不在地址内）"
+
+H = 300.
+
+Let me write.
+
+Labels left, anchor=end at x=150:
+- "Materialized 合成" at y=97
+- "Pointer 合成" at y=177
+- "查询（不物化）" at y=257
+
+At 13px: "Materialized 合成" ≈ 12*7 + 2*13 = 110px. From x=150-110=40. OK, safe area is 40. Good.
+"查询（不物化）" ≈ 7*13 = 91. OK.
+
+Block labels centered.
+Row1: 读取 Θ(n) center (260, 97); 计算 center (385, 97); 写出 Θ(n) center (535, 97)
+Row2: O(1) center (182,177), (227,177), (272,177); dashed block label center (477,177) "隐藏：内容 Θ(n)"
+Row3: O(1) center (182,257)
+
+Totals at x=668 anchor=start: y=97 "Θ(n)", y=177 "Θ(n)", y=257 "O(1)"
+
+Let me check text-anchor middle for block labels.
+
+Colors: 
+- muted blocks: fill var(--surface-muted), stroke var(--border)
+- brand blocks (the blocking cost): fill var(--brand) with opacity? Better: fill var(--surface-muted) stroke var(--brand) stroke-width 1.5. Hmm, "写出 Θ(n)" and "隐藏内容" are the blocking costs — mark them with brand stroke.
+- Let me use: normal blocks = muted fill + border stroke; blocking blocks = muted fill + brand stroke (1.5).
+
+Good.
+
+Now write.
+
+Then the text.
+
+Let me write the text carefully with all 9 sections.
+
+Key content recap:
+
+### 【1】守恒律的错误
+- 正确：log|A| ≤ Σ_{i∈I} log|V_i|
+- 撤回：K·min_i log|V_i| ≥ log|A|
+- 反例：A={0,1}^n, Π={α: 前 n-1 位, β: 第 n 位}. I={α,β}: Σ = (n-1)+1 = n ≥ n ✓, 但 K·min = 2·1 = 2 < n ✗
+- 四个量的区分表
+- 有效但不锋利：k·R_max ≥ log|A|（因为 k·R_max ≥ T ≥ log|A|）
+- 无效：k·R_min
+- 锋利：T ≥ log|A| ⟺ k·R_avg ≥ log|A|
+- **K·R 不是不变量** —— 撤回 (iv)
+
+### 【2】修正后的定理
+Theorem L' + corrected conservation. Plus: 正确的 quantity 是 T_min = min over separating families of Σ log|V_i|, a property of (A,Π).
+
+### 【3】正确的 Access Model M = (A,Rep,Π,C,Cost)
+Five-tuple definition. Interface-fixed comparison requirement. When can Rep1 vs Rep2 differ: only if Π is Rep-relative.
+
+### 【4】Materialized vs Pointer
+Definitions. Proposition: pointer O(1) is because structure is not in the address.
+
+### 【5】Output cost
+Trivial lower bound Ω(|output|). Theorem: composition-locality impossible in materialized model.
+
+### 【6】Structural Locality 定义
+navigation-local. And the 4-level classification (representation / access-model / machine-model / invariant).
+
+### 【7】已有理论严格覆盖
+Table with analogy/reduction/formal equivalence.
+
+### 【8】未解决问题
+### 【9】下一定理
+
+### 【2】审计 finite-family 反例
+- A_w = {0,1}^w 有限 ⟹ 不能承载闭合的结构保持表示（因为 |im ρ|² ≤ |im ρ| ⟹ |im ρ| ≤ 1）
+- 正确构造：A = {0,1}^*, 明确 term space / encoding / F / closure / address length / query cost / output cost
+
+Let me put this as part of 【2】or a separate section. The user's numbering has it as 二, and the output list is 1-9. Let me map:
+- 一 → output 【1】+【2】
+- 二 → part of 【2】
+- 三 → 【4】【5】
+- 四 → 【3】
+- 五 → 【6】
+- 六 → 【7】
+- 七 → part of 【6】
+- 八 → 【8】
+- 九 → the 9 outputs
+
+Hmm, the user wants output 【1】..【9】. Let me organize the answer as exactly those 9 sections, and fold the 一-八 tasks into them. That's cleanest and respects the instruction "只输出".
+
+Let me do that: 9 numbered sections, each addressing the relevant tasks. And I'll note which task maps where briefly.
+
+Let me write.
+
+For the trilemma (part 八), it belongs in 【8】.
+
+Let me write it all out now.
+
+Actually, let me put the trilemma prominently since the advisor says it's the core.
+
+Final structure:
+【1】上一轮守恒律的错误
+【2】修正后的定理（含正确的渐近反例）
+【3】正确的 Access Model
+【4】Materialized vs Pointer Address
+【5】Output Cost
+【6】Structural Locality 的严格定义
+【7】哪些已有理论严格覆盖
+【8】未解决问题 + 生死判断（三难困境）
+【9】唯一最关键的下一定理
+
+Let me write.
+
+For the asymptotic example in 【2】, be explicit:
+
+- Term space: T = T_Σ(X), Σ = {f/2}, X = {a}. |T| = ℵ₀.
+- Encoding: ρ: T → {0,1}^*, prefix-free, |ρ(t)| = Θ(size(t)). (Existence: by counting, Catalan(n) ~ 4^n/n^{3/2}, so Ω(n) bits needed; O(n) achievable.)
+- F: F(u,v) = ρ(f(ρ^{-1}u, ρ^{-1}v)) for u,v ∈ im ρ; extend to junk arbitrarily.
+- Closure: F(im ρ × im ρ) ⊆ im ρ ✓
+- Address length: |F(u,v)| = Θ(|u|+|v|)
+- Query cost: reading a bit at offset i costs 1
+- Output cost: writing |F(u,v)| bits costs Θ(|u|+|v|)
+
+And: F is injective on im ρ × im ρ (since f and ρ injective). So Theorem L' applies: k ≥ sep(im ρ, Π) = unbounded (since im ρ has unbounded length, no fixed finite bit-set separates it).
+
+Good.
+
+Now write.
+
+Let me also handle 【7】 precisely:
+
+| 名称 | 我们的模型 | 关系 |
+|---|---|---|
+| cell-probe | Π=位读取, 非自适应 | **归约**（我们的模型是 cell-probe 的一个特例，但成本核算不同：cell-probe 只数探测次数，我们还要计 h 的时间和输出成本） |
+| pointer machine | Rep = heap+handle | **形式等价**（指针子模型） |
+| decision-tree counting | k ≥ sep(A,Π) | **归约**（非自适应决策树下界的一个实例） |
+| quantifier-free FO^k | "fixed observers + arbitrary h" | **仅类比，撤回"precisely"**。理由：FO^k 固定词汇与语法、输出是布尔；我们的 h: V^k→A 是任意函数、输出是地址。不等价。 |
+| Gaifman locality | — | **仅类比**。它关于 FO 可定义性质在图距离意义下的局部性，不是关于组合运算的局部性 |
+| Hanf 定理 | — | **仅类比** |
+| EF games | — | **类比 / 潜在工具**（只在真的进入 FO^k 后才形式相关） |
+| succinct data structures | query 层的局部性 | **形式等价**（这是 query locality 的正确已有理论） |
+
+Good.
+
+Now write the whole thing. Let me be dense but complete.
+
+One more: for 【6】, the definition of navigation-local:
+
+**Definition.** Fix M = (A, Rep, Π, C, Cost). ρ: T_Σ(X) ↪ A injective. A query class Q. 
+- ρ is **output-optimal** if cost(F(u,v)) = Θ(|F(u,v)|).
+- ρ is **Q-navigation-local** if for all q ∈ Q and all u,v ∈ im ρ:
+  cost(q(F(u,v))) = O(|q(F(u,v))| + polylog(|u|+|v|))
+  — 注意右端**不含** |F(u,v)| 项。
+- ρ is **non-materializing for Q** if there's an algorithm answering q(F(u,v)) that never writes F(u,v) in full.
+
+And the distinction the user wants (part 七):
+- **"representation merely stores enough to reconstruct"** = Q-navigation-local fails: every algorithm must produce F(u,v) (Ω(|F|)).
+- **"representation structure participates directly"** = Q-navigation-local holds for a non-trivial Q.
+
+That's the clean answer to part 七.
+
+And the 4-level classification (part 五):
+1. **representation-dependent**: changing ρ (same Π,C,Cost) changes complexity. — Yes, this is where the flat bitstring case lives.
+2. **access-model-dependent**: changing Π changes it. — Yes.
+3. **machine-model-dependent**: changing C/Cost changes it. — Yes.
+4. **algebraically invariant**: NO. Theorem: (im ρ_1, F_1) ≅ (im ρ_2, F_2) as Σ-algebras for any two injective encodings, so no Σ-algebra property distinguishes them.
+
+**So structural locality is never (4).** And the user's requirement "如果必须换 primitive observer，则这应该被视为改变计算模型" → so it's (2), i.e., not a re-encoding.
+
+And the only (4)-level statement is the information-theoretic one: log|A| ≤ Σ log|V_i| for any separating family — but that's about separation, not locality.
+
+Good. Write it.
+
+Let me now produce the final response.
+
+Length check — this is long but the user asked for 9 sections with strict content. I'll be dense.
+
+Now write the full text. 9 sections. Let me be rigorous.
+
+Note: the widget label "Pointer 合成" — I should be careful, this is a fair representation.
+
+Let me write.
+# 【1】上一轮守恒律的错误
+
+**你完全正确。我上一轮的 $K\cdot\min_i\log|V_i|\ge\log|A|$ 是错的。**
+
+**正确的计数**：若索引表 $I$ 分离 $A$（即 $x\mapsto(\pi_i(x))_{i\in I}$ 单射），则
+
+$$\boxed{\ \log|A|\ \le\ \sum_{i\in I}\log|V_i|\ }$$
+
+**我的错在哪里**：$k\cdot\min_i\log|V_i| \le \sum_i \log|V_i|$。所以 $\sum$-式**不蕴含** $\min$-式。我把"等值域特例"当成了通例。
+
+**显式反例（推翻我的旧式）**：$A=\{0,1\}^n$，$\Pi=\{\alpha,\beta\}$，$\alpha$ 读前 $n-1$ 位（$|V_\alpha|=2^{n-1}$），$\beta$ 读第 $n$ 位（$|V_\beta|=2$）。取 $I=\{\alpha,\beta\}$：
+- 正确式：$\sum = (n-1)+1 = n \ge n$ ✓
+- 我的旧式：$K\cdot\min = 2\cdot 1 = 2 < n$ ✗
+
+**四个量必须分开：**
+
+| 记号 | 定义 | 在正确式中的位置 |
+|---|---|---|
+| **uniform observer resolution** | $R_{uni}=\log|V|$（仅当所有 $V_i=V$） | 此时 $\sum = k R_{uni}$ |
+| **average information per observer** | $R_{avg}=\frac{1}{k}\sum_{i\in I}\log|V_i|$ | **$\;k\cdot R_{avg}\ \ge\ \log|A|$ —— 这是正确的乘积形式** |
+| **maximum observer resolution** | $R_{max}=\max_i\log|V_i|$ | $k R_{max}\ge\sum\ge\log|A|$：**成立但不锋利** |
+| **total observation capacity** | $T=\sum_{i\in I}\log|V_i|$ | **$T\ge\log|A|$ —— 这是锋利形式** |
+
+**结论：**
+- **有效且锋利**：$T\ge\log|A|$，等价地 $k\cdot R_{avg}\ge\log|A|$。
+- **有效但不锋利**：$k\cdot R_{max}\ge\log|A|$。
+- **无效（撤回）**：$k\cdot\min_i\log|V_i|\ge\log|A|$。
+
+**并且必须撤回 (iv) "不变量"**：$T$ **不是**重新编码下的不变量——换编码可以改变所用观察者的数量与各自分辨率的分配。上一轮"$K\cdot R$ 是不变量、可沿曲线平移"的说法**一并撤回**。
+
+唯一还站得住的"界面量"是
+
+$$T_{\min}:=\min\{\textstyle\sum_{i\in I}\log|V_i|\ :\ I\ \text{分离}\ A\}$$
+
+它是 $(A,\Pi)$ 的性质（**不含** $\rho$、不含 $F$），且 $T_{\min}\ge\log|A|$，等号当且仅当该界面是信息最优的。**它是"界面效率"的度量，不是守恒量。**
+
+---
+
+# 【2】修正后的定理（含正确的渐近反例）
+
+## 2.1 修正后的局部性定理
+
+**定理 L′.** 设 $\Pi=\{\pi_i:A\to V_i\}$，$F:A\times A\to A$ 满足
+
+$$F(x,y)=h\big(\pi_{i_1}(x),\dots,\pi_{i_k}(x),\pi_{j_1}(y),\dots,\pi_{j_{k'}}(y)\big)$$
+
+索引表固定。若 $F$ **对第一变元单射**，则索引表 $\{i_1,\dots,i_k\}$ **分离** $A$，故 $k\ge\mathrm{sep}(A,\Pi)$，且 $|A|\le\prod_{r\le k}|V_{i_r}|$。
+
+（假设免费：任何结构保持地址自动满足，因为 $F(\rho(x),\rho(y))=\rho(g(x,y))$，$g$ 对每变元单射，$\rho$ 单射。）
+
+## 2.2 撤回有限族反例
+
+**$A_w=\{0,1\}^w$ 是错的，原因有两条，任一即足以致命：**
+
+1. **有限地址域不可能承载闭合的结构保持表示。** 若 $\rho:T_\Sigma(X)\hookrightarrow A_w$ 且 $F(\rho(x),\rho(y))=\rho(g(x,y))$，则 $F$ 在 $\mathrm{im}\,\rho\times\mathrm{im}\,\rho$ 上单射，于是 $|\mathrm{im}\,\rho|^2\le|\mathrm{im}\,\rho|$，即 $|\mathrm{im}\,\rho|\le 1$。**所以 $\rho$ 只能是平凡的。**
+2. $T_\Sigma(X)$ 在存在元数 $\ge1$ 的构造子且 $X\neq\varnothing$ 时是**无限**的，装不进任何 $A_w$。
+
+## 2.3 正确的渐近例子（逐项交代）
+
+| 项 | 内容 |
+|---|---|
+| **term space** | $T=T_\Sigma(X)$，$\Sigma=\{f/2\}$，$X=\{a\}$；$|T|=\aleph_0$ |
+| **encoding** | $\rho:T\to\{0,1\}^*$，**前缀无关**，$|\rho(t)|=\Theta(|t|)$。存在性：深度 $n$ 的项数 $\sim\mathrm{Catalan}(n)\sim 4^n/n^{3/2}$，故需 $\Omega(n)$ 位；$O(n)$ 可达 |
+| **$F$** | $F(u,v)=\rho\big(f(\rho^{-1}u,\rho^{-1}v)\big)$ 对 $u,v\in\mathrm{im}\,\rho$；在 $\mathrm{im}\,\rho$ 外任意延拓 |
+| **closure** | $F(\mathrm{im}\,\rho\times\mathrm{im}\,\rho)\subseteq\mathrm{im}\,\rho$ ✓（这正是结构保持） |
+| **address length** | $\lvert F(u,v)\rvert=\Theta(\lvert u\rvert+\lvert v\rvert)$ —— **增长** |
+| **query cost** | 读偏移 $i$ 处的位，成本 1 |
+| **output cost** | 写出 $F(u,v)$ 的 $\Theta(\lvert u\rvert+\lvert v\rvert)$ 位，成本 $\Theta(\lvert u\rvert+\lvert v\rvert)$ |
+
+**判定**：$F$ 在 $\mathrm{im}\,\rho$ 上单射（$f$、$\rho$ 均单射）⟹ 定理 L′ 适用 ⟹ 用位观察者时 $k\ge\mathrm{sep}(\mathrm{im}\,\rho,\Pi)$，而 $\mathrm{im}\,\rho$ 长度无界，**不存在固定有限位集分离它**，故 $k$ 无界。**B 成立，C 不成立——这是正确的渐近反例。**
+
+---
+
+# 【3】正确的 Access Model
+
+**定义 M.** 完整计算模型是五元组
+
+$$M=(A,\ \mathrm{Rep},\ \Pi,\ C,\ \mathrm{Cost})$$
+
+1. **$A$** —— 地址域（集合）。
+2. **$\mathrm{Rep}$** —— 表示/存储模型。规定 $A$ 的元素如何被存放（平坦位串？heap 单元 + 句柄？），以及内存的形态。
+3. **$\Pi$** —— 原始观察者（**接口**），$\Pi=\{\pi_i:A\to V_i\}$。
+4. **$C$** —— 原始计算基（允许的 $O(1)$ 操作集）。
+5. **$\mathrm{Cost}$** —— 三元成本：(a) 访问成本（每次 observer 调用）；(b) 计算成本（每步 $C$ 操作）；(c) **输出成本**（每单位写出的输出）。
+
+**比较铁律（你要求的）**：比较 $\mathrm{Rep}_1$ 与 $\mathrm{Rep}_2$ 时，$\Pi,C,\mathrm{Cost}$ **必须逐字相同**。且 **observer vocabulary 在比较开始前固定**——"给某个表示加 observer" **不构成 separation**，那是换模型。
+
+**Rep₁ 与 Rep₂ 何时能在同一个 $M$ 下呈现不同访问复杂度？**
+
+**答案：仅当 $\Pi$ 是 $\mathrm{Rep}$-相对的。**
+- 若 $\Pi$ 定义在 $A$ 的**抽象结构**上（如"规范分解的第 $i$ 个分量"），则它与 $\mathrm{Rep}$ 无关；此时同一个 $A$、同一个 $\Pi$、同一个 $\mathrm{Cost}$ ⟹ **复杂度必然相同，不可能有差异**。
+- 若 $\Pi$ 是**平坦相对**的（如"偏移 $i$ 处的机器字"），则两个不同的 $\rho$ 把数据放在不同偏移，**同一个 $\Pi$ 给出不同复杂度**。
+
+**所以：真正固定接口 ⟹ 无 separation；固定平坦接口 ⟹ 有 separation，但那是布局问题。**
+
+---
+
+# 【4】Materialized vs Pointer Address
+
+**定义 MA（Materialized Address）**：地址值**本身包含全部数据**。$\mathrm{Cost}$ 按表示长度计。读一个地址的成本 $=\Theta(\lvert a\rvert)$。
+
+**定义 PA（Pointer / Handle Address）**：地址只是**引用**；结构存在于外部 memory/heap。地址表示长度 $O(1)$。
+
+**命题（你要求证明的那一条）**
+
+> **在 PA 中 $F$ 的 $O(1)$ 组合，原因正是"结构不在 Address 里"，而不是"Address 具有 $O(1)$ 可计算的内部结构"。**
+
+**证明**：在 PA 中，句柄 $h$ 的**表示长度**是 $O(1)$；而 $h$ 的**内容**（从 $h$ 可达的 heap 单元集合）规模是 $\Theta(|t|)$。$F(x,y)=\mathrm{alloc}(f,x,y)$ 之所以 $O(1)$，是因为它**只读两个句柄的字面值**，并把新结构**写进 heap**——它没有访问、也没有计算任何"地址内部结构"。
+于是：
+- 任何**只依赖表示**的任务：$O(1)$。
+- 任何**依赖内容**的任务：必须遍历 heap，$\Omega(|t|)$。
+
+**所以 PA 的 $O(1)$ 是把结构外置（externalize）到地址之外换来的。** 严格地说：**在 PA 中，地址根本没有内部结构——它只是一个裸引用。** 因此"Address 的内部结构参与组合计算"这个命题在 PA 中**为假**。
+
+（这也正是你禁止"把 pointer model 当成 self-contained Address"的原因，我上一轮混淆了这一点，撤回。）
+
+---
+
+# 【5】Output Cost
+
+**平凡下界**：若 $\mathrm{Cost}$ 计入输出，则对任意 $F$
+
+$$\mathrm{cost}\big(F(x,y)\big)\ \ge\ \Omega\big(\lvert F(x,y)\rvert\big)$$
+
+**在 materialized 模型下这条下界是致命的**：
+
+**定理 O（合成局部性不可能）**
+设 $M$ 计入输出成本，$\rho$ 单射且地址长度无界，$g$ 是二元构造子且 $\lvert\rho(g(x,y))\rvert\ge\lvert\rho(x)\rvert+\lvert\rho(y)\rvert-O(1)$。则
+
+$$\mathrm{cost}\big(F(x,y)\big)=\Theta\big(\lvert F(x,y)\rvert\big)=\Theta(n)$$
+
+且**平凡算法（decode → compose → encode）已达此下界。**
+
+**推论 1**：上一轮的 LCA 定义（要求 $\mathrm{time}(h)=O(1)$）在 materialized 模型下**是空的**——不是"很难满足"，而是**不可能满足**。
+
+**推论 2**：在 materialized 模型下，"表示结构参与合成"**无法通过合成成本体现**，因为合成成本被输出成本抹平了。它**只能通过"在不物化合成结果的前提下回答关于它的查询"来体现**。
+
+**这就是本轮最重要的重构**：局部性**不可能存在于 composition 层**，**只可能存在于 query 层**。
+
+---
+
+# 【6】Structural Locality 的严格定义
+
+**定义（导航局部性）.** 固定 $M=(A,\mathrm{Rep},\Pi,C,\mathrm{Cost})$，$\rho:T_\Sigma(X)\hookrightarrow A$ 单射，$Q$ 是一个查询类。
+
+- $\rho$ 是 **output-optimal** 的，若 $\mathrm{cost}(F(u,v))=\Theta(\lvert F(u,v)\rvert)$。
+- $\rho$ 对 $Q$ 是 **navigation-local** 的，若对所有 $q\in Q$、所有 $u,v\in\mathrm{im}\,\rho$：
+$$\mathrm{cost}\big(q(F(u,v))\big)=O\big(\lvert q(F(u,v))\rvert+\mathrm{polylog}(\lvert u\rvert+\lvert v\rvert)\big)$$
+**注意右端不含 $\lvert F(u,v)\rvert$ 项** —— 这是定义的要点。
+- $\rho$ 对 $Q$ 是 **non-materializing** 的，若存在回答 $q(F(u,v))$ 的算法，**从不完整写出 $F(u,v)$**。
+
+**这精确地回答了你的第七节：**
+
+| 说法 | 形式刻画 |
+|---|---|
+| "representation merely stores enough to reconstruct" | navigation-local **失败**：任何算法必须先产出 $F(u,v)$，故 $\Omega(\lvert F(u,v)\rvert)$ |
+| "representation structure participates directly in computation" | navigation-local 对某个**非平凡** $Q$ **成立** |
+
+**四层归属（你要求严格区分）：**
+
+| 层次 | 是否成立 | 依据 |
+|---|---|---|
+| 1. **representation-dependent** | **是** | 同一 $\Pi,C,\mathrm{Cost}$ 下换 $\rho$ 会改变复杂度 |
+| 2. **access-model-dependent** | **是** | 换 $\Pi$ 会改变——而按你的规则，**换 $\Pi$ 就是换计算模型**，不是 re-encoding |
+| 3. **machine-model-dependent** | **是** | 换 $C$ 或 $\mathrm{Cost}$ 会改变 |
+| 4. **algebraically invariant** | **否** | 见下定理 |
+
+**定理 I（不存在代数不变量）**
+设 $\rho_1,\rho_2:T_\Sigma(X)\to A$ 是两个单射编码，$F_i=\rho_i\circ g\circ(\rho_i^{-1}\times\rho_i^{-1})$。则
+$$(\mathrm{im}\,\rho_1,F_1)\ \cong\ (\mathrm{im}\,\rho_2,F_2)\qquad\text{作为 }\Sigma\text{-代数}$$
+**故任何 $\Sigma$-代数性质都无法区分它们。** 因此 navigation-locality **绝不可能是 (4)**；它只能是 (1)(2)(3)。
+
+**唯一站得住的 (4) 层陈述**是信息论的、且是关于**分离**而非关于局部性的：任意分离族满足 $\log|A|\le\sum_{i\in I}\log|V_i|$（即【1】的修正式）。
+
+---
+
+# 【7】哪些已有理论严格覆盖
+
+按你的要求区分 **类比 / 归约 / 形式等价**：
+
+| 名称 | 与我们的模型的关系 | 层级 |
+|---|---|---|
+| **decision-tree counting bound** | $k\ge\mathrm{sep}(A,\Pi)$ 正是**非自适应决策树**分离 $A$ 所需深度的下界 | **归约**（我们的界是它的一个实例） |
+| **cell-probe model** | 取 $\Pi=$ 位读取、非自适应探测，我们的模型是它的特例。但成本核算不同：cell-probe 只数探测次数，我们还要计 $h$ 的时间与**输出成本** | **归约**（特例 + 不同核算） |
+| **pointer machine** | 指针子模型（【4】的 PA）与它**逐字一致** | **形式等价**（仅限该子模型） |
+| **succinct data structures** | **query 层导航局部性的正确已有理论**：近信息论下界空间 + $O(1)$/polylog 查询 | **形式等价**（针对 navigation-local 这一 notion） |
+| **quantifier-free $\mathrm{FO}^k$** | "fixed observers + **arbitrary** $h$" **不等价**：$\mathrm{FO}^k$ 固定词汇与语法、输出是**布尔**；我们的 $h:V^k\to A$ 是任意函数、输出是**地址** | **仅类比。撤回上一轮的 "precisely"** |
+| **Gaifman locality** | 它是关于 **FO 可定义性质在图距离意义下**的局部性，**不是**关于组合运算的局部性 | **仅类比** |
+| **Hanf 定理** | 同上，关于邻域计数的局部性 | **仅类比** |
+| **Ehrenfeucht–Fraïssé 博弈** | 刻画 $\mathrm{FO}^k$ 等价；只有真的进入 $\mathrm{FO}^k$ 后才形式相关 | **类比 / 潜在工具** |
+
+**撤回声明**：上一轮我把 FO^k / Gaifman / Hanf / EF 与我们的模型说成"精确对应"，**全部降级为类比**。唯一保留的**形式**关系是 decision-tree 计数下界（归约）与 succinct data structures（针对 query 层的形式等价）。
+
+---
+
+# 【8】当前是否仍存在未解决问题 + 生死判断
+
+## 8.1 三难困境（这是本轮的结论骨架）
+
+在**你列出的五条严格约束**下——不逃到 pointer/heap、不把整个 Address 当 primitive observer、不允许 observer vocabulary 随表示改变、不把 decode-compose-encode 藏进 $h$、且计入 materialized output cost——
+
+**答案：不可能。** 证明就是三难困境：
+
+| 分支 | 条件 | 后果 |
+|---|---|---|
+| **①** | materialized + 地址无界 | 输出成本 $\Omega(n)$ ⟹ **不存在 $O(1)$ 合成**（定理 O） |
+| **②** | materialized + 合成 $O(1)$ | 地址必须有界 ⟹ $\mathrm{sep}$ 有界 ⟹ $\lvert A\rvert$ 有界 ⟹ **概念空间有限**（违反"巨大/无限"） |
+| **③** | pointer + 无界 + $O(1)$ | 结构**不在地址内** ⟹ **不是 structural computation**（【4】命题） |
+
+**三支穷尽**：因为地址长度只有"有界/无界"两种，结构只有"在地址内/在地址外"两种。**故在五条约束下不存在同时满足 (1) 无限概念空间、(2) 唯一表示、(3) 二元组合、(4) 非平凡内部地址结构、(5) 低于"读取全部结构"的局部计算 的系统。**
+
+**但必须补一个诚实的限定**：**这五条要求里，(5) 在 composition 层是自动不可能的（定理 O），所以 (1)–(5) 的合取在字面上不可能。** 要让问题有意义，必须把 (5) 重新表述到 **query 层**：
+
+> **(5′)** 存在非平凡查询类 $Q$，使 $q(F(u,v))$ 可在 $O(\lvert\text{answer}\rvert+\mathrm{polylog})$ 内回答，**不物化** $F(u,v)$。
+
+## 8.2 在 (5′) 下是否可能？
+
+**可能，而且这是已有理论。** 对树结构：**平衡括号表示**可在 $2n+o(n)$ 位内存放一棵 $n$ 结点树，并支持 $O(1)$ 的 root / $i$-th child / depth / subtree-size / LCA 查询。这就是 **succinct data structures** 的标准结果。
+
+**所以最终判定是"取决于"，而模型分界线在这里：**
+
+> **分界线 = 查询的答案是否由编码中"$O(1)$ 个局部寻址部件"决定。**
+> - 若 $q$ 的答案落在编码的 $O(1)$ 个可局部寻址位置上 ⟹ navigation-local 可达。
+> - 若 $q$ 需要全量信息 ⟹ 下界 $\Omega(n)$，不可达。
+> - **且这一切是 $( \mathrm{Rep},\Pi,C,\mathrm{Cost})$ 的性质，不是 $(A,F)$ 的性质**（定理 I）。
+
+## 8.3 尚未解决的部分（真正的残留）
+
+1. **对概念系统真正需要的查询类**（不只是树导航，而是 $\Sigma$-诱导的语义查询），succinct 表示是否存在且最优？—— 这属于 succinct DS 的开放问题族。
+2. 上一轮的两个**经验**问题（原子集充分性、语义一致性）—— **仍然完全没碰过**。
+
+**已经死掉的**：把局部性当作代数结构性质（定理 I）；在 composition 层求局部性（定理 O）；把 pointer 的 $O(1)$ 当作 Address 的内部性质（【4】）。
+
+---
+
+# 【9】唯一最关键的下一定理
+
+**定理（合成局部性的不可能性 / 查询局部性的可达边界）**
+
+> 设 $M=(A,\mathrm{Rep},\Pi,C,\mathrm{Cost})$ 满足五条约束（无 pointer escape、无 whole-address observer、$\Pi$ 固定、$h$ 中无 decode-compose-encode、计入 output cost）。则：
+>
+> **(i) [合成层不可能]** 对任意单射 $\rho$ 与无界地址长度，
+> $$\mathrm{cost}\big(F(u,v)\big)=\Theta\big(\lvert F(u,v)\rvert\big)=\Theta(n),$$
+> 平凡算法已达下界。**故"合成的结构局部性"在 materialized 模型中是空的。**
+>
+> **(ii) [查询层可达]** 存在 $\rho$ 与非平凡查询类 $Q$（例如 $\Sigma$-诱导的 root / $i$-th child / depth / 子树相等），使
+> $$\mathrm{cost}\big(q(F(u,v))\big)=O\big(\lvert q(\cdot)\rvert+\mathrm{polylog}(n)\big)$$
+> 且存在不物化 $F(u,v)$ 的算法。**构造存在**（树的标准 succinct 表示）。
+>
+> **(iii) [分界]** 可达当且仅当 $q$ 的答案由编码中 $O(1)$ 个**可局部寻址**部件决定；否则下界 $\Omega(n)$。所需空间下界为该对象类的信息论最小空间。
+>
+> **(iv) [非不变性]** 对任意两个单射编码 $\rho_1,\rho_2$，$(\mathrm{im}\,\rho_1,F_1)\cong(\mathrm{im}\,\rho_2,F_2)$ 作为 $\Sigma$-代数。**故 (i)–(iii) 全部是 $(\mathrm{Rep},\Pi,C,\mathrm{Cost})$ 的性质，不是 $(A,F)$ 的性质。** 唯一在所有编码下存活的是 $\log|A|\le\sum_{i\in I}\log|V_i|$。
+
+**这个定理决定了你问的那个问题：**
+
+> **"Address 的表示结构本身能否成为组合计算的直接操作结构？"**
+>
+> **答案是分层的，且没有中间地带：**
+> - **在合成层：不可能。** 输出长度是 $\Theta(n)$，任何表示都无法把合成压到亚线性——这与表示好坏无关，是**输出成本**的硬约束。上一轮的 LCA 定义在 materialized 模型下是空的。
+> - **在查询层：可能，且这正是 succinct data structures。** 它不是一个新对象，而是"把项树做成可 $O(1)$ 导航的 succinct 表示"这一既有问题的特例。
+> - **它绝不是代数不变量**（定理 I）：任何两个编码作为 $\Sigma$-代数同构，所以不存在"属于概念地址代数的局部性"。
+>
+> **因此，上一轮"唯一非平凡出路是非单射 $F$/controlled collision"这个结论，我撤回**——它不是被守恒律逼出来的，而是被我在错误的层（合成层）提问逼出来的。**正确的出路是把问题从合成层移到查询层**，而在那一层，答案是既有理论，不需要新的代数构造。
