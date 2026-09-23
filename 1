@@ -1,0 +1,1268 @@
+This is a beautiful, sharp mathematical question. Let me think very carefully.
+
+The setup: F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)), F injective.
+
+We allow per-fiber coordinate changes u' = ψ_a(u) with ψ_a bijections. Then:
+Φ'_{a,b} = ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹, ψ_b⁻¹)
+
+Question: can we always find {ψ_a} such that Φ'_{a,b} = Φ (a single unified pairing, independent of (a,b))?
+
+This is exactly a **conjugacy / normalization problem**: is the family {Φ_{a,b}} "simultaneously conjugate" to a constant family?
+
+Let me set up the math properly.
+
+### Formal setup
+
+Let Q = A_0 (the coarse layer, finite). For each q ∈ Q, let D_q be the fiber (assume all fibers are isomorphic to a common D — otherwise set-theoretically no product decomposition anyway). Let me assume D_q ≅ D for all q.
+
+Hmm, but actually the fibers D_q need not be isomorphic. Let me handle the general case but note it.
+
+Data:
+- F_0 : Q × Q → Q
+- For each (a,b) ∈ Q², Φ_{a,b} : D_a × D_b → D_{F_0(a,b)}, injective (since F is injective)
+
+Hmm, wait. Is Φ_{a,b} injective? F is injective, and F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)). If (a,u) ≠ (a',u'), then F differs. For fixed (a,b), if (u,v) ≠ (u',v') then (a,u),(b,v) ≠ (a,u'),(b,v') so F differs, so Φ_{a,b}(u,v) ≠ Φ_{a,b}(u',v'). ✓ **Yes, each Φ_{a,b} is injective.** ✓
+
+Now: coordinate changes ψ_a : D_a → D'_a (bijections). The question: can we choose {ψ_q} so that the transformed family is constant?
+
+Φ'_{a,b} = ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹, ψ_b⁻¹) : D'_a × D'_b → D'_{F_0(a,b)}
+
+We want Φ'_{a,b} = Φ for all (a,b) — a single Φ : D × D → D (assuming all D'_q = D).
+
+**This is a genuine question with a real answer.** Let me think about when it's possible.
+
+### Analysis
+
+Suppose such {ψ_q} exist. Then for all (a,b):
+ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹ × ψ_b⁻¹) = Φ
+⟹ Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ ∘ Φ ∘ (ψ_a × ψ_b)
+
+So: **{Φ_{a,b}} is "simultaneously conjugate" to the constant Φ.**
+
+This means: the whole structure (A, F) is isomorphic to (Q × D, (a,u),(b,v) ↦ (F_0(a,b), Φ(u,v))). Which is exactly "F = pairing + independent tags" (i.e., a **split** extension with a product structure).
+
+**But we just proved (last round) that this is IMPOSSIBLE when |Q| ≥ 2 finite!**
+
+Hmm. So the answer is NO — cannot always be done. And the proof is the same theorem.
+
+Hmm, but wait. Let me re-examine. Last round's theorem said: no h : A → Q × D with F = (F_0, Φ) with Φ tag-independent. And the current question is exactly: is there {ψ_q} making Φ'_{a,b} constant = Φ?
+
+**These are the SAME question.** Because the ψ's ARE the coordinate change, and "Φ'_{a,b} = Φ constant" ⟺ "the extension splits with tag-independent fiber op".
+
+So the answer is **NO, and it's already proven.** 
+
+Hmm, but hold on. Let me re-derive carefully, because last round's theorem had a specific form. Let me redo it here in the current notation.
+
+**Theorem**: Let |Q| ≥ 2 finite. Suppose {ψ_q} exist with Φ'_{a,b} = Φ constant. Take (a,a') ≠ (b,b') with F_0(a,a') = F_0(b,b') (exists since |Q|² > |Q|). Then:
+Φ'_{a,a'}(u,v) = Φ(u,v) = Φ'_{b,b'}(u,v) for all u,v.
+Unwinding: ψ_{F_0(a,a')} ∘ Φ_{a,a'} ∘ (ψ_a⁻¹×ψ_{a'}⁻¹) = ψ_{F_0(b,b')} ∘ Φ_{b,b'} ∘ (ψ_b⁻¹×ψ_{b'}⁻¹).
+Hmm, this is just the condition. It doesn't immediately contradict.
+
+Hmm. So I need to be more careful. The condition Φ'_{a,b} = Φ is a *constraint* that may or may not be satisfiable. Let me check whether it's satisfiable in general.
+
+Hmm, wait. Let's recount. If Φ'_{a,b} = Φ constant, then:
+F'( (a,u),(b,v) ) = (F_0(a,b), Φ(u,v)) under the new coordinates.
+
+And F' must be injective. But: if (a,a') ≠ (b,b') with F_0(a,a') = F_0(b,b'), then
+F'((a,u),(a',v)) = (F_0(a,a'), Φ(u,v)) = (F_0(b,b'), Φ(u,v)) = F'((b,u),(b',v)).
+But (a,u),(a',v) ≠ (b,u),(b',v). **So F' is NOT injective.** Contradiction with F injective (conjugacy preserves injectivity). ✓
+
+**So: YES, the theorem holds and the answer is NO — it's impossible.** ✓
+
+Great, so last round's theorem IS the answer to this round's question. But the user is asking a *deeper* question: **what is the invariant?** and **is there a minimal non-removable state-dependent pairing?**
+
+Hmm. But if it's ALWAYS impossible (for finite |Q| ≥ 2), then "minimal non-removable" is every case... which is unsatisfying. Let me re-read the question.
+
+"研究是否总能找到 {ψ_a}，使 Φ'_{a,b} = Φ 成为与 (a,b) 无关的统一 pairing。如果总能做到：证明'粗层控制细层'只是坐标表示问题。如果不能：给出严格不变量，证明为什么依赖无法消除。"
+
+So: if not always possible, give a strict invariant.
+
+Hmm, but I should be careful: the user's transformation allows **arbitrary bijections ψ_a** on each fiber. My theorem says: even with arbitrary bijections, you can't make it constant. So the dependence is not a coordinate artifact. ✓
+
+**But** — the user asks a sharper question: **when CAN it be normalized?** That's the interesting direction. And: **what is the invariant?**
+
+Let me think about this properly.
+
+### The correct framework: when can a family be simultaneously normalized?
+
+Let me think about it as a **cocycle/obstruction** problem. This is very reminiscent of:
+- Group cohomology / extension theory
+- **The theory of "simultaneous conjugacy" of families of maps**
+- **Orbit classification under a group action**
+
+Let me set up:
+
+**The group action.** Consider the group G = Π_{q∈Q} Sym(D_q) — the product of symmetric groups on the fibers (allowing independent permutations of each fiber). G acts on the set of "F-structures" by conjugation:
+(ψ · F)((a,u),(b,v)) := (F_0(a,b), ψ_{F_0(a,b)}(Φ_{a,b}(ψ_a⁻¹u, ψ_b⁻¹v)))
+
+Wait, careful — the group action should be on the family {Φ_{a,b}}.
+
+**Question**: is {Φ_{a,b}} in the G-orbit of a constant family?
+
+**Answer**: No, in general. And the invariant is... let me find it.
+
+Hmm, let me think about the simplest case: Q = Z/2, so Q² has 4 elements, and F_0 = ⊕ maps Q² → Q with fibers of size 2 each:
+- F_0⁻¹(0) = {(0,0), (1,1)}
+- F_0⁻¹(1) = {(0,1), (1,0)}
+
+So there are 4 maps: Φ_{00}, Φ_{11} : D × D → D (target fiber D_0)
+and Φ_{01}, Φ_{10} : D × D → D (target fiber D_1)
+
+Constant family would mean: Φ_{00} = Φ_{11} (both map to D_0) and Φ_{01} = Φ_{10} (both map to D_1). Hmm, and also Φ_{00} vs Φ_{01} map to different fibers, so they can't be compared directly — but after the ψ's, we want them all to be the SAME map Φ : D × D → D.
+
+Hmm. So the condition is stronger: we need Φ'_{a,b} = Φ for ALL four (a,b), including those with different target fibers.
+
+Hmm, that's a strong condition. Let me think about whether it's even the right formulation.
+
+Hmm, actually — the user says "使 Φ'_{a,b} = Φ 成为与 (a,b) 无关的统一 pairing". So yes, all four become the same Φ.
+
+Hmm, but if the fibers D_q are all identified with a common D, then Φ'_{a,b} : D × D → D for all (a,b) — same type. So the condition makes sense.
+
+OK so the condition is: all four maps Φ'_{a,b} are equal.
+
+**Obstruction**: If F_0(a,a') = F_0(b,b') but Φ_{a,a'} and Φ_{b,b'} are "genuinely different" in a way no ψ's can fix... Let me see.
+
+Hmm, in my counterexample: A = Z/2 × N, F((a,d),(a',d')) = (a⊕a', 3C(d,d') + a).
+- Φ_{00}(d,d') = 3C(d,d')
+- Φ_{11}(d,d') = 3C(d,d') + 1
+- Φ_{01}(d,d') = 3C(d,d') + 0 = 3C(d,d')  [since a = 0]
+- Φ_{10}(d,d') = 3C(d,d') + 1  [since a = 1]
+
+So: Φ_{00} = Φ_{01} and Φ_{11} = Φ_{10}. Interesting.
+
+Now apply ψ's: Φ'_{a,b} = ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹ × ψ_b⁻¹).
+- Φ'_{00} = ψ_0 ∘ Φ_{00} ∘ (ψ_0⁻¹×ψ_0⁻¹) = ψ_0 ∘ (3C) ∘ (ψ_0⁻¹×ψ_0⁻¹)
+- Φ'_{11} = ψ_0 ∘ Φ_{11} ∘ (ψ_1⁻¹×ψ_1⁻¹) = ψ_0 ∘ (3C + 1) ∘ (ψ_1⁻¹×ψ_1⁻¹)
+
+For Φ'_{00} = Φ'_{11}: need ψ_0(3C(ψ_0⁻¹u, ψ_0⁻¹v)) = ψ_0(3C(ψ_1⁻¹u,ψ_1⁻¹v)+1) for all u,v. Since ψ_0 is a bijection, this needs 3C(ψ_0⁻¹u,ψ_0⁻¹v) = 3C(ψ_1⁻¹u,ψ_1⁻¹v)+1. LHS ≡ 0 mod 3, RHS ≡ 1 mod 3. **Impossible.** ✓
+
+So the obstruction: **Φ'_{00} and Φ'_{11} have different "images modulo 3"** — but mod 3 is coordinate-dependent... hmm, is it? Let me find the **coordinate-free invariant**.
+
+**Key: the images.** im(Φ_{00}) = {3C(d,d')} = 3N = multiples of 3. im(Φ_{11}) = {3C+1} = numbers ≡ 1 mod 3.
+So im(Φ_{00}) ∩ im(Φ_{11}) = ∅!
+
+And im(Φ_{01}) = 3N (same as Φ_{00}), im(Φ_{10}) = 3N+1 (same as Φ_{11}).
+
+Hmm! **So: im(Φ_{00}) = im(Φ_{01}) and im(Φ_{11}) = im(Φ_{10}).** Interesting.
+
+Now: is "im(Φ_{a,b}) ∩ im(Φ_{c,d}) = ∅" an invariant under the ψ-conjugation? 
+
+Under conjugation, im(Φ'_{a,b}) = ψ_{F_0(a,b)}(im(Φ_{a,b})). So the images are moved by ψ_{F_0(a,b)}. So im(Φ'_{a,b}) ∩ im(Φ'_{c,d}) = ∅ ⟺ ψ_{F_0(a,b)}(im Φ_{a,b}) ∩ ψ_{F_0(c,d)}(im Φ_{c,d}) = ∅.
+
+If F_0(a,b) = F_0(c,d), then both are moved by the SAME ψ, so the intersection is empty iff it was empty. ✓ **So "images disjoint" is invariant within the same target fiber.** ✓
+
+But across different target fibers, the ψ's are different, so we can always make them disjoint (or intersecting) by choosing ψ's appropriately — **provided the fibers are infinite**. Hmm! That's important.
+
+Hmm, so for infinite fibers, we can always arrange images to be disjoint or not. So "disjointness" isn't a strong invariant for infinite fibers.
+
+Hmm. Let me think differently. Let me look for a **cardinality-based** or **"fiber-size"** invariant.
+
+**Invariant candidate: the "degree" / fiber cardinality of Φ_{a,b}.**
+Φ_{a,b} : D_a × D_b → D_{F_0(a,b)} injective. So |D_a|·|D_b| ≤ |D_{F_0(a,b)}|. Hmm, for infinite fibers this is vacuous.
+
+Hmm. OK, so for infinite fibers (countable), what invariants survive?
+
+Let me think about the structure more carefully. **The real question is about the "simultaneous normalization" of a family of injective maps.** 
+
+Let me think about it as follows. Consider the "composition" structure. The key is that F can be iterated: F(F(x,y),z). This gives constraints.
+
+Hmm. Let me think about a cleaner formulation.
+
+**Reformulation**: The data is a "many-sorted" structure. Let me think of it as a **category** or a **directed graph with operations**.
+
+Hmm. Let me think about the simplest non-trivial case and find the invariant.
+
+**Simplest case: Q = Z/2, F_0 = ⊕, fibers all = D.**
+
+Maps: Φ_{00}, Φ_{01}, Φ_{10}, Φ_{11} : D × D → D, all injective.
+Constraint from F_0: F_0(0,0) = 0, F_0(0,1) = 1, F_0(1,0) = 1, F_0(1,1) = 0.
+
+So Φ_{00}, Φ_{11} : D×D → D_0 and Φ_{01}, Φ_{10} : D×D → D_1.
+
+After identification D_q ≅ D, all four are maps D×D → D.
+
+**Question**: can we choose ψ_0, ψ_1 ∈ Sym(D) so that
+ψ_{a⊕b} ∘ Φ_{ab} ∘ (ψ_a⁻¹ × ψ_b⁻¹) = Φ for all four?
+
+Equivalently: Φ_{ab} = ψ_{a⊕b}⁻¹ ∘ Φ ∘ (ψ_a × ψ_b).
+
+Let me denote Ψ := Φ (the target). Then:
+- Φ_{00} = ψ_0⁻¹ ∘ Φ ∘ (ψ_0 × ψ_0)
+- Φ_{11} = ψ_0⁻¹ ∘ Φ ∘ (ψ_1 × ψ_1)
+- Φ_{01} = ψ_1⁻¹ ∘ Φ ∘ (ψ_0 × ψ_1)
+- Φ_{10} = ψ_1⁻¹ ∘ Φ ∘ (ψ_1 × ψ_0)
+
+**Now here's the key**: consider the maps on the diagonal. Set u = v. Then:
+- Φ_{00}(u,u) = ψ_0⁻¹(Φ(ψ_0 u, ψ_0 u))
+- Φ_{11}(u,u) = ψ_0⁻¹(Φ(ψ_1 u, ψ_1 u))
+
+Hmm. Let me define the "diagonal map" δ_Φ(u) := Φ(u,u). Then:
+- Φ_{00}(u,u) = ψ_0⁻¹(δ_Φ(ψ_0 u))
+- Φ_{11}(u,u) = ψ_0⁻¹(δ_Φ(ψ_1 u))
+
+So: ψ_0 ∘ δ_{Φ_{00}} ∘ ψ_0⁻¹ = δ_Φ and ψ_0 ∘ δ_{Φ_{11}} ∘ ψ_1⁻¹ = δ_Φ.
+So: δ_{Φ_{00}} = ψ_0⁻¹ ∘ δ_Φ ∘ ψ_0 and δ_{Φ_{11}} = ψ_0⁻¹ ∘ δ_Φ ∘ ψ_1.
+
+**So δ_{Φ_{00}} and δ_{Φ_{11}} must be "conjugate up to a twist":** specifically, δ_{Φ_{00}} = ψ_0⁻¹ δ_Φ ψ_0 and δ_{Φ_{11}} = ψ_0⁻¹ δ_Φ ψ_1. Hence:
+
+**δ_{Φ_{00}} = ψ_0⁻¹ δ_Φ ψ_0 and δ_{Φ_{11}} = ψ_0⁻¹ δ_Φ ψ_1**
+⟹ δ_Φ = ψ_0 δ_{Φ_{00}} ψ_0⁻¹ = ψ_0 δ_{Φ_{11}} ψ_1⁻¹
+⟹ ψ_0 δ_{Φ_{00}} ψ_0⁻¹ = ψ_0 δ_{Φ_{11}} ψ_1⁻¹
+⟹ δ_{Φ_{00}} ψ_0⁻¹ = δ_{Φ_{11}} ψ_1⁻¹
+⟹ **δ_{Φ_{00}} ψ_0⁻¹ = δ_{Φ_{11}} ψ_1⁻¹**  ... (*)
+
+Hmm, and from Φ_{01} = ψ_1⁻¹ Φ (ψ_0 × ψ_1) and Φ_{10} = ψ_1⁻¹ Φ (ψ_1 × ψ_0):
+δ_{Φ_{01}} = ψ_1⁻¹ δ_Φ ψ_0, δ_{Φ_{10}} = ψ_1⁻¹ δ_Φ ψ_1.
+So ψ_1 δ_{Φ_{01}} ψ_0⁻¹ = δ_Φ = ψ_1 δ_{Φ_{10}} ψ_1⁻¹
+⟹ δ_{Φ_{01}} ψ_0⁻¹ = δ_{Φ_{10}} ψ_1⁻¹ ... (**)
+
+Hmm. Let me combine. From (*): δ_{Φ_{00}} ψ_0⁻¹ = δ_{Φ_{11}} ψ_1⁻¹. Define θ := δ_{Φ_{00}} ψ_0⁻¹ = δ_{Φ_{11}} ψ_1⁻¹.
+Then δ_{Φ_{00}} = θ ψ_0 and δ_{Φ_{11}} = θ ψ_1.
+From (**): δ_{Φ_{01}} = θ' ψ_0 and δ_{Φ_{10}} = θ' ψ_1 for θ' := δ_{Φ_{01}} ψ_0⁻¹ = δ_{Φ_{10}} ψ_1⁻¹.
+
+**So a NECESSARY condition is:**
+```
+δ_{Φ_{00}} ∘ δ_{Φ_{01}}⁻¹ = θ ψ_0 (θ' ψ_0)⁻¹ = θ θ'⁻¹     (independent of ψ_0!)
+δ_{Φ_{11}} ∘ δ_{Φ_{10}}⁻¹ = θ ψ_1 (θ' ψ_1)⁻¹ = θ θ'⁻¹     (independent of ψ_1!)
+```
+Hence: **δ_{Φ_{00}} ∘ δ_{Φ_{01}}⁻¹ = δ_{Φ_{11}} ∘ δ_{Φ_{10}}⁻¹.**
+
+Hmm, but δ's need not be bijections! Φ_{a,b} is injective but Φ_{a,b}(u,u) as a function of u — δ_{a,b} : D → D is injective ✓ (since Φ injective on the diagonal). So δ is injective, but not necessarily surjective. So δ⁻¹ isn't defined on all of D.
+
+Hmm, let me use a cleaner formulation. From δ_{Φ_{00}} = θ ψ_0 and δ_{Φ_{11}} = θ ψ_1, we get: **im(δ_{Φ_{00}}) = im(θ) = im(δ_{Φ_{11}})**. Because θ is the common factor... hmm, θ = δ_{Φ_{00}} ψ_0⁻¹ so im(θ) = im(δ_{Φ_{00}}) (since ψ_0 is onto). ✓ Similarly im(θ) = im(δ_{Φ_{11}}). 
+
+**So: im(δ_{Φ_{00}}) = im(δ_{Φ_{11}}).** ← **An invariant!**
+
+Similarly im(δ_{Φ_{01}}) = im(δ_{Φ_{10}}).
+
+**Hmm, but is that a necessary condition for the normalization?** Let me redo:
+δ_{Φ_{00}} = ψ_0⁻¹ ∘ δ_Φ ∘ ψ_0. So im(δ_{Φ_{00}}) = ψ_0⁻¹(im(δ_Φ)). ✓
+δ_{Φ_{11}} = ψ_0⁻¹ ∘ δ_Φ ∘ ψ_1. So im(δ_{Φ_{11}}) = ψ_0⁻¹(im(δ_Φ)). ✓
+**So im(δ_{Φ_{00}}) = im(δ_{Φ_{11}})** ✓ — necessary.
+
+**So: a necessary condition for normalizability is im(Φ_{a,a}(·,·) on the diagonal) = im(Φ_{b,b} on the diagonal) whenever F_0(a,a) = F_0(b,b).**
+
+Hmm, that's a bit convoluted. Let me find a cleaner, more natural invariant.
+
+Let me think again. Hmm.
+
+Actually, let me step back and think about the **right general framework**.
+
+### Right framework: the family {Φ_{a,b}} as a "2-cocycle" / the classification of extensions
+
+Hmm. Let me think about the structure differently.
+
+Actually — here's a cleaner way to think. The condition "Φ'_{a,b} = Φ for all (a,b)" means the structure (A,F) is isomorphic (in the appropriate sense) to (Q × D, (F_0, Φ)) — a **product/split** structure.
+
+**The general theorem**: the extension is split iff there's a section s : Q → A with suitable compatibility. Hmm, but F is a binary operation, not a group operation, so the standard extension theory doesn't directly apply.
+
+Hmm. Let me think about what "suitable compatibility" means. If A ≅ Q × D and F = (F_0, Φ) with Φ independent, then... consider the elements (a, u) and (b, v). Hmm.
+
+Hmm, let me think about the **"section" idea**: the natural section is s(a) = (a, u_0) for a fixed u_0 ∈ D. Then F(s(a), s(b)) = (F_0(a,b), Φ(u_0,u_0)) = s(F_0(a,b)) iff Φ(u_0,u_0) = u_0. So if there's a u_0 with Φ(u_0,u_0) = u_0 (an "idempotent"), then s is a homomorphism.
+
+Hmm. So: **if the constant Φ has a fixed point on the diagonal, then the split structure has a homomorphic section.**
+
+Conversely, if F has a homomorphic section s : Q → A (i.e., F(s(a),s(b)) = s(F_0(a,b))), does that help? Hmm.
+
+Let me think about the cleanest invariant. Hmm.
+
+### Let me try a different, cleaner approach: count "local sections"
+
+Hmm. Let me think about the problem from the perspective of **"which elements can be reached from the coarse layer"**.
+
+Alternative approach: think about the **fiber cardinalities**.
+
+Hmm, let me think about the finite-fiber case first, which might give a clean invariant.
+
+**Suppose all fibers are finite of size n.** Then F : A×A → A injective with |A| = |Q|·n. Then |A|² ≤ |A| → |Q|²n² ≤ |Q|n → |Q|n ≤ 1. So trivial. So finite fibers don't work. **Fibers must be infinite.** ✓ (Consistent with everything.)
+
+So all fibers are infinite (countable, say). Then cardinality invariants are weak.
+
+Hmm. So what invariants exist?
+
+Let me go back to the **diagonal analysis** and see if I can find a clean invariant.
+
+Actually, let me reconsider. Let me look for the invariant in a cleaner way:
+
+**From Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ ∘ Φ ∘ (ψ_a × ψ_b):**
+
+Define the "partial application": for fixed v ∈ D_b, the map u ↦ Φ_{a,b}(u,v) : D_a → D_{F_0(a,b)}. Under conjugation: u ↦ Φ'_{a,b}(u, ψ_b v) = ψ_{F_0(a,b)}(Φ_{a,b}(ψ_a⁻¹ u, v)).
+
+Hmm.
+
+Let me try yet another angle: **consider the "fiber of F over the coarse output" and how it's partitioned.**
+
+Hmm. Let me think about what's really going on with my counterexample and find the invariant there.
+
+My example: Φ_{00}(d,d') = 3C(d,d'), Φ_{11}(d,d') = 3C(d,d')+1, Φ_{01} = 3C, Φ_{10} = 3C+1.
+
+**Key observation**: Φ_{00} and Φ_{01} are THE SAME MAP (as maps into their respective fibers, identified with N via the canonical identification). Similarly Φ_{11} = Φ_{10}.
+
+Hmm, so the "obstruction" is: Φ_{00} ≠ Φ_{11} but they have the same target fiber. And no ψ can fix it.
+
+Hmm, let me reconsider. Is there a cleaner example?
+
+**Simpler idea**: Let me look for an invariant like "the number of orbits" or "the isomorphism type of the 'diagonal image'".
+
+From the derivation: im(δ_{Φ_{00}}) = im(δ_{Φ_{11}}) is necessary.
+
+Hmm, so let me construct an example where this FAILS, giving a clean invariant:
+Φ_{00}(d,d') with δ_{Φ_{00}}(d) = Φ_{00}(d,d) = 2d (image = even numbers)
+Φ_{11}(d,d) = 2d+1 (image = odd numbers)
+Then im(δ_{00}) ≠ im(δ_{11}) → not normalizable. ✓ 
+
+But wait — I need to double check that δ is injective and that this is consistent with F injective. Φ_{00}(d,d') = 2·Cantor(d,d')? Then δ_{00}(d) = 2·Cantor(d,d) = 2·(2d)(2d+1)/2 = 2d(2d+1) — image = {2d(2d+1)} which is even. And Φ_{11}(d,d') = 2·Cantor(d,d')+1 → δ_{11}(d) = 2d(2d+1)+1 — odd. So images disjoint → not normalizable. ✓
+
+Hmm, but this is just a variant of my mod-2 argument. The invariant "im(δ_{00}) vs im(δ_{11})" is essentially "the parity" which is coordinate-dependent... no wait, the DISJOINTNESS is invariant under bijections of the target fiber! Because both are moved by the same ψ_0. ✓
+
+Hmm, so: **im(δ_{Φ_{00}}) ∩ im(δ_{Φ_{11}}) = ∅** is invariant under ψ_0 (both images moved by the same bijection). And if the target Φ has δ_Φ, then both must equal ψ_0⁻¹(im δ_Φ), so they must be EQUAL, not just non-disjoint. ✓
+
+**So the invariant is: im(δ_{Φ_{a,a}}) must be the same for all a with the same F_0(a,a).** Hmm, still convoluted.
+
+Hmm, let me find a cleaner, more conceptual invariant.
+
+### Cleaner idea: the "section" / "constant" structure
+
+Hmm. Let me think about the following: in the split case, F((a,u),(b,v)) = (F_0(a,b), Φ(u,v)). So the "fine coordinate" evolves **independently of the coarse coordinate**. That means: **the map (a,u) ↦ u is a "projection" that commutes with F** in the sense that the fine part of F(x,y) depends only on the fine parts of x,y.
+
+**Equivalently**: there's a map π_f : A → D (the "fine projection") with π_f(F(x,y)) = Φ(π_f x, π_f y).
+
+**So: the split condition is exactly "there exists a retraction π_f compatible with F".**
+
+Hmm! And then: **F(x,y) is determined by (π_0 x, π_0 y, π_f x, π_f y)** — i.e., the pair (π_0, π_f) separates points. And that's the product structure.
+
+**So the invariant should be about whether such a π_f exists.**
+
+**When does it exist?** Hmm.
+
+Let me think about it via the "**fiberwise retraction**" idea. π_f : A → D with π_f|D_a a bijection for each a. So π_f is a choice of an identification D_a ≅ D for each a. And the compatibility is: π_f(F(x,y)) = Φ(π_f x, π_f y) for a single Φ.
+
+So: **the question is exactly the one asked.** And the obstruction is a "cocycle".
+
+Hmm. Let me think about it in terms of **iterated composition**. Here's an idea:
+
+Consider the "3-fold" composition: F(F(x,y),z). In the split case:
+F(F(x,y),z) = F((F_0(a,b), Φ(u,v)), (c,w)) = (F_0(F_0(a,b),c), Φ(Φ(u,v),w)).
+So the fine part is Φ(Φ(u,v),w) — depends only on u,v,w.
+And F(x,F(y,z)) = (F_0(a,F_0(b,c)), Φ(u,Φ(v,w))).
+
+**So in the split case, the fine part of the iterated composition depends only on the fine parts.** And this must hold for all iteration depths.
+
+**In the non-split case**, the fine part of F(F(x,y),z) depends on a,b,c too.
+
+Hmm. So a potential invariant: **"does the fine part of the depth-n composition depend only on the fine parts of the leaves?"**
+
+Hmm. Let me think about whether this gives a clean invariant for my example.
+
+In my example: F((a,d),(a',d')) = (a⊕a', 3C(d,d')+a).
+Depth 2: F(F((a,d),(a',d')), (a'',d'')) = F((a⊕a', 3C(d,d')+a), (a'',d'')) = (a⊕a'⊕a'', 3·C(3C(d,d')+a, d'') + (a⊕a')).
+Hmm, so the fine part depends on a. ✓ Non-split.
+
+And the invariant: hmm, what's clean here? 
+
+Let me think about **the "diagonal" invariant** more. Actually, let me reconsider — maybe there's a much cleaner way to see it.
+
+### The cleanest invariant: "F has no homomorphic section"? Or "no idempotent"?
+
+Hmm. Let me test: in the split case, does F have a "homomorphic section"? s(a) = (a, u_0). F(s(a),s(b)) = (F_0(a,b), Φ(u_0,u_0)). For s to be homomorphic we need Φ(u_0,u_0) = u_0.
+
+So: **if Φ has no fixed point on the diagonal, then even the split case has no homomorphic section.** Hmm, so that's not an invariant distinguishing split from non-split.
+
+Hmm, but: in the split case, **the image of any section s(a) = (a, u_a)** — hmm.
+
+Let me think about it differently: **the number of "F-closed" subsets?** Hmm.
+
+OK let me think about the structure more abstractly.
+
+### Abstract framework: the category of "F-structures with a projection"
+
+Let me define the category C whose objects are (A, F, π) with F injective and π ∘ F = F_0 ∘ π², and morphisms are bijections commuting with F and π (fiberwise bijections).
+
+The question: is (A,F,π) isomorphic to (Q × D, (F_0, Φ), pr_Q)?
+
+**The invariant**: the isomorphism class of the pair (fiber system, family of maps).
+
+Hmm. Let me think about **what the "orbit" of {Φ_{a,b}} under the group G = Π_q Sym(D_q) looks like**.
+
+Two families {Φ_{a,b}} and {Φ'_{a,b}} are G-equivalent iff ∃{ψ_q} with Φ'_{a,b} = ψ_{F_0(a,b)} Φ_{a,b} (ψ_a⁻¹ × ψ_b⁻¹).
+
+**G-invariants** of the family {Φ_{a,b}}:
+
+1. **For each (a,b)**, the "isomorphism type" of Φ_{a,b} as an injective map D_a × D_b → D_{F_0(a,b)}. Under conjugation by ψ's, this is preserved. So: the "type" of each Φ_{a,b} is an invariant. But for infinite D, there's typically only one type (all injective maps D×D ↪ D are "the same" up to relabeling, if D is infinite). Hmm.
+
+Hmm, for D = N: an injective map N × N → N. Are all such maps conjugate (via bijections of N and of N×N... hmm, the conjugation acts as ψ_target ∘ Φ ∘ (ψ_a⁻¹ × ψ_b⁻¹) — so the source is also relabeled). Two injective maps f, g : N×N → N: is there a bijection h : N → N and bijections α,β : N → N with g = h ∘ f ∘ (α⁻¹ × β⁻¹)? 
+
+Hmm, f : N×N → N injective, so im(f) ⊆ N is infinite. g likewise. We want to conjugate. Take h mapping im(f) to im(g) bijectively, extended arbitrarily. Then h∘f is a bijection N×N → im(g). And we want it to equal g ∘ (α×β). Since g : N×N → im(g) is a bijection, (α,β) must satisfy g(α u, β v) = h(f(u,v)). Hmm, we need to find α,β. 
+
+Hmm, this is a "does the map factor" question. Given g bijective N×N → im(g) and h∘f bijective N×N → im(g), we need α,β : N→N bijections with g(αu,βv) = (h∘f)(u,v). That requires: the level sets... Hmm. We need g(α·,β·) = h∘f as functions of (u,v). So we need to reparametrize the two arguments of g to match h∘f. 
+
+Hmm. In general, h∘f and g are both bijections N×N → im(g), so there's a bijection γ : N×N → N×N with g∘γ = h∘f. But we need γ to be of the **product form** (α,β). That's not always possible!
+
+**AH — here's the invariant!** The requirement that the reparametrization γ be a **product of two bijections** (not an arbitrary bijection of N×N) is a real constraint.
+
+Hmm. So: the invariant is the **"product-form conjugacy class"** of Φ_{a,b} as a binary map.
+
+Hmm, let me think about this concretely. Two injective maps f, g : N² → N. When is g = h ∘ f ∘ (α⁻¹ × β⁻¹)?
+
+Hmm. Let me think about a clean invariant. 
+
+**Idea: the "sections" of f.** For fixed u, the map v ↦ f(u,v) is injective N → N. Its image im(f(u,·)) is an infinite subset of N. 
+
+Hmm, but images can be moved by h. Hmm, but h moves ALL of them simultaneously.
+
+Hmm, let me think about **relative** invariants: for u, u' ∈ N, consider im(f(u,·)) vs im(f(u',·)). Under conjugation:
+im(g(αu,·)) = im(h f(u, β⁻¹·)) = h(im(f(u,·))).
+So: **im(g(αu,·)) = h(im(f(u,·)))** — the family of images {im(f(u,·))}_{u∈N} is mapped by the SAME h and reindexed by α.
+
+**So: the "isomorphism type" of the family of subsets {im(f(u,·))}_{u∈N} of N, up to a global bijection of N and reindexing by α, is an invariant!** 
+
+And crucially, this is a **richer invariant** than "the type of f alone" because it involves the *structure of the family of subsets*.
+
+**Concretely**: consider the equivalence relation on N given by u ~ u' iff im(f(u,·)) = im(f(u',·)). Hmm, this is invariant under the reindexing? Under conjugation, u ~_f u' ⟺ im f(u,·) = im f(u',·) ⟺ h(im f(u,·)) = h(im f(u',·)) ⟺ im g(αu,·) = im g(αu',·) ⟺ αu ~_g αu'. **So the equivalence relation is transported by α — so the NUMBER of classes is invariant.** ✓
+
+**So: #{im(f(u,·)) : u ∈ N} is an invariant of the product-form conjugacy class.** ✓
+
+Hmm, nice. And for a "generic" f, all im(f(u,·)) are distinct, so the count is ℵ₀. Hmm, so that's not discriminating for generic maps.
+
+Hmm. Let me think about whether there's a cleaner invariant that's easy to compute.
+
+Hmm, let me step back and think about the ACTUAL question the user cares about:
+
+**"什么时候 family {Φ_{a,b}} 可以同时被规范化为同一个 Φ？什么时候不能？"**
+
+So they want a **characterization** (necessary and sufficient conditions), not just a necessary condition.
+
+Hmm. Let me think about the case Q = Z/2 and see if I can characterize it.
+
+Hmm, this is getting deep. Let me think about whether there's a cleaner way.
+
+### Key realization: the number of "F-classes" or the structure of "F-invariant" things
+
+Hmm. Let me think about **F as a partial order / a "reachability"** structure.
+
+Hmm. Let me try a cleaner idea: **the "coarse section" idea.**
+
+Hmm. Let me think about **the number of distinct "Φ-types"**. 
+
+Actually, here's a thought. Let me reconsider the problem. In the split case:
+F((a,u),(b,v)) = (F_0(a,b), Φ(u,v)).
+**Iterating**: F(F((a,u),(b,v)),(c,w)) = (F_0(F_0(a,b),c), Φ(Φ(u,v),w)).
+
+So the fine coordinate evolves by iterating Φ — **independently of the coarse trajectory**.
+
+**In the non-split case**, the fine coordinate's evolution depends on the coarse trajectory.
+
+**So the invariant is: "does the fine coordinate's evolution depend on the coarse trajectory?"** — and this is a **dynamical** invariant.
+
+Formalize: Consider the "depth-n" iterated composition. In the split case, the fine part is determined by the fine parts of the leaves (via iterated Φ). In the non-split case, it depends on the coarse parts too.
+
+Hmm. So: **the obstruction is a "cocycle" measuring how the coarse trajectory twists the fine evolution.**
+
+Hmm. Let me formalize as a **group-valued cocycle**. Hmm, but F isn't a group operation.
+
+OK. Let me now think about what the CLEANEST, most defensible answer is, since I need to deliver A-E.
+
+### Deliverables
+
+A. **严格的等价/共轭定义**
+B. **最小不可消除反例**
+C. **一个不变量**
+D. **一个定理**
+E. **一个可计算验证方案**
+
+Let me settle:
+
+**A. 定义（纤维重标号等价 / gauge equivalence）**
+G := Π_{q∈Q} Sym(D_q). 对 ψ = (ψ_q) ∈ G 定义
+ψ · Φ_{a,b} := ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹ × ψ_b⁻¹)
+两个结构等价 ⟺ 存在 ψ ∈ G 使其族相等。
+**规范化**：{Φ_{a,b}} 可规范化 ⟺ ∃ψ 使 ψ·Φ_{a,b} = Φ 对一切 (a,b)（同一个 Φ）。
+这等价于：存在分解 A ≅ Q × D 使 F = (F_0, Φ)，Φ 与标签无关。
+
+**B. 最小反例**
+Hmm, I want the simplest possible. Let me think about the simplest Q and simplest Φ.
+
+Q = Z/2 (2 elements). Fibers = N. 
+Φ_{00}(u,v) = 2·Cantor(u,v)      [image = even]
+Φ_{11}(u,v) = 2·Cantor(u,v) + 1  [image = odd]
+Φ_{01}(u,v) = 2·Cantor(u,v)
+Φ_{10}(u,v) = 2·Cantor(u,v) + 1
+
+F((a,u),(a',u')) = (a⊕a', Φ_{a,a'}(u,u'))
+
+Check injectivity: from (c,e): a⊕a' = c. And e = 2C(u,u') + a. So a = e mod 2, then a' = a⊕c, then C(u,u') = (e-a)/2 → (u,u'). ✓ **Injective** ✓
+
+Non-normalizable: 
+Φ'_{00}(u,v) = ψ_0(2·Cantor(ψ_0⁻¹u, ψ_0⁻¹v))
+Φ'_{11}(u,v) = ψ_0(2·Cantor(ψ_1⁻¹u, ψ_1⁻¹v) + 1)
+For equality: 2C(ψ_0⁻¹u,ψ_0⁻¹v) = 2C(ψ_1⁻¹u,ψ_1⁻¹v)+1. LHS even, RHS odd. **Impossible.** ✓
+
+**Invariant**: im(Φ_{00}) = 2N (even), im(Φ_{11}) = 2N+1 (odd). These are disjoint. And under ψ, both images are moved by the SAME ψ_0, so **disjointness is preserved**. But for the normalized Φ, we'd need im(Φ'_{00}) = im(Φ) = im(Φ'_{11}), so they'd have to be EQUAL. Contradiction. ✓
+
+**So the invariant is: "for a,a' with F_0(a,a) = F_0(a',a'), the images im(Φ_{a,a}) and im(Φ_{a',a'}) must be equal" (necessary for normalizability).** 
+
+Hmm, but that's a somewhat ugly invariant. Let me see if there's a cleaner one.
+
+**Cleaner: the "diagonal image" family.** Define Δ_a := im(Φ_{a,a}) ⊆ D_{F_0(a,a)}. 
+Necessary condition: if F_0(a,a) = F_0(b,b), then Δ_a = Δ_b.
+
+Hmm. Can I make it cleaner? Let me think about **the set of "diagonal values"**: 
+
+Hmm, actually here's a cleaner way. Let me define:
+**For each q ∈ Q, consider the set S_q := { Φ_{a,b}(u,v) : F_0(a,b) = q } ⊆ D_q.** The union of all images landing in fiber q.
+Under ψ: S_q ↦ ψ_q(S_q). So the family {S_q} is moved fiberwise. Hmm, no constraint.
+
+Hmm.
+
+OK, let me think about a genuinely clean invariant.
+
+**Insight attempt**: In the normalized case, Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ ∘ Φ ∘ (ψ_a × ψ_b). So Φ_{a,b}(u,v) — the "output" depends on (a,b) only through ψ's. In particular:
+**Φ_{a,b}(u,v) = Φ_{a',b'}(u,v) whenever ψ_a = ψ_{a'}, ψ_b = ψ_{b'}, ψ_{F_0(a,b)} = ψ_{F_0(a',b')}.**
+
+Hmm, so if all ψ_q are equal (ψ_q = ψ for all q), then Φ_{a,b} = Φ_{a',b'} for ALL (a,b),(a',b'). I.e., **all four maps are equal!**
+
+Hmm! So in the normalized case with a single ψ, all Φ_{a,b} coincide. But the ψ's can differ per fiber.
+
+Hmm. OK. Let me think about whether there's a "cleanest" formulation.
+
+**Cleanest formulation of the obstruction**: 
+
+Consider the "diagonal" maps δ_{a,b} := Φ_{a,b}(·,·) : D_a → D_{F_0(a,b)} (i.e., u ↦ Φ_{a,b}(u,u)).
+
+Hmm, actually the cleanest might be:
+
+**Theorem (necessary condition)**: If {Φ_{a,b}} is normalizable to a constant Φ, then for all (a,b), (a',b') with F_0(a,b) = F_0(a',b'):
+```
+im(Φ_{a,b}) and im(Φ_{a',b'}) are related by ... 
+```
+Hmm, no: im(Φ'_{a,b}) = ψ_{F_0(a,b)}(im Φ_{a,b}) and both have the same target, so if normalized they'd both equal im(Φ) after applying ψ. Hmm, no: Φ'_{a,b} = Φ so im(Φ'_{a,b}) = im(Φ) for all (a,b). And Φ'_{a,b} = ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (...). So im(Φ'_{a,b}) = ψ_{F_0(a,b)}(im Φ_{a,b}) = im(Φ). 
+
+Hmm, but that's automatically satisfiable: given any im(Φ_{a,b}), we can choose ψ_{F_0(a,b)} to map it to im(Φ) — as long as it's consistent across all (a,b) with the same F_0(a,b). Hmm, but ψ_{F_0(a,b)} must map ALL the images im(Φ_{a,b}) for F_0(a,b) = q to im(Φ). So: **all im(Φ_{a,b}) with F_0(a,b) = q must be "simultaneously mappable" to im(Φ)** — i.e., there must be a bijection ψ_q : D_q → D with ψ_q(im Φ_{a,b}) = im(Φ) for all such (a,b).
+
+**So a necessary condition: for each q, all the images {im(Φ_{a,b}) : F_0(a,b) = q} must be "mutually comparable" via a single bijection** — i.e., **there must be a bijection of D_q mapping all of them to a common set.** 
+
+If two of them are disjoint (like even/odd), that's impossible. ✓
+
+**So the invariant: "for each q, can a single bijection of D_q map all {im Φ_{a,b} : F_0(a,b)=q} onto a common set?"** And a simple obstruction: two of them are disjoint and the target is infinite but their union... hmm.
+
+Hmm, if im(Φ_{a,b}) and im(Φ_{a',b'}) are both infinite and disjoint, can a single bijection map both to the same set? No! Because ψ(im Φ_{a,b}) = ψ(im Φ_{a',b'}) = S implies im Φ_{a,b} = im Φ_{a',b'}. So disjoint ⟹ impossible. ✓
+
+**So: a clean necessary condition is: for each q, all {im(Φ_{a,b}) : F_0(a,b) = q} must be EQUAL as sets.**
+
+Hmm, that's a strong condition. Let me double check with my example: q=0: F_0(0,0) = 0, F_0(1,1) = 0. im(Φ_{00}) = 2N, im(Φ_{11}) = 2N+1. Not equal → not normalizable. ✓ 
+
+Hmm, and actually this condition might be **sufficient** too (together with more conditions on the map structure, not just images). Hmm.
+
+Hmm, but is "images equal" necessary? Let me re-derive. Normalized: Φ'_{a,b} = Φ for all (a,b). So im(Φ'_{a,b}) = im(Φ) for all (a,b). And Φ'_{a,b} = ψ_{F_0(a,b)} Φ_{a,b} (ψ_a⁻¹×ψ_b⁻¹), so im(Φ'_{a,b}) = ψ_{F_0(a,b)}(im Φ_{a,b}). So ψ_q(im Φ_{a,b}) = im(Φ) for all (a,b) with F_0(a,b)=q. Hence im(Φ_{a,b}) = ψ_q⁻¹(im Φ) — **the same for all (a,b) with F_0(a,b) = q.** ✓ **Necessary.** ✓
+
+**So: INVARIANT: for each q ∈ Q, the set im(Φ_{a,b}) must be the same for all (a,b) ∈ F_0⁻¹(q).**
+
+That's clean! Let me state it as the invariant.
+
+Hmm, and it's easy to check computationally. ✓
+
+And is it sufficient? No — there are more conditions (the "internal structure" of the maps must also match, e.g., the family of fiber-sections). But it's a clean **necessary** condition and it's enough to prove non-normalizability.
+
+**Sufficient condition (partial)**: if additionally the "section structure" matches... Let me not over-claim. Let me state:
+- **Necessary condition (invariant)**: im(Φ_{a,b}) constant on fibers of F_0.
+- **Sufficient condition**: hmm. Let me think. If we ALSO have that the "slice maps" match... 
+
+Hmm. Let me think about sufficiency for the special case where all ψ_q are forced to be equal. Hmm.
+
+Actually, let me think about **a cleaner sufficient condition**: if there exists a bijection ψ_q for each q such that ψ_{F_0(a,b)} Φ_{a,b} (ψ_a⁻¹×ψ_b⁻¹) is the same for all (a,b). 
+
+Hmm, let me think about the **case where F_0 is a group operation** (like ⊕ on Z/2). Hmm.
+
+OK, let me think about sufficiency differently. **Consider the case where all Φ_{a,b} are "the same map"** — i.e., Φ_{a,b} = Ψ for all (a,b), where Ψ : D×D → D injective. Then with ψ_q = id for all q, Φ'_{a,b} = Ψ — already normalized! ✓ 
+
+Hmm, but wait: in my example, Φ_{00} = Φ_{01} = 2C and Φ_{11} = Φ_{10} = 2C+1. So they're not all the same. If instead all four were 2C, then... F((a,u),(a',u')) = (a⊕a', 2C(u,u')). Injectivity: from (c,e): a = e mod 2, a' = a⊕c, C = (e-a)/2. ✓ Injective. And normalized with ψ = id. ✓ **So it IS "pairing + independent tags"!** ✓ Good, consistent.
+
+So: **the obstruction is exactly that the images differ within a fiber.** ✓
+
+**Sufficient condition**: if there exists a family {ψ_q} making all Φ'_{a,b} equal — this is the definition. A useful *sufficient* condition: **if the Φ_{a,b} are "uniformly equivalent" in the sense that there's a single Φ and maps ψ with Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ Φ (ψ_a × ψ_b)**. Hmm, that's circular.
+
+Let me give a **practical sufficient condition**: Suppose for each q we can find ψ_q such that ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹ × ψ_b⁻¹) is independent of (a,b). This is a system of equations. A clean sufficient case: **if F_0(a,b) determines (a,b) up to the action of a group that acts trivially on the fibers** — hmm, too vague.
+
+Let me give a clean sufficient condition for the **"all ψ_q = ψ" case**:
+If there's a single ψ with ψ ∘ Φ_{a,b} ∘ (ψ⁻¹ × ψ⁻¹) independent of (a,b) — i.e., **all Φ_{a,b} are conjugate to each other by the same ψ** — then normalized. Hmm, that's also somewhat circular.
+
+OK. Let me just be honest: 
+- **Necessary**: images constant on F_0-fibers.
+- **Sufficient (clean special case)**: all Φ_{a,b} coincide (then ψ = id works). More generally, if there's {ψ_q} satisfying the system.
+- And: **when |Q| = 1** (single coarse state), it's trivially normalizable (only one Φ). So the obstruction requires |Q| ≥ 2 and a non-injective F_0.
+
+Hmm, let me also think about a **cleaner sufficient condition** that's natural:
+
+**Theorem (sufficient)**: If the family {Φ_{a,b}} is such that there exist bijections {ψ_q} with Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ ∘ Ψ ∘ (ψ_a × ψ_b) for a fixed Ψ, then normalized. And a natural sufficient condition for THIS: if **the "diagonal" maps δ_{a,b} = Φ_{a,b}(·,·) satisfy δ_{a,b} = ψ_{F_0(a,b)}⁻¹ Ψ (ψ_a)** hmm.
+
+Hmm. Let me simplify and just present the necessary invariant + the special sufficient case + the theorem.
+
+### Now: the "State-indexed computation space" question
+
+The user asks: if non-removable Φ_{a,b} exist, can Address be strictly defined as a **"State-indexed computation space"** rather than "pairing + tags"?
+
+Hmm. Let me think about what that means mathematically.
+
+The structure is: A = ⊔_{q∈Q} D_q with a binary operation F that is injective and descends. The "state" (coarse class) **indexes** the fiber operation: Φ_{a,b} depends on the states.
+
+**Mathematical name for this**: it's a **"family of operations indexed by the base"** — i.e., a **"gauge field"** or a **"bundle with a connection"**! 
+
+Hmm! That's the right vocabulary:
+- A → Q is a **fiber bundle** (a "bundle" of fibers over the base Q).
+- The family {Φ_{a,b}} is a **"multiplication that depends on the base point"** — i.e., a **"twisted" or "gauged" operation**.
+- The {ψ_q} are **gauge transformations**.
+- The obstruction to normalizing is a **gauge-theoretic obstruction** — an **anholonomy / curvature / cocycle**.
+
+**YES — this is exactly the right framework.** And the mathematical language is:
+- **Gauge group** G = Π_q Sym(D_q)
+- **Gauge transformation** ψ = (ψ_q)
+- **Gauge-invariant** quantities
+- **Obstruction to a global trivialization** = the **curvature / holonomy**
+
+And in the case where D is a **group** or has group structure, the standard theory is **principal bundles and their characteristic classes**.
+
+Hmm! So: the answer to "State-indexed computation space" is: **YES, and its proper mathematical name is "a gauge field over the coarse base" (or "a bundle of algebras with a base-dependent operation").**
+
+**And the invariant is a "holonomy": the failure of the fiber operations to be simultaneously trivializable.**
+
+Let me try to make this concrete as a **holonomy/cocycle**.
+
+Hmm. Let me think about it via **loops in the base**. Consider a "loop" in Q: a sequence a_0, a_1, ..., a_n = a_0 with F_0 linking them. Hmm. Since F_0 is a binary operation, a natural "path" structure: hmm.
+
+Actually, here's a cleaner way to get a cocycle. Consider the **"shift" maps**: for fixed b, the map a ↦ F_0(a,b). Hmm.
+
+Hmm, let me think about **F_0 as a group operation** (e.g., Z/2). Then "paths" in Q are just... hmm, Q is finite, so we can consider the action.
+
+Hmm, let me think about the **"monodromy"**: consider composing along the "loop" a → F_0(a,b) → F_0(F_0(a,b), c) → ...
+
+Hmm. Let me try to find the cocycle concretely in the simplest case.
+
+**Simplest case: Q = Z/2, F_0 = ⊕, D = N.**
+
+Data: Φ_{00}, Φ_{01}, Φ_{10}, Φ_{11}.
+Normalization: ∃ψ_0,ψ_1 ∈ Sym(N) with:
+ψ_0 Φ_{00} (ψ_0⁻¹×ψ_0⁻¹) = ψ_1 Φ_{01} (ψ_0⁻¹×ψ_1⁻¹) = ψ_1 Φ_{10} (ψ_1⁻¹×ψ_0⁻¹) = ψ_0 Φ_{11} (ψ_1⁻¹×ψ_1⁻¹) = Φ
+
+From the 1st and 4th: ψ_0 Φ_{00} (ψ_0⁻¹×ψ_0⁻¹) = ψ_0 Φ_{11} (ψ_1⁻¹×ψ_1⁻¹)
+⟹ Φ_{00} (ψ_0⁻¹×ψ_0⁻¹) = Φ_{11} (ψ_1⁻¹×ψ_1⁻¹)
+⟹ **Φ_{00} = Φ_{11} ∘ (ψ_1⁻¹ψ_0 × ψ_1⁻¹ψ_0)**  ... let me verify: Φ_{00}(ψ_0⁻¹u, ψ_0⁻¹v) = Φ_{11}(ψ_1⁻¹u, ψ_1⁻¹v). Let x = ψ_0⁻¹u, y = ψ_0⁻¹v. Then u = ψ_0 x, v = ψ_0 y. So Φ_{00}(x,y) = Φ_{11}(ψ_1⁻¹ψ_0 x, ψ_1⁻¹ψ_0 y). Let γ := ψ_1⁻¹ψ_0 ∈ Sym(N). Then:
+**Φ_{00}(x,y) = Φ_{11}(γx, γy)** ... (I)
+
+Similarly from the 2nd and 3rd:
+ψ_1 Φ_{01} (ψ_0⁻¹×ψ_1⁻¹) = ψ_1 Φ_{10} (ψ_1⁻¹×ψ_0⁻¹)
+⟹ Φ_{01}(ψ_0⁻¹u, ψ_1⁻¹v) = Φ_{10}(ψ_1⁻¹u, ψ_0⁻¹v). Let x = ψ_0⁻¹u, y = ψ_1⁻¹v → u = ψ_0x, v = ψ_1y. So Φ_{01}(x,y) = Φ_{10}(ψ_1⁻¹ψ_0 x, ψ_0⁻¹ψ_1 y) = Φ_{10}(γx, γ⁻¹y).
+**Φ_{01}(x,y) = Φ_{10}(γx, γ⁻¹y)** ... (II)
+
+**So the necessary conditions are (I) and (II) for some γ ∈ Sym(N).** 
+
+**These are clean, computable necessary conditions!** And they're gauge-invariant statements (existence of γ).
+
+Hmm, so: **the invariant is "∃γ ∈ Sym(D) with Φ_{00} = Φ_{11} ∘ (γ×γ) and Φ_{01} = Φ_{10} ∘ (γ × γ⁻¹)".** 
+
+And in my example: Φ_{00} = 2C, Φ_{11} = 2C+1. Need 2C(x,y) = 2C(γx,γy)+1 — LHS even, RHS odd. Impossible. ✓
+
+**So the invariant is the existence of such a γ.** That's a clean, computable invariant! ✓
+
+And it's exactly the **"holonomy"** of the bundle: γ is the "monodromy" around the loop 0 → 0 (via ⊕: 0 = 0⊕0 = 1⊕1). ✓✓
+
+**BEAUTIFUL.** So: 
+- The loop in the base: 0 → 0 via the two decompositions 0 = 0⊕0 and 0 = 1⊕1.
+- The "parallel transport" around this loop gives γ ∈ Sym(D).
+- **The obstruction is the monodromy γ: if no γ satisfies (I) and (II), the bundle is not trivializable.**
+
+And the invariant: **the "monodromy group" — the set of γ that work — must be non-empty.**
+
+Hmm, this is genuinely nice. Let me formalize:
+
+**定义（单值性 / monodromy）**: 对每个 q ∈ Q，考虑 q 的两种分解 (a,b), (a',b') ∈ F_0⁻¹(q)。若可规范化，则必存在 γ ∈ Sym(D) 使 Φ_{a,b} = Φ_{a',b'} ∘ (γ × γ)（当 a=a', b=b' 时）或更一般的置换。这个 γ 就是绕行基空间中"环"的单值性。
+
+Hmm, let me state it generally:
+
+**定理 (必要条件 / 单值性判据)**: 若 {Φ_{a,b}} 可规范化为常数 Φ，则对任意 (a,b),(a',b') ∈ Q² 与任意双射 α,β ∈ Sym(D)，只要满足 ψ 关系… hmm.
+
+Let me simplify. The general necessary condition:
+
+**若 {Φ_{a,b}} 可规范化，则对任意 (a,b), (a',b')，存在 γ,η,ζ ∈ Sym(D) 使**
+**Φ_{a,b} = Φ_{a',b'} ∘ (γ × η)** hmm, no.
+
+Hmm, let me redo generally. If normalized: Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ Φ (ψ_a × ψ_b). Then for (a,b),(a',b'):
+Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ Φ (ψ_a × ψ_b) and Φ_{a',b'} = ψ_{F_0(a',b')}⁻¹ Φ (ψ_{a'} × ψ_{b'})
+
+If F_0(a,b) = F_0(a',b') = q: 
+Φ_{a,b} = ψ_q⁻¹ Φ (ψ_a × ψ_b), Φ_{a',b'} = ψ_q⁻¹ Φ (ψ_{a'} × ψ_{b'})
+⟹ Φ_{a,b} = Φ_{a',b'} ∘ (ψ_{a'}ψ_a⁻¹ × ψ_{b'}ψ_b⁻¹) ... let me verify: Φ_{a',b'}(x,y) = ψ_q⁻¹Φ(ψ_{a'}x, ψ_{b'}y). Set x = ψ_a ψ_{a'}⁻¹ X... hmm let me just do: 
+Φ_{a,b}(u,v) = ψ_q⁻¹Φ(ψ_a u, ψ_b v). And Φ_{a',b'}(α u, β v) = ψ_q⁻¹Φ(ψ_{a'} α u, ψ_{b'} β v). For these to be equal for all u,v: need ψ_a = ψ_{a'}α and ψ_b = ψ_{b'}β. So α = ψ_{a'}⁻¹ψ_a, β = ψ_{b'}⁻¹ψ_b. ✓
+**So: Φ_{a,b} = Φ_{a',b'} ∘ (ψ_{a'}⁻¹ψ_a × ψ_{b'}⁻¹ψ_b)** ✓
+
+**Necessary condition**: for all (a,b),(a',b') with F_0(a,b) = F_0(a',b'), there exist α,β ∈ Sym(D) with Φ_{a,b} = Φ_{a',b'} ∘ (α × β).
+And moreover, these α,β must be **consistent** (they come from a single {ψ_q}), i.e., α depends only on (a,a') and β only on (b,b').
+
+**That's the invariant!** ✓ And it's clean and computable.
+
+In my example: (0,0) and (1,1) both map to 0. Need α,β with Φ_{00} = Φ_{11} ∘ (α×β), i.e., 2C(u,v) = 2C(αu,βv)+1. LHS even, RHS odd. Impossible. ✓
+
+**So: the invariant is "是否存在 α,β ∈ Sym(D) 使 Φ_{a,b} = Φ_{a',b'} ∘ (α × β)" for each pair with the same F_0-output, plus the consistency.**
+
+Great. Let me now write it up.
+
+### Answering the final question
+
+"如果存在不可消除的 Φ_{a,b}，那么 Address 是否可以严格定义为 State-indexed computation space 而不只是 pairing + tags？"
+
+**Answer**: YES, and the strict name is:
+
+> **A = 一个以粗层 Q 为底、以 {D_q} 为纤维的丛，其纤维运算 Φ 是一个"底点相关的乘法"——即一个规范场（gauge field）/ 带联络的丛。**
+
+And:
+- The "gauge group" is Π_q Sym(D_q)
+- "pairing + tags" = **trivial (globally trivializable) bundle** = the extension splits
+- The obstruction is a **monodromy/holonomy** around loops in the base (loops created by the non-injectivity of F_0)
+- **The non-removability is exactly the non-triviality of the bundle.**
+
+**And the crucial honest caveat**: this is a **trivializable-or-not** question, i.e., the structure is a **bundle**, and the "state-indexing" is precisely the **gauge field**. So "State-indexed computation space" IS the right name — but it's not a "new theory", it's **the standard notion of a non-trivial bundle / gauge structure**. I must say this (the user warned: don't call a counterexample a new theory).
+
+So: **the correct statement is: 分层地址代数的正确数学范畴是"以粗层为底、纤维为 {D_q}、带底点相关运算的丛"，其"独立标签"情形恰是平凡丛。不可消除的 Φ_{a,b} 就是非平凡丛。这不是新理论，而是丛论/规范理论的标准对象。**
+
+Hmm, but I should be careful: is it REALLY a bundle? A bundle needs a structure group. Here the structure group is Π Sym(D_q). And a "connection" needs... hmm, actually the family {Φ_{a,b}} is more like a "family of operations" than a connection. Hmm.
+
+Hmm. Let me be careful. Let me not over-claim. The honest statement:
+
+- A → Q is a **fibered set** (a bundle with structure group G = Π_q Sym(D_q)).
+- The family {Φ_{a,b}} is a **G-equivariant family of operations** — i.e., a section of an associated bundle, or more precisely a **"twisted operation"**.
+- Normalizability = the twisted operation is **G-equivalent to a constant (untwisted) operation**.
+- The obstruction is a **G-valued cocycle** = the monodromy.
+
+**So: it IS the standard framework of "twisted structures / gauge equivalence / non-trivial bundles".** I'll state it as such, honestly noting it's a standard notion applied here, not a new theory.
+
+Hmm, one more consideration: is the obstruction really a *cocycle*? Let me check. In the simple case, γ = ψ_1⁻¹ψ_0 is the "monodromy". And the condition was (I),(II) for a single γ. So the cocycle is: γ(a,a') := ψ_{a'}⁻¹ψ_a. And it must satisfy a cocycle condition: γ(a,a'') = γ(a',a'')γ(a,a'). ✓ Standard. And the obstruction is whether such a cocycle exists at all.
+
+OK. Let me now write up.
+
+Let me also think about **sufficiency** to give a clean theorem.
+
+**定理**: {Φ_{a,b}} 可规范化为常数 Φ ⟺ 存在 {ψ_q} ∈ G 与 Φ 使 Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ Φ (ψ_a × ψ_b)。
+这等价于：存在 Ψ ∈ (injective maps D×D → D) 与 {ψ_q} 满足上述方程。
+
+Hmm, and a **sufficient condition**: hmm. Let me give the clean one: **若 F_0 是单射**（i.e., no two pairs share an output), then... hmm, F_0 injective means |Q|² ≤ |Q|, so |Q| ≤ 1. Trivial.
+
+Hmm. OK so F_0 is always non-injective for |Q| ≥ 2. So there are always "loops". And the obstruction is the monodromy around them.
+
+**Sufficient condition**: if the monodromy cocycle can be "killed". Concretely: **if there's a "flat" choice** — i.e., if the family {Φ_{a,b}} has "zero curvature". Hmm.
+
+Let me give the cleanest sufficient statement: 
+
+**定理（充分条件）**: 若存在 γ ∈ Sym(D) 满足 (I),(II) 且 γ 可以延拓为一个相容的 cocycle（即存在 {ψ_q} 实现它），则可规范化。
+
+Hmm, that's circular. Let me just state:
+
+**定理（判别）**: 可规范化 ⟺ 方程组 Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ Φ (ψ_a × ψ_b) 有解 (Φ, {ψ_q})。
+**必要条件（易验证）**: ∀(a,b),(a',b') with F_0(a,b)=F_0(a',b'): ∃α,β ∈ Sym(D): Φ_{a,b} = Φ_{a',b'} ∘ (α × β)。
+**充分条件（特殊情形）**: 若所有 Φ_{a,b} 相等，则取 ψ_q = id 即可规范化。
+
+And the **invariant**: the "monodromy group" — hmm, let me define the invariant as:
+
+**不变量 I(a,a'|b,b')**: 对 F_0(a,b) = F_0(a',b')，定义集合
+**M := { (α,β) ∈ Sym(D)² : Φ_{a,b} = Φ_{a',b'} ∘ (α × β) }**
+则 M ≠ ∅ 是可规范化的必要条件。且 M 是**规范不变量**（在 (I) 的意义下）。
+
+Hmm, let me double check that M ≠ ∅ is gauge-invariant. If we change coordinates by {ψ}, then Φ → Φ', and M' = {(α,β) : Φ'_{a,b} = Φ'_{a',b'} ∘ (α×β)}. And Φ'_{a,b} = ψ_q Φ_{a,b} (ψ_a⁻¹×ψ_b⁻¹), Φ'_{a',b'} = ψ_q Φ_{a',b'} (ψ_{a'}⁻¹×ψ_{b'}⁻¹). So Φ'_{a,b} = Φ'_{a',b'} ∘ (α×β) ⟺ ψ_q Φ_{a,b} (ψ_a⁻¹×ψ_b⁻¹) = ψ_q Φ_{a',b'} (ψ_{a'}⁻¹×ψ_{b'}⁻¹) ∘ (α×β) ⟺ Φ_{a,b} (ψ_a⁻¹×ψ_b⁻¹) = Φ_{a',b'} (ψ_{a'}⁻¹ α × ψ_{b'}⁻¹ β). So α' = ψ_{a'}⁻¹ α ... hmm, this gives a bijection between M and M'. So **M ≠ ∅ is gauge-invariant** ✓ (the non-emptiness, though not M itself).
+
+Hmm, actually let me redo: we want Φ_{a,b} = Φ_{a',b'} ∘ (α'×β'). From the above, Φ_{a,b}(ψ_a⁻¹u, ψ_b⁻¹v) = Φ_{a',b'}(ψ_{a'}⁻¹αu, ψ_{b'}⁻¹βv). Set u = ψ_a x, v = ψ_b y: Φ_{a,b}(x,y) = Φ_{a',b'}(ψ_{a'}⁻¹αψ_a x, ψ_{b'}⁻¹βψ_b y). So α' = ψ_{a'}⁻¹αψ_a, β' = ψ_{b'}⁻¹βψ_b. ✓ So M' = {(ψ_{a'}⁻¹αψ_a, ψ_{b'}⁻¹βψ_b) : (α,β) ∈ M}. So M' is a conjugate of M — **M ≠ ∅ is invariant** ✓ and the conjugacy class of M is invariant. ✓
+
+Good. So the invariant is the **conjugacy class of M** (or at least its non-emptiness).
+
+Hmm, and in my example: M = {(α,β) : 2C = (2C+1) ∘ (α×β)} = ∅. ✓
+
+Great.
+
+### Now let me also give the minimal verifiable scheme (E)
+
+1. Take Q = Z/2, F_0 = ⊕, D = N, Φ as in the counterexample.
+2. Check descent: trivial (F_0 = ⊕).
+3. Check injectivity: verify the inverse.
+4. Check the invariant: compute M for ((0,0),(1,1)) — show it's empty by the parity argument. That's the certificate of non-normalizability.
+
+And: a **positive control**: take Φ_{a,b} = 2C for all (a,b); then M ≠ ∅ (α=β=id), and normalization works with ψ_q = id. So we have both a positive and a negative instance. ✓ That's a good verifiable scheme.
+
+OK. Now let me write it all up.
+
+Should I use a widget? I've done 6. This round's content: the gauge/bundle framing, the invariant M, the theorem. 
+
+The most valuable visual: the **bundle picture** — base Q with fibers D_q, and the "monodromy loop". Hmm, that's a classic bundle diagram: a base (a small graph with Q nodes), fibers hanging, and a loop with parallel transport.
+
+Hmm, or: the "normalizable vs not" contrast in two panels.
+
+Let me think about what's most clarifying. The core new insight is: **normalization is possible iff the "monodromy" around loops in Q can be killed.** And the loop comes from F_0's non-injectivity.
+
+A diagram: base Q = {0,1}, with the loop 0 → 0 via (0,0) and (1,1), showing the two Φ's, and γ as the "monodromy". Hmm, that's a nice picture.
+
+Hmm, I've used a lot of widgets. Let me consider skipping. But this round has a genuinely geometric content (bundles, loops, monodromy) that benefits from a visual.
+
+Let me do a compact one: a 2-panel comparison "平凡丛（可规范化）" vs "非平凡丛（不可规范化）", showing the fiber operation and the loop.
+
+Hmm, let me design:
+
+Panel A: "可规范化（平凡丛）" 
+- base: q=0 with two decompositions (0,0) and (1,1)
+- both give Φ_{00} = Φ_{11} = 2C → "γ = id 可行"
+
+Panel B: "不可规范化（非平凡丛）"
+- same base
+- Φ_{00} = 2C (even), Φ_{11} = 2C+1 (odd) → "无 γ 可行"
+
+Hmm. Layout: two panels side by side? Or two rows?
+
+Let me do two rows (each a wide card), which is easier to read:
+Row A: title + a line showing "Φ_{00} = Φ_{11} ⟹ γ = id ⟹ 可规范化"
+Row B: title + "im Φ_{00} = 2N, im Φ_{11} = 2N+1 ⟹ 无 γ ⟹ 不可规范化"
+
+Hmm, that's essentially a table. Hmm.
+
+OK — let me make the decision: I'll skip the widget this round. The content is: a framework (bundles/gauge), an invariant (M), a theorem, and a verification scheme. The invariant M is a set-theoretic condition best expressed in notation. A bundle diagram would be decorative rather than clarifying at this level of precision.
+
+Hmm, but I've skipped 3 of the last 4 rounds... Let me reconsider once more.
+
+Actually — a genuinely useful visual: **the loop in the base that generates the obstruction**. Base Q = {0,1}, and the "loop" 0 →(0,0)→ 0 and 0 →(1,1)→ 0. Showing that F_0's non-injectivity creates a loop, and going around the loop applies γ to the fiber. If γ ≠ id is required but impossible, obstruction.
+
+Hmm, that's a real conceptual picture. Let me do it. It shows WHY non-injectivity of F_0 creates the obstruction.
+
+Design: 
+- A vertical diagram: base Q = {0, 1} as two nodes at top and bottom? Or a single node 0 with two self-loops labeled (0,0) and (1,1)?
+
+Hmm, a self-loop picture: node "0" (coarse state) with two self-loops: one via (0,0), one via (1,1). The fiber D over node 0. Going around loop 1 then loop 2⁻¹ gives the monodromy γ.
+
+Hmm, drawing self-loops is fiddly. Let me do:
+
+Base as a single rounded rect "粗层状态 q" with two arrows looping back, labeled "(0,0)" and "(1,1)". Then a caption: "F_0 非单射 ⟹ 基空间出现环 ⟹ 绕环一周得到单值性 γ ∈ Sym(D)".
+
+Then below: two cases.
+
+Hmm, self-loops in SVG: a path from the right side of the box curving out and back to the left side. Doable.
+
+Hmm, this is getting complex for an inline widget. Let me simplify to a cleaner design:
+
+**Design**: Two panels stacked, each showing the "loop" concept:
+Panel 1 (可规范化): 
+  - A box "q = 0" 
+  - Two arcs looping back, labeled "经 (0,0)" and "经 (1,1)"
+  - Text: "两个环给出同一个 Φ ⟹ γ = id ⟹ 可规范化"
+Panel 2 (不可规范化):
+  - Same, but "经 (0,0) → Φ = 2C（偶）" / "经 (1,1) → Φ = 2C+1（奇）"
+  - Text: "两个环无法对上 ⟹ 无 γ ⟹ 不可规范化"
+
+Hmm. OK let me just do it with boxes and labels, no arcs — simpler and safer:
+
+Actually, let me do a cleaner, more informative visual: **the gauge/bundle picture as a table of the two cases**, showing: 基空间环 / 纤维运输 / 单值性 γ / 判定.
+
+Hmm, that's a table again.
+
+You know what — let me do the self-loop diagram. It's the clearest way to show "F_0 非单射 → 环 → 单值性". And it's a real conceptual insight.
+
+Let me plan:
+viewBox 0 0 720 H
+
+Top: caption y=32: "F_0 非单射 ⟹ 基空间出现环；绕环一周对纤维施加单值性 γ"
+
+Middle: a base node box at x=280, y=70, w=160, h=56, labeled "粗层状态 q = 0" (14px). 
+Two self-loops: 
+- Loop 1: from (280, 84) curving left and back to (280, 112), labeled "经 (0,0)" 
+  Path: M280 84 C 200 84, 200 112, 280 112 — with marker-end. Hmm, the label needs space. Let me put the label at x=170.
+- Loop 2: from (440, 84) curving right and back to (440, 112), labeled "经 (1,1)" at x=470.
+  Path: M440 84 C 520 84, 520 112, 440 112
+
+Hmm, label placement: left loop label at x=160 (left of the loop), right loop label at x=530.
+
+Hmm, the loop path spans x from 200 to 280. So a label at x=160 would be to the left of the loop. Let me instead put labels inside the loop or below.
+
+Hmm, this is getting fiddly. Let me simplify: put the two loops on left and right, and put the labels as text at the loop's leftmost/rightmost point.
+
+Left loop: path from (280,86) to (280,110) bulging left to x=210. Label "经 (0,0)" centered at (215, 102)? That would overlap the path. Hmm.
+
+Let me use leader-free labels placed outside:
+- Left loop bulge left to x=215. Label at x=200, text-anchor=end, y=98: "经 (0,0)". Length ~55. So it occupies 145..200. Loop leftmost = 215. Gap 15. OK.
+- Right loop bulge right to x=505. Label at x=520, text-anchor=start, y=98: "经 (1,1)". Occupies 520..575. OK.
+
+Then below the loops: two result boxes.
+- Box A: y=150..214, x=40..340: "可规范化" / "两环给出同一 Φ" / "γ = id 可行"
+- Box B: y=150..214, x=380..680: "不可规范化" / "im Φ = 2N vs 2N+1" / "无 γ 可行"
+
+Hmm, then the caption. H = 214+40 = 254.
+
+Hmm, but I need the loops to connect to the boxes. Let me add arrows from the base box down to the two result boxes? Hmm, the loops are "around" the base, and the results are about them. Let me instead label the loops directly with the result.
+
+Simpler design: skip the base node, just show the two "paths" as two rows:
+
+Row 1: "环①：经 (0,0) 回到 q=0" → "Φ_{00} 作用于纤维"
+Row 2: "环②：经 (1,1) 回到 q=0" → "Φ_{11} 作用于纤维"
+Then: "两者必须是同一个 Φ 的共轭 ⟹ 需要 γ = ψ_1⁻¹ψ_0 满足 Φ_{00} = Φ_{11}∘(γ×γ)"
+Then: 判定.
+
+That's a flow, not a bundle picture. Hmm.
+
+OK, I'm overthinking the widget. Let me just do a clean, simple, informative one: **the two-case comparison as two cards**, with the essential equations. Compact and honest.
+
+Card A (可规范化 / 平凡丛):
+- "Φ_{00} = Φ_{11} = 2C"
+- "⟹ γ = id 可行"
+- "⟹ 即 pairing + 独立标签"
+
+Card B (不可规范化 / 非平凡丛):
+- "Φ_{00} = 2C（偶）"
+- "Φ_{11} = 2C+1（奇）"
+- "⟹ 无 γ 可行"
+
+Plus a header explaining the loop.
+
+Layout: header band + two cards.
+viewBox 0 0 720 H
+- Header: rect x=40 y=26 w=640 h=44, fill surface-muted. Text at x=60, y=54 (12px): "F_0 非单射 ⟹ 基空间出现环；绕环一周对纤维施加单值性 γ"
+  Length: ~30 chars ≈ 360. ✓
+- Card A: x=40 y=90 w=310 h=120, rx=8. 
+  title y=118 (14px medium): "可规范化 · 平凡丛"
+  line1 y=146 (12px): "Φ_{00} = Φ_{11} = 2C"
+  line2 y=168 (12px): "⟹ γ = id 可行"
+  line3 y=190 (12px): "⟹ 就是 pairing + 独立标签"
+- Card B: x=370 y=90 w=310 h=120, rx=8.
+  title y=118: "不可规范化 · 非平凡丛"
+  line1 y=146: "im Φ_{00} = 2N，im Φ_{11} = 2N+1"
+  line2 y=168: "⟹ 无 γ 满足 Φ_{00} = Φ_{11}∘(γ×γ)"
+  line3 y=190: "⟹ 依赖不可消除"
+
+Hmm, card B line2 is long: "⟹ 无 γ 满足 Φ_{00} = Φ_{11}∘(γ×γ)" ≈ 8 + 3 + 12 + 12 + 3 + 20×7=140 + ... ≈ 250. Card inner width = 310-32 = 278. Tight but OK. Let me shorten: "⟹ 无 γ 满足该方程" ≈ 130. ✓
+
+Card widths: 310 each, x=40..350 and 370..680. Gap = 20. Hmm, need ≥32. Let me use w=300: 40..340 and 380..680. Gap 40. ✓
+Card inner width = 300-32 = 268.
+
+Card A line1 "Φ_{00} = Φ_{11} = 2C" ≈ 19 chars × 7 = 133 ✓
+Card B line1 "im Φ_{00} = 2N，im Φ_{11} = 2N+1" ≈ 27 chars × 7 = 189 ✓
+Card B line2 "⟹ 无 γ 满足 Φ_{00} = Φ_{11}∘(γ×γ)" ≈ 8+3+12+12+3+ 19×7=133 → 171 ✓
+Card A line3 "⟹ 就是 pairing + 独立标签" ≈ 8+3+24+3+ 7×7=49 + 3 + 48 = 138 ✓
+Card B line3 "⟹ 依赖不可消除" ≈ 8+3+72 = 83 ✓
+
+Card h=120, y=90..210. H = 210+40 = 250.
+
+Focal point: Card B (the non-trivial one) — mark with brand border? Hmm, or mark Card A as "退化情形" and B as the real one. Let me make B the focal (brand border) since it's the non-trivial case.
+
+Hmm, actually the punchline is the CONTRAST. Let me keep both neutral and make the header the focal (muted band). Hmm. Let me mark card B with a brand border to show it's the non-trivial/new case. 1 meaning color. OK.
+
+Let me write it.
+
+Then the text.
+
+Let me now write the response text. Structure:
+
+0. 直接回答
+1. A: 等价/共轭定义（gauge）
+2. 关键：什么时候能规范化
+3. B: 最小反例
+4. C: 不变量
+5. D: 定理
+6. E: 可计算验证方案
+7. 最终问题：State-indexed computation space？
+8. 诚实声明：这不是新理论
+
+Let me write it.
+
+Let me be careful with the math. Let me re-verify the key necessary condition derivation once more.
+
+Setup: A = ⊔_{q∈Q} D_q, π_0 : A → Q, F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)).
+
+Normalization: ∃{ψ_q : D_q → D} bijections (to a common D) such that the transformed family is constant.
+
+In the transformed coordinates: the address (a,u) becomes (a, ψ_a(u)). And F becomes:
+F'((a,ψ_a u),(b,ψ_b v)) = (F_0(a,b), ψ_{F_0(a,b)}(Φ_{a,b}(u,v)))
+So F'((a,u'),(b,v')) = (F_0(a,b), ψ_{F_0(a,b)}(Φ_{a,b}(ψ_a⁻¹u', ψ_b⁻¹v'))) = (F_0(a,b), Φ'_{a,b}(u',v'))
+with **Φ'_{a,b} = ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹ × ψ_b⁻¹)** ✓ (matches the user's formula)
+
+Normalizable ⟺ ∃{ψ_q} and Φ with Φ'_{a,b} = Φ for all (a,b). ✓
+
+Necessary condition: for (a,b),(a',b') with F_0(a,b) = F_0(a',b') = q:
+Φ'_{a,b} = Φ = Φ'_{a',b'}, so ψ_q Φ_{a,b} (ψ_a⁻¹×ψ_b⁻¹) = ψ_q Φ_{a',b'} (ψ_{a'}⁻¹×ψ_{b'}⁻¹)
+⟹ Φ_{a,b} (ψ_a⁻¹×ψ_b⁻¹) = Φ_{a',b'} (ψ_{a'}⁻¹×ψ_{b'}⁻¹)
+Set u = ψ_a x, v = ψ_b y: Φ_{a,b}(x,y) = Φ_{a',b'}(ψ_{a'}⁻¹ψ_a x, ψ_{b'}⁻¹ψ_b y)
+⟹ **Φ_{a,b} = Φ_{a',b'} ∘ (α × β)** with α = ψ_{a'}⁻¹ψ_a, β = ψ_{b'}⁻¹ψ_b ✓
+
+And consistency: α depends on (a,a') only; β on (b,b') only. Plus α,β come from a single {ψ_q}: ψ_{a'}⁻¹ψ_a — so for fixed a,a', α is determined; and the map (a,a') ↦ α must factor as ψ_{a'}⁻¹ψ_a, which means the "cocycle" {ψ_q⁻¹ψ_{q'}} is consistent. ✓
+
+**So: M_{a,a';b,b'} := {(α,β) ∈ Sym(D)² : Φ_{a,b} = Φ_{a',b'} ∘ (α×β)} must be non-empty whenever F_0(a,b) = F_0(a',b').** ✓
+
+And a stronger, cleaner special case: if a = a' then α must be id... hmm, α = ψ_{a'}⁻¹ψ_a = ψ_a⁻¹ψ_a = id. So for a = a', α = id. And β = ψ_{b'}⁻¹ψ_b. So: Φ_{a,b} = Φ_{a,b'} ∘ (id × β) — i.e., **reindexing the second argument**. ✓
+
+So: **for a = a' (so α = id): Φ_{a,b} = Φ_{a,b'} ∘ (id × β)**. This means: for fixed a, the maps Φ_{a,b} and Φ_{a,b'} differ only by a reparametrization of the SECOND argument. That's a clean necessary condition!
+
+Similarly for b = b': β = id, so Φ_{a,b} = Φ_{a',b} ∘ (α × id).
+
+And for a≠a' and b≠b': both.
+
+**These are clean and checkable.** Let me use the a=a' case as the main invariant since it's simplest.
+
+Hmm, let me double check with my example. Take a = 0, and b,b' with F_0(0,b) = F_0(0,b'). F_0(0,b) = 0⊕b = b. So F_0(0,b) = F_0(0,b') ⟹ b = b'. So no distinct pair. Hmm. 
+
+Take a = 1: F_0(1,b) = 1⊕b. Distinct b give distinct outputs. So no.
+
+Hmm. So the a=a' condition is vacuous for F_0 = ⊕. Let me use a≠a', b≠b'.
+F_0(0,0) = 0 = F_0(1,1). So (a,b) = (0,0), (a',b') = (1,1). Then α = ψ_1⁻¹ψ_0 = γ, β = ψ_1⁻¹ψ_0 = γ. So need Φ_{00} = Φ_{11} ∘ (γ × γ). ✓ Matches my earlier (I).
+
+And F_0(0,1) = 1 = F_0(1,0). So (0,1),(1,0): α = ψ_1⁻¹ψ_0 = γ, β = ψ_0⁻¹ψ_1 = γ⁻¹. So Φ_{01} = Φ_{10} ∘ (γ × γ⁻¹). ✓ Matches (II).
+
+Great, consistent.
+
+So the **invariant**: the existence of γ ∈ Sym(D) satisfying these. In the counterexample: Φ_{00} = 2C, Φ_{11} = 2C+1 → need 2C = (2C+1)∘(γ×γ), i.e., 2C(x,y) = 2C(γx,γy)+1, even = odd. **Impossible.** ✓
+
+**Invariant statement**: define the "monodromy set" 
+Mon := { γ ∈ Sym(D) : Φ_{00} = Φ_{11} ∘ (γ×γ) and Φ_{01} = Φ_{10} ∘ (γ×γ⁻¹) }
+Then Mon ≠ ∅ is necessary for normalizability. And Mon is a gauge-invariant up to conjugacy. ✓
+
+And a simpler-to-state invariant: **im(Φ_{a,b}) must be "the same up to a single bijection" for all (a,b) with the same F_0-output.** In the example: im(Φ_{00}) = 2N, im(Φ_{11}) = 2N+1 — disjoint, so no single bijection maps both to the same set. ✓
+
+Let me use both: the image condition as the "easy invariant", and Mon as the "precise invariant".
+
+OK. Now let me write everything up.
+
+One more thing for the final question: "Address 是否可以严格定义为 State-indexed computation space？"
+
+**Answer**: YES — and the strict mathematical name is:
+
+> **一个以粗层 Q 为底、纤维为 {D_q}、结构群为 G = Π_q Sym(D_q) 的纤维丛，配上一个 G-等变的"底点相关二元运算" Φ。**
+
+- "pairing + 独立标签" = **平凡丛**（存在整体平凡化 ⟹ 全局坐标使 Φ 常数）
+- 不可消除的 Φ_{a,b} = **非平凡丛**，其障碍是**单值性（monodromy）**，即绕基空间"环"一周后纤维上的置换 γ
+- 环从哪来？**从 F_0 的非单射性来**（`F_0(a,b) = F_0(a',b')` 给出一个"环"）
+
+**诚实声明**：这不是新理论。这就是**纤维丛 + 规范等价 + 单值性障碍**的标准框架。所以正确的说法是：
+
+> **分层地址代数的正确范畴是"带 G-结构的纤维丛 + 底点相关运算"。所谓"粗层控制细层"的不可消除性，就是丛的非平凡性（monodromy ≠ 平凡）。**
+
+**而这个框架给出了一个此前没有的、可操作的结果**：把"是否存在不可消除依赖"化归为一个**单值性方程是否有解**的问题，因而是**可计算的**（见 E）。
+
+Good. Let me write it all.
+
+Let me write the widget then the response.
+
+Now write the text response. This is the key deliverable. Let me write it carefully.
+
+Structure:
+0. 直接回答
+1. A: 等价/共轭定义
+2. 规范化的充要条件（推导）
+3. B: 最小反例
+4. C: 不变量
+5. D: 定理
+6. E: 可计算验证方案
+7. 最终问题：State-indexed computation space
+8. 诚实声明
+
+Let me write.
+不写代码。直接给结论：**依赖不总是坐标伪象。它是否可消除，等价于一个"单值性方程"是否有解——因此这是一个可判定的问题。**
+
+---
+
+## 0. 先把问题写成方程
+
+设粗层 `Q = A_0`，纤维 `D_q := π_0⁻¹(q)`，并设各纤维都同构于一个公共 `D`（否则集合层面就没有乘积分解，问题更早失败）。
+
+```
+A = ⊔_{q∈Q} D_q
+F( (a,u), (b,v) ) = ( F_0(a,b),  Φ_{a,b}(u,v) )
+```
+
+`F` 单射 ⟹ 每个 `Φ_{a,b}` 单射（固定 `(a,b)` 时，`(u,v) ≠ (u',v')` ⟹ 输入对不同 ⟹ 输出不同）。✓
+
+你的变换：`u' = ψ_a(u)`，`ψ_a ∈ Sym(D_a)`。代入后：
+
+```
+Φ'_{a,b}  =  ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ ( ψ_a⁻¹ × ψ_b⁻¹ )
+```
+
+**规范化问题**：是否存在 `{ψ_q}` 与一个统一的 `Φ`，使 `Φ'_{a,b} = Φ` 对一切 `(a,b)` 成立？
+
+---
+
+## A · 严格的等价 / 共轭定义
+
+**定义（规范群）** `G := Π_{q∈Q} Sym(D_q)`，元素 `ψ = (ψ_q)`。
+**定义（规范作用）** `(ψ · Φ)_{a,b} := ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a⁻¹ × ψ_b⁻¹)`。
+
+**定义（规范等价）** 两个族 `{Φ_{a,b}}` 与 `{Φ'_{a,b}}` 规范等价，当且仅当 `∃ψ ∈ G` 使 `Φ' = ψ · Φ`。
+
+**定义（可规范化 / 平凡丛）** `{Φ_{a,b}}` 可规范化，当且仅当存在 `Φ`（与 `(a,b)` 无关）使 `{Φ_{a,b}}` 与常数族 `{Φ}` 规范等价。等价地：
+
+```
+∃ {ψ_q} ,  ∃ Φ :    Φ_{a,b}  =  ψ_{F_0(a,b)}⁻¹ ∘ Φ ∘ ( ψ_a × ψ_b )       (★)
+```
+
+**(★) 正是"pairing + 独立标签"的精确形式**，也正是上一轮那条"结构保持同构"的定义。**所以本轮的问题 = 上一轮的问题的规范化版本。**
+
+**关键：`G` 是共轭作用，"可规范化"就是"轨道里含有常数族"。**
+
+---
+
+## 规范化的充要条件（推导，这是本轮的核心）
+
+**(★) 的坐标形式**：把 `(★)` 写成对 `Φ_{a,b}` 的约束。
+
+取 `(a,b), (a',b')` 满足 `F_0(a,b) = F_0(a',b') = q`。由 `(★)`：
+
+```
+Φ_{a,b}  = ψ_q⁻¹ ∘ Φ ∘ (ψ_a × ψ_b)
+Φ_{a',b'} = ψ_q⁻¹ ∘ Φ ∘ (ψ_{a'} × ψ_{b'})
+```
+
+消去 `ψ_q` 与 `Φ`：
+
+> **Φ_{a,b}  =  Φ_{a',b'}  ∘  ( α × β ) ,   其中  α = ψ_{a'}⁻¹ψ_a ,  β = ψ_{b'}⁻¹ψ_b**
+
+**这就是规范化的必要条件，而且它是可逐对检验的。**
+
+再补上**一致性**：`α` 只依赖 `(a,a')`，`β` 只依赖 `(b,b')`，且它们必须由**同一个** `{ψ_q}` 导出，即
+
+```
+(a,a') ↦ α = ψ_{a'}⁻¹ ψ_a        满足 cocycle 条件：  γ(a,a'') = γ(a',a'') ∘ γ(a,a')
+```
+
+**所以：可规范化 ⟺ 存在 cocycle `γ(a,a') = ψ_{a'}⁻¹ψ_a` 与 `Φ` 使 (★) 成立。**
+
+---
+
+## B · 最小不可消除反例
+
+取最简情形：`Q = Z/2`（2 个粗状态），`F_0 = ⊕`，纤维 `D = N`。
+
+**注意 `F_0` 非单射在基空间产生的"环"：**
+
+```
+F_0⁻¹(0) = { (0,0) , (1,1) }        ← 两条路都回到 0
+F_0⁻¹(1) = { (0,1) , (1,0) }
+```
+
+**定义**
+
+```
+Φ_{00}(u,v) = 2·Cantor(u,v)          （像 = 偶数 2N）
+Φ_{11}(u,v) = 2·Cantor(u,v) + 1      （像 = 奇数 2N+1）
+Φ_{01}(u,v) = 2·Cantor(u,v)
+Φ_{10}(u,v) = 2·Cantor(u,v) + 1
+F( (a,u),(a',u') ) = ( a ⊕ a' , Φ_{a,a'}(u,u') )
+```
+
+**单射验证**：从输出 `(c,e)` 得 `a = e mod 2`，`a' = a ⊕ c`，`Cantor(u,u') = (e−a)/2`。**全可逆** ✓
+
+**不可规范化证明**：由上面的必要条件，取 `(a,b) = (0,0)`，`(a',b') = (1,1)`（同为 `F_0` 输出 `0`），需要 `γ = ψ_1⁻¹ψ_0` 使
+
+```
+Φ_{00} = Φ_{11} ∘ (γ × γ)   ⟹   2·Cantor(x,y) = 2·Cantor(γx,γy) + 1
+```
+
+**左边恒为偶数，右边恒为奇数。永不成立。** ∎
+
+**同理由 `(0,1)` 与 `(1,0)` 得 `Φ_{01} = Φ_{10} ∘ (γ × γ⁻¹)`，同样失败。**
+
+**所以：`{ψ_q}` 取遍整个规范群也消除不掉依赖。它不是坐标伪象。**
+
+---
+
+## C · 不变量
+
+**不变量 1（最易用）：像的"可同时对齐性"**
+
+对每个 `q ∈ Q`，集合族 `{ im(Φ_{a,b}) : F_0(a,b) = q }` 必须能被**同一个双射** `ψ_q` 映到同一个集合上。
+
+> **可规范化的必要条件**：对 `F_0(a,b) = F_0(a',b') = q`，必须有 `im(Φ_{a,b}) = im(Φ_{a',b'})`。
+
+**证明**：规范化后 `im(Φ'_{a,b}) = im(Φ)` 对一切 `(a,b)` 成立，而 `im(Φ'_{a,b}) = ψ_q(im Φ_{a,b})`。故 `ψ_q(im Φ_{a,b}) = ψ_q(im Φ_{a',b'})`，由 `ψ_q` 双射得相等。∎
+
+**反例中**：`im Φ_{00} = 2N`，`im Φ_{11} = 2N+1`，**不相等（且不交）** ⟹ 不可规范化。
+
+**不变量 2（精确形式）：单值性集合**
+
+```
+Mon  :=  { γ ∈ Sym(D) :  Φ_{00} = Φ_{11} ∘ (γ × γ)  且  Φ_{01} = Φ_{10} ∘ (γ × γ⁻¹) }
+```
+
+**`Mon ≠ ∅` 是可规范化的必要条件；`Mon` 的共轭类在规范群作用下不变。**
+
+**这就是单值性（monodromy）**：`γ = ψ_1⁻¹ψ_0` 是绕基空间中"环"（`0 → 0`，经由 `(0,0)` 或 `(1,1)`）一周后纤维上产生的置换。**规范化的失败就是"绕环无法回到原位"。**
+
+---
+
+## D · 定理
+
+> **定理（规范化的判别与障碍）**
+>
+> 设 `A = ⊔_{q∈Q} D_q`，`F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v))`，`F` 单射。
+>
+> **(i)（判别）** `{Φ_{a,b}}` 可规范化为常数 `Φ` ⟺ 方程组
+> ```
+> Φ_{a,b} = ψ_{F_0(a,b)}⁻¹ ∘ Φ ∘ (ψ_a × ψ_b)        对一切 (a,b)
+> ```
+> 有解 `({ψ_q}, Φ)`。这等价于：`{Φ_{a,b}}` 的 `G`-轨道含有常数族。
+>
+> **(ii)（必要条件，逐对可检验）** 对任意 `F_0(a,b) = F_0(a',b')`，必须存在 `α,β ∈ Sym(D)` 使
+> ```
+> Φ_{a,b} = Φ_{a',b'} ∘ (α × β)
+> ```
+> 且 `α` 只依赖 `(a,a')`、`β` 只依赖 `(b,b')`，并由同一个 cocycle `γ(a,a') = ψ_{a'}⁻¹ψ_a` 导出。
+>
+> **(iii)（充分条件，特殊情形）** 若所有 `Φ_{a,b}` 相等，则取 `ψ_q = id` 即得规范化（平凡丛）。
+>
+> **(iv)（通例性）** 若 `Q` 有限、`|Q| ≥ 2`，则 `F_0` 必非单射，基空间**必有环**。因此**每个**分层地址代数都携带一个单值性障碍；它是平凡丛当且仅当该障碍可被杀死。
+>
+> **证明**：(i)(ii) 见上文推导；(iii) 直接代入；(iv) `|Q|² > |Q|` ⟹ `F_0` 非单射 ⟹ 存在 `(a,b) ≠ (a',b')` 同像 ⟹ 这是基空间中的一个环。∎
+
+**注意 (iv) 与上一轮那条定理的关系**：上一轮说"`|Q| ≥ 2` 有限时，`Φ` 不能与标签无关"——**那其实就是 (iv) 在"所有环都不可杀"时的特例**。本轮的定理更精确：**关键不在于 `|Q|` 的大小，而在于单值性障碍能否被杀死。**
+
+---
+
+## E · 可计算验证方案
+
+**输入**：`Q`、`F_0`、`{Φ_{a,b}}`（都可有限表示，若 `D` 有限或可用有限模型代替）。
+
+| 步骤 | 动作 | 输出 |
+|---|---|---|
+| 1 | 枚举 `F_0` 的纤维，列出所有"环"：`(a,b) ≠ (a',b')` 且 `F_0(a,b) = F_0(a',b')` | 环的集合 |
+| 2 | **不变量 1 检验**：对每个环，比较 `im(Φ_{a,b})` 与 `im(Φ_{a',b'})` | 若不等 ⟹ **立即判定不可规范化** |
+| 3 | **单值性方程检验**：对每个环，求 `Mon` 是否有解（对有限 `D` 可枚举 `Sym(D)`；对 `D = N` 可用不变量如"像的密度/模性质"判定） | `Mon = ∅` ⟹ 不可规范化 |
+| 4 | **正向对照**：把 `{Φ_{a,b}}` 替换为常数族，重跑 2–3 | 必须通过（`γ = id`） |
+| 5 | 若 2–3 全部通过，再解方程组 (★)（对有限 `D` 可用约束求解） | 有解 ⟹ 可规范化，并输出 `{ψ_q}` |
+
+**最小验证实例**：上面的 `Q = Z/2` 反例。
+- 步骤 2：`im Φ_{00} = 2N` vs `im Φ_{11} = 2N+1` → **不等** → 不可规范化。**一步就能判定。**
+- 正向对照：取 `Φ_{a,b} ≡ 2C` → 通过。
+
+**所以"依赖是否可消除"是一个有有限证书的判定问题**：正向证书是 `{ψ_q}`，负向证书是一个失败的环（及 `Mon = ∅`）。
+
+---
+
+## 最终问题：Address 是否可以严格定义为 State-indexed computation space？
+
+**可以。而且它有准确的数学名字。**
+
+| 你的说法 | 标准数学对象 |
+|---|---|
+| 粗层 `Q` | **底空间（base）** |
+| 纤维 `D_q` | **纤维（fiber）** |
+| 规范群 `G = Π_q Sym(D_q)` | **结构群** |
+| `{ψ_q}` | **规范变换 / 局部平凡化** |
+| `{Φ_{a,b}}` 依赖 `(a,b)` | **底点相关的运算 = 规范场（gauge field）** |
+| 可规范化 | **丛可整体平凡化** |
+| 不可规范化 | **非平凡丛** |
+| `Mon` | **单值性（monodromy）/ 和乐** |
+
+所以严格的表述是：
+
+> **Address 的正确范畴是"以粗层为底、以 `{D_q}` 为纤维、带 `G`-等变二元运算的纤维丛"。**
+> **"pairing + 独立标签"恰好是其中的平凡丛。**
+> **"粗层控制细层"不可消除，就是丛的非平凡性。**
+
+**而这个框架给出一个此前没有的东西**：把"是否存在不可消除依赖"**化归为单值性方程是否有解**，因此它**可判定**、有**有限证书**。
+
+---
+
+## 诚实声明（按你的要求）
+
+**这不是新理论。** 它就是**纤维丛 + 规范等价 + 单值性障碍**的标准框架，只是被应用到了"地址空间"这个具体对象上。所以正确的说法不是"发现了 State-indexed computation space"，而是：
+
+> **"分层地址代数"的自然范畴是"带结构群的纤维丛 + 底点相关运算"。**
+> **它相对于"pairing + 独立标签"的确切位置是：前者是后者的"扭曲版本"，扭曲量由单值性 `Mon` 度量。**
+
+**目前唯一可能构成贡献的东西**，是这条具体的对应关系本身：**"地址的粗层控制细层" ⟺ "纤维丛的非平凡性"**，以及由此得到的**可判定判别式**（D 的 (i)(ii) + E 的步骤 2/3）。这是一个**定义性的对应**，而不是一条新定理——要成为定理，需要证明的是"某个具体的地址系统确实对应一个非平凡丛，且该非平凡性有可观测的后果"。**这一步目前还没有做
