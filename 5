@@ -1,0 +1,1214 @@
+这一轮我不碰 complexity、succinct DS、pointer model。只研究 (A, F, Π, {F_i}, coherence) 作为 enriched algebraic structure。先给判据图。
+The user is right to call out that I substituted the question. Let me carefully work through the real mathematical question.
+
+The enriched structure: M = (A, F, Π, {F_i}, coherence) with
+π_i ∘ F = F_i ∘ (π_i × π_i)
+
+Question: is this just a renaming of some existing Σ-algebra, or genuinely richer?
+
+Let me think hard about the mathematics.
+
+## The core question
+
+Given (A, F) a Σ-algebra (F is the composition, i.e., for each constructor c ∈ Σ of arity n, we have F_c: A^n → A). Plus Π = {π_i: A → A_i} projections, plus F_i operations on the A_i, with
+
+π_i(F_c(x_1,...,x_n)) = F_{i,c}(π_i(x_1),...,π_i(x_n))
+
+This says: **each π_i is a Σ-algebra homomorphism** from (A, {F_c}) to (A_i, {F_{i,c}}).
+
+So the enriched structure is: **a Σ-algebra A together with a family of Σ-algebra homomorphisms π_i: A → A_i.**
+
+Now — is this new? Let's think.
+
+**This is precisely a Σ-algebra in the slice / a family of homomorphisms out of A.** Equivalently: **a Σ-algebra A with a family of quotients.**
+
+Actually more precisely: it's a **Σ-algebra A together with a set of Σ-congruences** (each π_i induces a congruence ker π_i), OR a Σ-algebra with a family of homomorphic images.
+
+Hmm — so the first thing to note: **π_i being a homomorphism is equivalent to ker π_i being a Σ-congruence.** So the enriched structure = (A, {~_i}) where each ~_i is a Σ-congruence.
+
+That's completely standard: **a Σ-algebra with a family of congruences.** This is standard universal algebra. Nothing new.
+
+BUT — wait. There's a subtlety. Is π_i: A → A_i required to be a homomorphism, or is the coherence law a *constraint* on F? Let me re-read.
+
+The user says: M = (A, F, Π, {F_i}, coherence), π_i ∘ F = F_i ∘ (π_i × π_i).
+
+If F_i are *given* and the law must hold, then π_i is a homomorphism. If F_i are *defined by* F_i := π_i ∘ F ∘ (s_i × s_i) for sections s_i, then it's different.
+
+Let me consider both readings:
+(a) π_i homomorphism (F_i given or defined): standard.
+(b) F_i defined via sections: then F_i = π_i ∘ F ∘ (s_i × s_i), and the coherence law becomes a *constraint on F* — this is stronger.
+
+Hmm. Let me think about (b). If s_i: A_i → A is a section of π_i (π_i ∘ s_i = id), and F_i := π_i ∘ F ∘ (s_i × s_i), then the law π_i ∘ F = F_i ∘ (π_i × π_i) becomes
+
+π_i(F(x,y)) = π_i(F(s_i π_i x, s_i π_i y))
+
+which is a *constraint* saying F only depends on x,y through their π_i-images, for each i. That's much stronger — it would say π_i ∘ F factors through π_i × π_i, i.e., **F respects each congruence**. Which is exactly the homomorphism condition again.
+
+Hmm, so it's the same. OK so reading (a) and (b) converge: **the coherence law = π_i is a Σ-homomorphism.**
+
+So: **the enriched structure M = (A, F, Π, {F_i}, coherence) is exactly: a Σ-algebra A with a family of Σ-homomorphisms π_i (equivalently, a family of Σ-congruences).**
+
+**Is that standard? YES — completely.** It's "a Σ-algebra with a family of congruences". In categorical terms: a Σ-algebra in the category of sets with a family of quotients. Or: a **filtered algebra** if the family is a chain. Or: a **graded algebra**. Or: the object part of a **Σ-algebra in a slice category**.
+
+Hmm. But wait — there's a much more interesting reading. Let me look at the user's part 三 more carefully.
+
+The user asks: given M_1 = (A_1, F_1, Π_1, {F_{1i}}) and M_2 = (A_2, F_2, Π_2, {F_{2i}}), what does M_1 ≅ M_2 mean as *enriched* structure? Must preserve F, all π_i, all F_i, resolution maps, coherence laws.
+
+So: an enriched isomorphism is a Σ-algebra isomorphism h: A_1 → A_2 such that h(ker π_{1i}) = ker π_{2i} for all i, i.e., **h preserves the family of congruences**.
+
+So: **M_1 ≅ M_2 iff there's a Σ-algebra isomorphism A_1 → A_2 mapping the congruence family to the congruence family.**
+
+**Key question**: are any two injective term encodings isomorphic in this enriched sense?
+
+**NO.** Here's the minimal counterexample, and it's exactly the round-7/8 object:
+
+Take A = Q × D with Q = ℤ/2, D = ℕ.
+- M_1: π_0 = first projection (a,u) ↦ a. F((a,u),(b,v)) = (a⊕b, 2·Cantor(u,v)).
+- M_2: π_0 = first projection. F'((a,u),(b,v)) = (a⊕b, 2·Cantor(u,v) + (a⊕b mod 2)). 
+
+Hmm, wait. Are these two isomorphic as enriched structures? Both have A = Q × D, both have π_0 = first projection. F and F' differ. An enriched isomorphism h: A→A with h∘π_0 = π_0∘h (preserving π_0) and h(F(x,y)) = F'(h(x),h(y)).
+
+Hmm, let me think about what's the *right* counterexample. Let me reconsider.
+
+Actually, let me think about the structure differently. The key question is: **is there an enriched structure that is NOT isomorphic to a "pairing + tag" enriched structure?**
+
+"Pairing + tag" enriched structure: A = P × T, π_T: A → T the tag projection, F((p,t),(q,s)) = (π(p,q), g(t,s)) for some tag operation g.
+
+Hmm. Let me think about what invariants exist.
+
+**Invariant 1: the congruence lattice / the kernel family.**
+ker π_i is a Σ-congruence. The family {ker π_i} is preserved by enriched isomorphism.
+
+**Invariant 2: the quotient algebras A/ker π_i.**
+
+**Invariant 3: the "interaction between fibers and F".** This is the key one. Given π: A → Q, the fibers A_q = π^{-1}(q). F induces maps F_{a,b}: A_a × A_b → A_{F_0(a,b)} where F_0 = the induced operation on Q (which exists because π is a homomorphism: π(F(x,y)) = F_0(πx,πy)).
+
+So: **the fiber-wise operation Φ_{a,b} := F|_{A_a × A_b}** — this is the round-7/8 object.
+
+**Invariant 4**: whether Φ_{a,b} is "constant in (a,b)" up to fiber reparametrization. That's the round-8 gauge question.
+
+Hmm. So what's the honest answer?
+
+Let me think about whether the enriched structure is "just a Σ-algebra with congruences" and hence standard.
+
+**Claim**: M = (A, F, Π, {F_i}, coherence) where coherence says π_i is a homomorphism. This is **exactly** the data of:
+- a Σ-algebra A
+- a family {~_i} of Σ-congruences on A
+
+And that's standard universal algebra. So **the enriched structure is standard**.
+
+BUT — and here's the crucial point the user is pushing toward — **the interesting content is not the congruences, it's the fibers and how F acts across fibers.**
+
+Let me formalize. Given π: A → Q (a homomorphism to a smaller algebra Q), we get:
+- The **fiber bundle** structure: A = ⨆_{q∈Q} A_q (disjoint union of fibers).
+- F restricts to F_{a,b}: A_a × A_b → A_{F_0(a,b)}.
+
+So the enriched structure = **(Q, F_0, {A_q}, {F_{a,b}})**.
+
+Now: is THIS standard? 
+
+This is: **a "family of algebras indexed by a base algebra with a compatible operation"**. Hmm.
+
+Key: if all fibers are isomorphic and the F_{a,b} are "constant" up to transport, then A ≅ Q × D and F = (F_0, Φ) with Φ independent of (a,b) — i.e., A is a **direct product** Q × D with the product operation. That's the "pairing + tag" case!
+
+If not, A is a **non-trivial "twisted" family**. And that's... hmm.
+
+Let me think about what this is called. It's an algebra A with a homomorphism π: A → Q. This is exactly a **Σ-algebra in the slice category Σ-Alg/Q**, i.e., an object of the slice category. Equivalently: **an extension of Q by the fibers**.
+
+Hmm. In universal algebra, "A with a homomorphism onto Q" is just... a homomorphic image relation. And the fibers are the congruence classes.
+
+So: **M = (A, F, π: A ↠ Q) is nothing more than a Σ-algebra homomorphism.** Standard.
+
+But the user wants to know if it's "genuinely richer". Let me think about the right framing.
+
+**I think the honest answer is:**
+
+The enriched structure, as *stated* (coherence = π_i is a homomorphism), is **exactly a Σ-algebra with a family of Σ-congruences** — standard universal algebra, completely covered.
+
+**BUT** there is one thing that is NOT covered, and it's the thing the user has been circling: **the coherence law as stated is a *commutative square*, and it forces π_i to be a homomorphism. But the user's actual structure in part 八 is F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)) — where Φ depends on (a,b). In that structure, is π_0 = "first projection" a homomorphism?** Yes: π_0(F(x,y)) = F_0(π_0 x, π_0 y). ✓ So it IS a homomorphism.
+
+So the Φ-dependence is *allowed* by the homomorphism condition. It's not extra structure — it's just the residual freedom after fixing π_0.
+
+**Hmm, so is there anything?** Let me think harder.
+
+OK here's a thought. Let me think about the **category-theoretic** framing, which might reveal something.
+
+The structure: A is a Σ-algebra, Π = {π_i: A → A_i} a family of homomorphisms. This is:
+- An object in the **slice category** Σ-Alg/(A_i)_{i∈I}... 
+- Or: a **cone** over the diagram {A_i}.
+- Or: **A is a Σ-algebra in the category of "I-indexed sets"**? No.
+
+Hmm. Actually — a cleaner framing: Π being a family of homomorphisms means A is a Σ-algebra **in the category of Π-algebras**? No.
+
+Let me try: **the data (A, {π_i}) where π_i are homomorphisms is exactly a Σ-algebra A equipped with a "presentation" by the A_i.**
+
+**Better framing**: This is precisely the notion of **"A is a subdirect product of the A_i"** if the π_i jointly separate (i.e., ⋂ ker π_i = Δ). Subdirect products are a **completely classical** universal algebra topic (Birkhoff's subdirect representation theorem).
+
+**So: if Π separates A, then A is a subdirect product of the A_i.** And subdirect products are standard. Birkhoff's theorem: every algebra is a subdirect product of subdirectly irreducibles.
+
+**So the enriched structure = a subdirect product representation of A.** Standard.
+
+Hmm. So the answer seems to be: **A. 完全已有理论覆盖.**
+
+But wait. Let me look for the gap more carefully. Let me consider the user's part 六:
+
+"Address 是否可以同时作为一个 algebra carrier 和一个 structured interface" — 即同一个对象 A 既是 F 的代数载体，又提供 π_1, π_2, ...，并要求这些 projection 本身与 F 相容。
+
+The user asks: is this just
+1. many-sorted algebra
+2. algebra with distinguished operations
+3. algebra with homomorphisms
+4. indexed algebra
+5. coalgebraic structure
+6. comodel / observer structure
+7. something else
+
+**My answer: it's (3) — algebra with homomorphisms — equivalently, an algebra with a family of congruences, equivalently a subdirect product presentation.** Standard.
+
+BUT — here's where I should be careful and honest — there IS a genuinely different reading that is NOT covered, and I should identify it precisely.
+
+**The different reading**: What if the projections π_i are not required to be homomorphisms to *smaller* algebras, but rather the structure is that **A's elements ARE the tuples**, i.e., A ⊆ Π_i A_i with F defined componentwise-plus-correction?
+
+Hmm, that's the same thing.
+
+**Another reading**: what if the coherence is required for *all* i simultaneously and the family is *infinite / self-similar*? Then A is a subdirect product of infinitely many A_i. Still standard.
+
+**Another**: what if the A_i are themselves required to be quotients of A AND the π_i are required to be *retractions* (i.e., there are sections s_i)? Then A ≅ A_i × ker... no, that's the split case.
+
+Hmm.
+
+OK, let me try a genuinely different angle. Let me look for what's NOT in universal algebra.
+
+**Universal algebra** studies: signature, operations, identities, congruences, subdirect products, varieties (HSP).
+
+**What is NOT in universal algebra**: 
+- The *fiber-wise* structure as an indexed family with *transport*. I.e., the fact that F_{a,b}: A_a × A_b → A_{F_0(a,b)} is an *indexed family of operations* whose *indexing* is controlled by F_0.
+
+Hmm, but this IS in universal algebra: it's just the restriction of F to congruence classes.
+
+**What might genuinely be extra**: the user's part 十 asks for invariants: "state-dependent operation orbit", "splitting/non-splitting", "higher-order composition identities".
+
+Hmm, "splitting/non-splitting" — this is standard (extension theory).
+
+Let me reconsider. Let me think about whether there's a genuine gap.
+
+**KEY INSIGHT ATTEMPT**: The user's structure has F injective. In universal algebra, injections matter for *embeddings*, but the standard theory is about homomorphisms and congruences. An injective F means F is an embedding A×A ↪ A... no, F: A×A → A injective means A×A embeds into A.
+
+Hmm! **F: A×A → A injective means A × A ↪ A as a set.** And A × A is itself a Σ-algebra? Not naturally.
+
+But: **A × A carries a natural Σ-algebra structure** (componentwise: F_c^{A×A}((x1,y1),...,(xn,yn)) = (F_c(x1..xn), F_c(y1..yn))). And F: A×A → A. Is F a homomorphism from this componentwise structure? 
+
+F(F_c^{A×A}(...)) vs F_c^A(F(...),...). Not necessarily.
+
+Hmm. But if F were a homomorphism A×A → A (w.r.t. the componentwise structure on A×A and the structure on A), then F would be a **binary operation on A that is a Σ-algebra homomorphism** — that's a "distributive law" / "medial" condition. Interesting but probably not what we want.
+
+Let me step back and think about what the honest, correct answer is.
+
+**I believe the honest answer is: A. 完全已有理论覆盖.**
+
+Reasoning:
+1. π_i ∘ F = F_i ∘ (π_i × π_i) ⟺ π_i is a Σ-algebra homomorphism ⟺ ker π_i is a Σ-congruence.
+2. So M = (A, F, Π, {F_i}) = a Σ-algebra with a family of Σ-congruences (or: with a subdirect product presentation, if Π separates).
+3. Enriched isomorphism = Σ-algebra isomorphism preserving the congruence family.
+4. Two injective term encodings need NOT be enriched-isomorphic — because they can have different congruence families. **So the enriched structure is NOT a mere renaming** — but that's because the congruence family is *extra data*, not because the structure is new mathematics.
+5. The extra data is: a family of congruences. Standard object.
+
+So the structure is standard, but the *question* "is the address algebra enriched-isomorphic to a pairing+tag" is a genuine question about a specific family of congruences — and the answer can be NO (round-7 example).
+
+**So the answer is B, not A**: existing theory covers the *主体* (it's a Σ-algebra with congruences), but there's an extra structure that isn't covered by "just a Σ-algebra": **the specific congruence family / the fiber-wise operation family, and the question of whether it's "constant" (product-like) or not.**
+
+Hmm. But "a Σ-algebra with a congruence family" IS fully covered by universal algebra. So it's A?
+
+Let me be careful. The distinction:
+- "Is the *class* of objects (Σ-algebra + congruence family) covered by existing theory?" → YES, it's subdirect products / congruence lattices. **A.**
+- "Is the *specific question* (is this particular enriched structure isomorphic to a product-with-tags) answered by existing theory?" → The *method* is covered (compare congruence lattices, fibers), but the *answer* for a specific system is a computation, not a theorem.
+
+So: **A** for the class; the "remaining" is not a missing theory but a specific instance computation.
+
+Hmm, but let me look once more for a genuine gap. Let me think about the **fiber-wise operations with injectivity**.
+
+Let me reconsider. In the Φ-model: F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)), with F injective.
+
+Round 7 proved: this is NOT isomorphic (as enriched structure) to a product Q × D with tag-independent Φ.
+
+Is that a *theorem* or just a specific counterexample? Round 7's argument: if |A_k| ≥ 2 finite and fibers equinumerous, then F_k: A_k × A_k → A_k cannot be injective, so some layer's F_k is non-injective, contradiction. That's an argument about **finite quotients**.
+
+So: **Theorem: if A has a finite nontrivial quotient Q (|Q| ≥ 2) and F is injective, then F does NOT factor as (F_0, Φ) with Φ independent of the Q-coordinate.**
+
+Hmm, is that right? Let me re-derive. If F(x,y) = (F_0(πx,πy), Φ(u,v)) with u = fiber coord, and F injective... For F injective we need: (πx, πy, u, v) ↦ (F_0(πx,πy), Φ(u,v)) injective. Given the first component F_0(πx,πy) = q, we need (u,v) ↦ Φ(u,v) injective *within that fiber*. But the fiber over q is D_q, and Φ: D × D → D... if D is the same for all q, then Φ must be injective on D × D → D_{q}, and |D_{F_0}| ≥ |D|^2. For finite D that's impossible unless |D| ≤ 1.
+
+Hmm right — so the issue is that Φ: D × D → D can't be injective for finite D. But if D is infinite (ℕ), |D|² = |D| ✓, so Φ = Cantor works and is injective. So F((a,u),(b,v)) = (a⊕b, Cantor(u,v)) IS injective! And here Φ is independent of (a,b). So this IS a product!
+
+Wait — so round 7's claim was about a *different* thing. Let me recheck. Round 7's claim: **"there is no structure-preserving isomorphism A ≅ Q × D with Φ independent of tags"** — but I just constructed one: A = ℤ/2 × ℕ, F((a,u),(b,v)) = (a⊕b, Cantor(u,v)). That IS a product with tag-independent Φ. So round 7's "non-split" must be about something else.
+
+Ah — I think round 7's object was: **the coarse layer F_0 is FINITE and the fine layer is also finite**, i.e., all layers finite. Then |A_k|² > |A_k| forces non-injectivity. Right: round 7 said "若某层 A_k 有限、|A_k| ≥ 2、各纤维等势". So: **if the base Q is finite and the fiber D is finite**, then no injective F. If D is infinite, it works.
+
+So: round 7's non-splitness requires **finite fibers**. And with infinite fibers, you get a genuine product.
+
+Hmm. So the "non-split" phenomenon is: finite base + finite fiber + injective F ⟹ impossible. Which is just the pigeonhole again.
+
+OK so let me now think very carefully about whether there's ANY enriched structure not isomorphic to pairing+tag.
+
+**Setup**: M = (A, F, π: A ↠ Q) with F injective, π a homomorphism, F_0 = induced op on Q.
+**Claim to test**: is M always isomorphic (as enriched structure) to (Q' × D, (F_0', Φ), π'=first projection)?
+
+An enriched isomorphism must preserve π (i.e., h(ker π) = ker π'). So h must map fibers to fibers.
+
+If all fibers A_q are equinumerous (|A_q| = |D| for all q) and we can choose bijections ψ_q: A_q → D, then h = (π, (ψ_q)_q) is a bijection A → Q × D preserving π. Then F' = h ∘ F ∘ (h^{-1} × h^{-1}) is the transported operation, and it has the form (F_0, Φ_{a,b}) where Φ_{a,b} = ψ_{F_0(a,b)} ∘ F|_{A_a×A_b} ∘ (ψ_a^{-1} × ψ_b^{-1}).
+
+So: **any such M is isomorphic (as enriched structure) to (Q × D, (F_0, Φ_{a,b}), first projection) where Φ_{a,b} may depend on (a,b).**
+
+So the question becomes: **can we choose the ψ_q so that Φ_{a,b} is independent of (a,b)?** That's round 8's gauge question. And round 8 found: NO in general (the parity example).
+
+**So: the enriched structure is NOT always isomorphic to a pairing+tag (product with tag-independent Φ).** And the obstruction is an invariant.
+
+**Now — is this new mathematics?** The obstruction is: the family {Φ_{a,b}} is a "cocycle" and non-triviality is measured by... hmm. But without associativity, no cohomology.
+
+Let me think about the right invariant in the *pure* enriched-algebra setting (no associativity, just injective F and π homomorphism).
+
+**Invariant candidate**: Consider the fibers A_q. F induces, for each pair (a,b) with F_0(a,b) = c, a map Φ_{a,b}: A_a × A_b → A_c. Under an enriched isomorphism (which preserves π), the fibers are permuted only within themselves (h maps A_a to A_a if we fix the base... no, h can map A_a to A_{h_0(a)} where h_0 is induced on Q).
+
+Hmm. Let me simplify by fixing the base: consider enriched isomorphisms that are the identity on Q.
+
+Then: the invariant is the **multiset of "fiber operations" {Φ_{a,b}} up to fiber reparametrization**. And the question "is it product-like" = "is there a simultaneous trivialization".
+
+**Now: is "family of operations indexed by a base, up to simultaneous trivialization" a standard object?** 
+
+YES — this is precisely the theory of **"algebras over a base" / "indexed algebras" / and in the group case, extension theory**. And more generally: it's the theory of **"structured families"** or **"the category of algebras in a slice"**.
+
+Hmm. But without associativity, the classical extension theory doesn't apply.
+
+**So here's my honest read:**
+
+The enriched structure (A, F, π, F_0, coherence) is:
+- **As a class of objects**: a Σ-algebra with a Σ-homomorphism (equivalently a Σ-congruence). **Fully standard.**
+- **The specific question "is it isomorphic to a product with tag-independent operation?"**: this is the question of whether the homomorphism π **splits** in the enriched sense. For **groups**, this is completely classified (Schreier theory / H²). For **arbitrary Σ-algebras without associativity**, there is **no general classification theory** — this is a genuine gap.
+
+**So the answer is B**: existing theory covers the object (Σ-algebra with congruence), but the *splitting question* for non-associative injective F is not covered by classical extension theory (which needs group structure).
+
+Hmm, is that a "gap" or just "the question is hard"? Let me think about whether there's a *theorem* to prove.
+
+**Candidate theorem**: For Σ-algebras with injective F and a homomorphism π onto a finite Q with |Q| ≥ 2 and finite fibers — impossible (pigeonhole, round 7). So: **non-splitness is forced when fibers are finite.**
+
+And when fibers are infinite: splitness is possible (Cantor example). So the dichotomy is: finite fibers ⟹ non-split forced; infinite fibers ⟹ can split.
+
+**And the interesting middle**: infinite fibers, but Φ_{a,b} genuinely depends on (a,b) — is that possible? Round 8's example: Q = ℤ/2, Φ_{00}(u,v) = 2C(u,v), Φ_{11} = 2C+1, etc. Is that really non-trivializable? Round 8 argued yes by parity. Let me verify.
+
+Round 8: need ψ_0, ψ_1: ℕ → ℕ with Φ_{00} = Φ_{11} ∘ (ψ_0 × ψ_0)? Hmm, let me not re-derive; the argument was: im(Φ_{00}) = 2ℕ, im(Φ_{11}) = 2ℕ+1, and these must be equal after reparametrization... Actually reparametrization can change the image! ψ_1^{-1} ∘ Φ_{11} ∘ (ψ_1 × ψ_1)... hmm, Φ'_{11} = ψ_{F_0(1,1)} ∘ Φ_{11} ∘ (ψ_1^{-1} × ψ_1^{-1}) = ψ_0 ∘ Φ_{11} ∘ (ψ_1^{-1} × ψ_1^{-1}). And we want Φ'_{11} = Φ'_{00} = ψ_0 ∘ Φ_{00} ∘ (ψ_0^{-1} × ψ_0^{-1}). So need Φ_{11} ∘ (ψ_1^{-1}×ψ_1^{-1}) = Φ_{00} ∘ (ψ_0^{-1}×ψ_0^{-1}). Set α = ψ_0^{-1}, β = ψ_1^{-1}: need Φ_{11} ∘ (β×β) = Φ_{00} ∘ (α×α). 
+
+With Φ_{00}(u,v) = 2C(u,v), Φ_{11}(u,v) = 2C(u,v)+1. Then Φ_{11}(βu,βv) = 2C(βu,βv)+1, which is always ODD. And Φ_{00}(αu,αv) = 2C(αu,αv), always EVEN. **Never equal.** ✓ So indeed non-trivializable. **And this doesn't depend on fibers being finite.** 
+
+So: **there exist enriched structures with infinite fibers that are NOT isomorphic to a product with tag-independent Φ.** ✓
+
+**So the answer is definitively: the enriched structure is genuinely richer than "pairing + tag" — but only in the sense that it carries an extra datum (the congruence/fiber-operation family) that "pairing+tag" fixes to a trivial one.**
+
+**And the honest assessment of novelty**: the *object* is standard (Σ-algebra + congruence). The *non-trivialization question* is standard in spirit (splitting). But the *specific* question — **for a Σ-algebra with injective F and a non-associative operation, classify the fiber-operation families up to simultaneous trivialization** — is NOT covered by classical theory, because:
+- Group extension theory (Schreier, H²) needs groups (associativity).
+- The pigeonhole argument shows finite fibers force non-splitness.
+- The parity argument shows infinite fibers can be non-split.
+- **There is no general classification.**
+
+**So: B.** Existing theory covers the object; the *classification of fiber-operation families for injective non-associative operations* is not covered.
+
+Hmm, but is that "a gap" or "a research area"? I should be honest: it's a question that *falls between* existing theories. It's not that nobody studied it; it's that the classical tools require structure we don't have (associativity), and the classical non-associative tools (e.g., quasigroup theory) study different questions.
+
+Hmm — wait. **Quasigroups!** Let me think. F injective on A × A → A. If |A| finite, this is impossible. If A infinite... F: A×A → A injective. This is like a "free magma" structure. Hmm.
+
+Actually, let me reconsider: **F injective A×A → A is exactly the structure of a "binary operation with no collisions"**. Such operations exist on infinite sets. They're studied as... hmm, "injective binary operations" or "Shelah's operations". Not a big theory.
+
+OK. Let me now think about the *right* framing for the answer, and whether there's a cleaner existing name.
+
+**The cleanest existing name for M = (A, F, π: A ↠ Q, F_0, coherence):**
+
+Since π is a homomorphism, M is: **an extension of the Σ-algebra Q by the family of fibers**, or equivalently **a Σ-algebra A together with a Σ-congruence**. In the special case where the congruence is the "kernel" of a specific projection and we ask about splitting: **a split/non-split extension**.
+
+**And the category-theoretic name for "A with a family of homomorphisms out of it"**: A is a **coalgebra-like** object? No. A is an object of the **slice category** Σ-Alg/Q. Objects of a slice category are morphisms into Q. So M ∈ Σ-Alg/Q. Standard.
+
+**The name for "A with a family of congruences that separate"**: **subdirect product** / **subdirect representation**. Standard (Birkhoff).
+
+OK. So I'm fairly confident: **the object is standard; the specific classification question is a gap.**
+
+Now let me think about what the user REALLY wants in part 十一: a minimal structure that is provably not isomorphic to pairing + finite tag.
+
+**Minimal example** (this is round 8's, cleaned up):
+
+- Q = ℤ/2 = {0,1}, D = ℕ.
+- A = Q × D = ℤ/2 × ℕ. |A| = ℵ₀.
+- π: A → Q, π(a,u) = a. (first projection)
+- F_0: Q × Q → Q, F_0(a,b) = a ⊕ b.
+- Φ_{a,b}(u,v) = 2·Cantor(u,v) + (a ⊕ b)   — hmm, let me use the round-8 form:
+  Φ_{00} = Φ_{01} = 2C, Φ_{10} = Φ_{11} = 2C+1.
+  
+  Wait, need F_0(a,b) to index. Let me define: Φ_{a,b}(u,v) = 2·Cantor(u,v) + (a ∨ b)? Let me just take the simplest non-trivial one.
+  
+  Simplest: **Φ_{a,b}(u,v) = 2·Cantor(u,v) + a.** Then Φ_{0,·} = 2C (even), Φ_{1,·} = 2C+1 (odd).
+  F((a,u),(b,v)) = (a⊕b, 2C(u,v) + a).
+
+  Is F injective? Given (c,w): a⊕b = c, and w = 2C(u,v) + a. From w we get a = w mod 2. Then b = a⊕c. Then C(u,v) = (w-a)/2, and Cantor is invertible → (u,v). ✓ **F injective.**
+
+- **Non-trivializable**: need α, β bijections of ℕ with Φ_{11}∘(β×β) = Φ_{00}∘(α×α), i.e., 2C(βu,βv)+1 = 2C(αu,αv). LHS odd, RHS even. **Never.** ✓
+
+  Hmm wait, need to be careful: the trivialization condition is Φ'_{a,b} = Φ (constant) where Φ'_{a,b} = ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a^{-1} × ψ_b^{-1}). For a=b=1: Φ'_{11} = ψ_0 ∘ Φ_{11} ∘ (ψ_1^{-1}×ψ_1^{-1}). For a=b=0: Φ'_{00} = ψ_0 ∘ Φ_{00} ∘ (ψ_0^{-1}×ψ_0^{-1}). Setting these equal: Φ_{11}∘(ψ_1^{-1}×ψ_1^{-1}) = Φ_{00}∘(ψ_0^{-1}×ψ_0^{-1}). With Φ_{00} = 2C, Φ_{11} = 2C+1: LHS = 2C(...)+1 odd, RHS = 2C(...) even. Never equal. ✓
+
+- **Is it isomorphic to pairing + finite tag?** "Pairing + finite tag" = A = P × T with T finite, F((p,t),(q,s)) = (π(p,q), g(t,s)). For that, we'd need Φ independent of (a,b) after reparametrization — which we just showed impossible. Also, we'd need the "tag" to be the Q-coordinate and the "pairing" to be the D-coordinate, and Φ independent of tag. **Not isomorphic.** ✓
+
+So: **M = (ℤ/2 × ℕ, F, π_0, F_0, coherence) is a minimal enriched structure NOT isomorphic to pairing + finite tag.**
+
+**Minimality**: |Q| = 2 (smallest non-trivial), D = ℕ (smallest infinite), one projection, one operation. Yes, minimal.
+
+**Now: the invariant.** What is preserved under enriched isomorphism and distinguishes M from a product?
+
+**Invariant**: For each q ∈ Q, consider the set of fiber operations {Φ_{a,b} : F_0(a,b) = q} and its "image structure". Hmm, but images can change under reparametrization.
+
+Let me find a cleaner invariant. 
+
+**Candidate invariant**: Define the **fiber-operation family up to simultaneous conjugation**:
+$$\mathcal{F} := \{\Phi_{a,b}\}_{(a,b)\in Q\times Q} \big/ \sim$$
+where (ψ_q)_q acts by Φ_{a,b} ↦ ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a^{-1}×ψ_b^{-1}).
+
+This is an **orbit under the group G = Π_q Sym(A_q)**. And the invariant is: **whether the orbit contains a constant family** (i.e., Φ_{a,b} independent of (a,b)).
+
+- If yes ⟹ M ≅ product with tag-independent Φ ⟹ "pairing + tag"-like.
+- If no ⟹ M is genuinely twisted.
+
+**This is a complete criterion for THIS question** (whether M trivializes). It's not a complete classification of M up to isomorphism, but it exactly answers "is it a product?"
+
+**So: [COMPLETE for the trivialization question], [NECESSARY ONLY for full classification].**
+
+And the parity argument gives a **decidable, finitely checkable obstruction** in the Q = ℤ/2 case.
+
+**Is this new?** It's the standard "does the family trivialize" question. For groups: H¹(Q, ...) classification. For non-associative: no general theory, but the orbit criterion is the right formulation and is a tautology-level observation.
+
+Hmm. OK. So the honest answer:
+
+**B. 已有理论覆盖主体（对象 = Σ-代数 + Σ-同余族 = subdirect product / slice object），但存在一个明确未覆盖的额外结构：injective 非结合运算下的 fiber-operation family 的"同时平凡化"分类问题。**
+
+And the next theorem:
+
+**定理**: 设 M = (A, F, π, F_0, coherence)，F 单射，π 满同态，|Q| ≥ 2。
+(i) 若所有纤维有限 ⟹ M 必不平凡化（非分裂被强制）。[由鸽笼]
+(ii) 若纤维无限，平凡化 ⟺ G-轨道含常数族；存在不可平凡化的最小例子（Q = ℤ/2, A = ℤ/2 × ℕ）。
+(iii) 平凡化判据是可判定的，其不变量是 fiber-operation family 在 G = Π_q Sym(A_q) 下的轨道是否含常数族。
+
+Hmm, this is round 8 restated. And the user said don't discuss fiber bundle / monodromy. The orbit formulation is *algebraic*, not topological — it's fine.
+
+Now, part 六: which existing theory?
+1. many-sorted algebra — no
+2. algebra with distinguished operations — **partially yes**: (A, F, π_i, F_i) is an algebra with distinguished operations, but the *coherence law* is an identity, so it's a variety... hmm, actually the coherence law π_i(F(x,y)) = F_i(π_i x, π_i y) is an identity in the 2-sorted signature. So M is a **2-sorted algebra**! (Sort A and sort Q, operations F: A²→A, F_0: Q²→Q, π: A→Q, subject to the identity.) 
+
+**YES — this is the cleanest answer to part 六**: the enriched structure is a **many-sorted (2-sorted) algebra** with the coherence law as an identity. So option 1 = **many-sorted algebra**, and it fully covers the object!
+
+Hmm. So: many-sorted algebra with the coherence identity. That's standard universal algebra. So the *object* is standard.
+
+And the *question* "is M isomorphic to a product-with-tags" is: "is M isomorphic to a 2-sorted algebra where the A-sort is the product of the Q-sort and a fiber sort, and F = (F_0, Φ) with Φ of the fiber sort only" — i.e., is π a **projection** in the sense that A ≅ Q × D and π = first projection, with F respecting the product decomposition.
+
+Hmm — so it's the question of whether the 2-sorted algebra is a **direct product** (in the 2-sorted sense) of Q and D.
+
+Hmm, more precisely: A as a 2-sorted algebra with sorts (A, Q) and π: A → Q. It's a product iff A ≅ Q × D where D is an algebra and F(x,y) = (F_0(πx,πy), F_D(dx,dy)) for some projection d: A → D.
+
+**So the question is: does the 2-sorted algebra (A,Q,π,F,F_0) admit a "direct decomposition" A ≅ Q × D?**
+
+That IS a standard question in universal algebra — **direct decompositions**! And there's theory: a direct decomposition of A corresponds to a **pair of complementary congruences** (θ, φ with θ ∩ φ = Δ and θ ∘ φ = ∇).
+
+**So: M ≅ Q × D iff there's a congruence φ on A with ker π ∩ φ = Δ and ker π ∘ φ = ∇.**
+
+That's the standard characterization of direct decompositions! **And it's a theorem.**
+
+So: **the question is completely covered by universal algebra.** The answer: M is a product iff ker π has a complement in the congruence lattice.
+
+**So the answer is A. 完全已有理论覆盖.**
+
+Hmm! Let me double check this.
+
+Direct decomposition theorem: an algebra A is isomorphic to B × C iff there exist congruences θ, φ on A such that θ ∩ φ = Δ_A, θ ∘ φ = ∇_A, and A/θ ≅ B, A/φ ≅ C.
+
+In our case: θ = ker π, B = Q. We need φ with ker π ∩ φ = Δ and ker π ∘ φ = ∇. Then A ≅ Q × (A/φ).
+
+And then F on A = Q × D: F((a,u),(b,v)) = (F_0(a,b), F_D(u,v)) — because F is a homomorphism w.r.t. the direct product decomposition (F preserves θ and φ). Hmm, F preserves θ (= ker π) by coherence. Does F preserve φ? Not automatically — F is not a homomorphism from A×A to A in the standard sense (it's the *operation*, not a homomorphism).
+
+Hmm. Careful. F is the binary operation of the algebra, not a homomorphism. So F doesn't "preserve" congruences — rather, congruences are *compatible* with F (that's what makes them congruences).
+
+Let me redo. A is a Σ-algebra. F is (the interpretation of) the operation. ker π is a congruence (compatible with F). A direct decomposition A ≅ Q × D requires: a congruence φ complementary to ker π, AND the compatibility.
+
+If A ≅ Q × D as *sets* with π = first projection, and φ = ker(second projection), then A/φ ≅ D. And F on A = Q×D. Is F necessarily of the form (F_0(a,b), F_D(u,v))? 
+
+F: (Q×D)² → Q×D. Write F((a,u),(b,v)) = (G(a,u,b,v), H(a,u,b,v)). Since ker π is a congruence: π(F(x,y)) depends only on πx, πy ⟹ G depends only on (a,b). So G = F_0(a,b). ✓ And H = Φ_{a,b}(u,v) can depend on (a,b) in general.
+
+So the direct decomposition gives G = F_0, but H = Φ_{a,b} may still depend on (a,b). **So the direct decomposition does NOT give tag-independence of Φ!**
+
+Hmm. Right — because the congruence φ = ker(second projection) is compatible with F, meaning: if (a,u) φ (a,u') and (b,v) φ (b,v') then F(a,u,b,v) φ F(a,u',b,v'). I.e., Φ_{a,b}(u,v) depends only on u,v (not on a,b) — wait, no. φ-compatibility says: (a,u) φ (a,u') means u = u'. And (b,v) φ (b,v') means v = v'. Then F(a,u,b,v) φ F(a,u',b,v') means the second components agree: Φ_{a,b}(u,v) = Φ_{a,b}(u,v') — trivially true. Hmm, that doesn't constrain a,b.
+
+Hmm, φ-compatibility for a binary operation: (x,y) φ (x',y') ⟹ F(x,y) φ F(x',y'). With φ = ker(d) where d(a,u) = u: x=(a,u), x'=(a',u), y=(b,v), y'=(b',v). Then F(x,y) = (F_0(a,b), Φ_{a,b}(u,v)), F(x',y') = (F_0(a',b'), Φ_{a',b'}(u,v)). φ-equality requires Φ_{a,b}(u,v) = Φ_{a',b'}(u,v) for all u,v. 
+
+**YES!** So φ = ker(second projection) is a congruence **iff** Φ_{a,b} is independent of (a,b)!! 
+
+**So the direct-decomposition criterion is EXACTLY the trivialization criterion.** 
+
+So: **M ≅ Q × D with tag-independent Φ ⟺ ker π admits a complementary congruence in Con(A).**
+
+**This is a standard universal algebra theorem.** So the answer is **A: 完全已有理论覆盖.**
+
+And the parity example: ker π (the Q-coordinate) has no complement in Con(A) because... the congruence lattice of that algebra doesn't contain a complement. ✓
+
+**So: the enriched structure = 2-sorted algebra; the trivialization question = existence of a complementary congruence = direct decomposition; both are standard universal algebra.**
+
+**Answer: A.**
+
+Hmm. But let me double-check the "fiber-operation family" and whether universal algebra really gives a *usable* criterion. The criterion "ker π has a complement in Con(A)" is a *complete* characterization — that's a full classification of the property. So it's covered.
+
+But: **computing Con(A) for a given A** is the hard part, and universal algebra doesn't give an algorithm. So the *question* is covered in principle but not *decidable* in general. Hmm, but that's true of most algebra.
+
+OK so my honest answer: **A**, with a caveat that the criterion is complete but non-constructive in general.
+
+Hmm, but hold on. Let me reconsider once more. The user says:
+
+"如果已有理论只能覆盖一部分：明确指出剩余结构。"
+
+Let me look for what's left. 
+
+The direct-decomposition theorem requires A ≅ Q × D **as an algebra** (i.e., the isomorphism is an algebra isomorphism). But in our case, we want an isomorphism that preserves π — which is the same as requiring the isomorphism to be A → Q × D with π = first projection composed. Hmm, and the direct decomposition gives A ≅ Q × D. Combined with π: A → Q being the first projection under this iso — that's automatic since A/ker π ≅ Q.
+
+Hmm, one subtlety: the direct decomposition theorem says A ≅ A/θ × A/φ. With θ = ker π, A/θ ≅ Q (if π is surjective). So A ≅ Q × A/φ. ✓ Good.
+
+So the criterion is: **exists φ ∈ Con(A) with φ ∩ ker π = Δ and φ ∘ ker π = ∇.**
+
+That's complete. Standard.
+
+**So: A.**
+
+Hmm, but then what's the residual? Let me think about whether there's a *sub-question* not covered.
+
+Actually — here's one: the user's structure has **F injective**, which is not a standard universal-algebra condition. And the interaction of injectivity with the congruence lattice... Let me think.
+
+**F injective ⟹ ?** If A ≅ Q × D with tag-independent Φ, then F = (F_0, Φ), and F injective requires F_0 injective (on Q) and Φ injective (on D×D). F_0: Q² → Q injective is impossible for finite Q with |Q| ≥ 2. So **if Q is finite with |Q| ≥ 2, F_0 cannot be injective, so F cannot be injective.** Wait — but F injective requires F_0(πx,πy) to determine (πx,πy)? Yes: if F(x,y) = F(x',y') then F_0(πx,πy) = F_0(πx',πy') and Φ(u,v) = Φ(u',v'). For F injective we need (πx,πy,u,v) determined. Φ injective gives (u,v). But F_0(πx,πy) = F_0(πx',πy') with F_0 non-injective doesn't force (πx,πy) = (πx',πy'). So F would NOT be injective. **Contradiction.**
+
+**So: if A ≅ Q × D with tag-independent Φ and F injective, then F_0 must be injective, which is impossible for finite Q with |Q| ≥ 2. Hence: finite non-trivial Q ⟹ NOT a direct product.**
+
+**That's exactly round 7's theorem!** And it's now derived cleanly from the direct-decomposition criterion + injectivity. 
+
+And it says: **for finite Q with |Q| ≥ 2, the enriched structure is NEVER isomorphic to a product with tag-independent Φ.** So it's genuinely richer — but the reason is the pigeonhole, and the criterion is the standard congruence-complement one.
+
+OK. So the final answer:
+
+**A. 完全已有理论覆盖** — the object is a 2-sorted algebra; the trivialization question is the direct-decomposition question, characterized by complementary congruences; and injectivity forces non-decomposability for finite non-trivial Q.
+
+Hmm, but wait — is the *combination* (injectivity + direct decomposition + non-associativity) covered? The direct-decomposition theorem is for arbitrary algebras, so yes.
+
+But: I should note that the *specific* theorem "finite non-trivial Q + injective F ⟹ no direct decomposition" is a small corollary that I don't think is written down anywhere in this exact form, but it's an immediate consequence. So: **covered, but the corollary is worth stating.**
+
+Hmm. Let me reconsider whether to say A or B. 
+
+I think the most honest answer is **A**, with a precise statement of what "covered" means:
+- The object = 2-sorted algebra (many-sorted universal algebra). Covered.
+- The coherence law = an identity. Covered.
+- Enriched isomorphism = isomorphism of 2-sorted algebras. Covered.
+- The trivialization/product question = direct decomposition = existence of complementary congruence. Covered (complete criterion).
+- The injectivity corollary = immediate.
+
+And the residual is not a missing theory but: **the criterion is non-constructive; and for the specific structures arising from concept addresses, no one has computed Con(A).** That's a computation, not a theory gap.
+
+Hmm. But the user asked for A, B, or C. Let me go with **A** and be explicit, since the advisor-style honesty demands it. But let me also note the one thing that is arguably not covered: **the combination with injectivity is not standard** (universal algebra rarely studies injective operations), so the *corollaries* about what injectivity forces are not in the literature. That's a thin "B" — but I should say A with that noted.
+
+Actually, let me reconsider once more. Let me be careful about "many-sorted algebra".
+
+M = (A, F, π: A → Q, F_0, coherence). Sorts: A and Q. Operations: F: A×A→A (arity 2 over sort A), F_0: Q×Q→Q, π: A→Q (arity 1, A→Q). Identity: π(F(x,y)) = F_0(πx, πy).
+
+Yes — this is a **2-sorted algebra with one identity**. In universal algebra this is a variety (or a class defined by an identity). So M is an object of a variety of 2-sorted algebras. **Standard.**
+
+Hmm, actually — this is even more specific: it's the variety of "2-sorted algebras with a homomorphism". Which is the **comma category** construction: the category of Σ-algebras with a distinguished homomorphism. Standard.
+
+OK. Let me also address part 四 (intrinsic vs external observer) properly, since it's important.
+
+**Intrinsic vs external:**
+- **External observer**: a function π: A → V defined *on top of* A, not part of A's specification. E.g., π(n) = n mod 2 on A = ℕ. Here A = ℕ is defined independently, and π is extra.
+- **Intrinsic**: π is part of A's *definition*, and the coherence law is an *axiom* on F.
+
+**The formal distinction**: 
+- External: M_ext = (A, F) is a Σ-algebra; Π is an arbitrary family of functions; no axiom links Π to F. Then "the address has internal structure" is a *claim about the pair (A, Π)* that is not constrained.
+- Intrinsic: M_int = (A, F, Π, {F_i}) is a **2-sorted algebra with the coherence identity**. The projections are *sort-declared* and the coherence is an *axiom*.
+
+**So: the distinction is exactly "is the coherence law an axiom or not".** If it's an axiom, the projections are part of the structure (and must be preserved by isomorphism). If not, they're external and can be changed freely.
+
+**This is a clean formalization of the user's part 四.** And it explains why the user is right that "只要允许 observer，就能读出字段" is not the right argument: the difference is whether the observer family is part of the *signature + axioms* (intrinsic) or an add-on (external).
+
+Good. Let me include this.
+
+Now part 十 — invariants. Let me list with [NECESSARY ONLY] or [COMPLETE] tags:
+
+- **projection kernels** ker π_i: [invariant, and the congruence family is preserved by enriched isomorphism]. 
+- **fibers** A_q: determined by ker π_i. [invariant]
+- **induced quotient algebras** A/ker π_i: [invariant]
+- **interaction between fibers and F** = the family {Φ_{a,b}}: [invariant up to simultaneous conjugation]
+- **subalgebra structure**: [invariant]
+- **congruence lattice Con(A)**: [invariant]
+- **automorphism group preserving projections**: [invariant]
+- **state-dependent operation orbit**: = the G-orbit of {Φ_{a,b}}; [COMPLETE for the trivialization question]
+- **splitting/non-splitting**: = existence of complementary congruence; [COMPLETE, by the direct-decomposition theorem]
+- **higher-order composition identities**: [would require associativity; F injective ⟹ no associativity, so vacuous]
+
+**So: the trivialization question has a COMPLETE criterion** (complementary congruence). That's why I say A.
+
+OK, let me now write the answer.
+
+Structure per the user's part 十二:
+- Answer: is the object "带有 intrinsic projection / resolution structure 的 compositional algebra"? → YES, precisely.
+- Is it fully covered? → **A**, with precise naming: 2-sorted algebra / Σ-algebra with Σ-homomorphism / (equivalently) Σ-algebra with a Σ-congruence; trivialization = direct decomposition = complementary congruence.
+
+And I must NOT give a "next theorem" if A. But the user says "如果是 B 或 C：给出唯一最关键的下一步定理". So if A, I should say A and... hmm, the user says give the conclusion A/B/C. If A, then no next theorem needed. But I should still note what's *not* resolved (the non-constructive criterion, the injectivity corollaries).
+
+Hmm, let me be careful and honest. Let me think about whether it's really A.
+
+Let me stress-test: is there an enriched structure that is NOT a 2-sorted algebra in this sense? 
+
+What if the user's Π is required to be *self-referential*: π_i: A → A (not to a smaller algebra)? E.g., child_i: A → A. Then the "resolution" is on the same carrier. Hmm — that's a different structure! If π_i: A → A and π_i ∘ F = F_i ∘ (π_i × π_i) with F_i = F, then π_i is an **endomorphism of (A,F)**.
+
+So: Π ⊆ End(A, F). That's: **A with a distinguished family of endomorphisms.** Still standard (it's an algebra with distinguished endomorphisms).
+
+But if the "layers" are A itself at each level (self-similar), then... hmm, the round-5/6 "layered address algebra" had A = lim← A_k with A_k different. If A_k = A for all k, that's a **self-similar / iterated structure**. Hmm.
+
+I think it's still covered: it's an algebra with a family of endomorphisms + a filtration.
+
+OK. Let me commit to **A**, stated precisely, with the honest note that:
+- the *object* is covered;
+- the *corollaries under injectivity* (finite non-trivial quotient ⟹ no direct decomposition) are immediate but worth stating as they're the actual content;
+- the *criterion is non-constructive*, so deciding it for a specific A is a computation.
+
+And then, since the user asked for a next theorem only if B or C — but I should still give the sharpest *consequence*, which is the injectivity corollary. Let me present that as "the one thing that is not in the literature verbatim" while still answering A.
+
+Hmm. Let me reconsider — maybe I should be more careful and say **A**, but with a precise boundary: covered by "many-sorted universal algebra + direct decomposition theory". And note that what's NOT covered is only the *specific* decision problem for concept-address systems, which is an instance computation.
+
+Let me write.
+
+Now, should I render a widget? A diagram showing the 2-sorted algebra structure and the direct-decomposition criterion would help. Let me do a compact one:
+
+The enriched structure as a 2-sorted algebra, with the coherence square, and the criterion.
+
+Maybe: a diagram showing
+- Left: M = (A, F, π, F_0, coherence) as a 2-sorted algebra
+- Right: the trivialization criterion: ker π has a complement in Con(A)
+
+Hmm. Or a lattice diagram: Con(A) with ker π and its complement.
+
+Let me do a compact "coherence square + criterion" diagram. Actually, let me do a diagram of the congruence lattice showing the two cases:
+- Case 1: ker π has a complement φ ⟹ A ≅ Q × D ⟹ trivializable
+- Case 2: no complement ⟹ not a product
+
+A lattice picture: 
+- Left panel: Con(A) with ⊥, ker π, φ, ⊤ — ker π ∩ φ = ⊥, ker π ∘ φ = ⊤
+- Right panel: Con(A) with ⊥, ker π, ⊤ — no complement
+
+That's a nice, compact, informative visual. Let me build it.
+
+Let me design:
+Two panels side by side. Each a small Hasse diagram of a congruence lattice.
+
+Panel 1 (x 60-340): lattice with ⊥ at bottom, ker π and φ in the middle (two incomparable nodes), ⊤ at top. Label "有补元 ⟹ A ≅ Q × D（可平凡化）"
+Panel 2 (x 400-680): lattice with ⊥ at bottom, ker π in the middle, ⊤ at top. Label "无补元 ⟹ 非乘积（不可平凡化）"
+
+Hasse: bottom node at (cx, 250), middle nodes at (cx-45, 160) and (cx+45, 160), top at (cx, 70).
+
+Edges: bottom→middle-left, bottom→middle-right, middle-left→top, middle-right→top.
+
+Panel 2: bottom (cx, 250), middle (cx, 160), top (cx, 70). Edges bottom→middle, middle→top.
+
+Node labels: "⊥", "ker π", "φ", "⊤".
+
+Hmm, "ker π" and "φ" as text in small circles. Let me use rounded rects instead of circles for labels.
+
+Let me make nodes 56x24 rounded rects.
+
+Panel 1: cx = 200.
+- ⊥ at (200-28, 238) → rect x=172, y=238, w=56, h=24
+- ker π at (155-34, 148)? Let me place: left-middle at x=120, right-middle at x=224, both y=148, w=68, h=24.
+  - ker π: x=120, y=148, w=68
+  - φ: x=224, y=148, w=68
+- ⊤ at x=172, y=58, w=56
+
+Edges (lines):
+- ⊥(200,238) → ker π(154,172)
+- ⊥(200,238) → φ(258,172)
+- ker π(154,172) → ⊤(200,82)
+- φ(258,172) → ⊤(200,82)
+
+Panel 2: cx = 540.
+- ⊥ at x=512, y=238, w=56
+- ker π at x=506, y=148, w=68
+- ⊤ at x=512, y=58, w=56
+Edges: ⊥(540,238)→kerπ(540,172); kerπ(540,172)→⊤(540,82)
+
+Captions:
+- Panel 1 title at y=300: "有补元：可平凡化为 Q × D"
+- Panel 2 title at y=300: "无补元：非乘积"
+- Formula at y=330: "ker π ∩ φ = ⊥, ker π ∘ φ = ⊤"
+
+Hmm, need to check widths. Let me put panel titles at y=300 centered under each panel, 12px.
+
+"有补元：可平凡化为 Q × D" ≈ 6*12 + 8*7 = 128px. Centered at 200 → 136..264. Panel 1 spans 60..340. OK.
+
+H = 350.
+
+Let me also add a header at y=30: "Enriched structure 的乘积性判据（直分解定理）". 12px, ~24 chars ≈ 200px. Centered at 360 → 260..460. OK.
+
+Let me write it.
+
+Actually, let me reconsider the visual. Is a congruence lattice the clearest? The user's core question is "is the enriched structure just a renaming?" The lattice shows the criterion. I think it's good and compact.
+
+Let me write the SVG.
+
+Now let me write the text. Sections per the user's 十二 → but they asked to only answer one question with A/B/C. Let me organize:
+
+- 前置：三个问题的区分（part 一）
+- 【结论】A / B / C
+- Then the justification, organized by their parts.
+
+Let me write it as:
+1. 先把三个问题分开（接受你的纠正）
+2. M 到底是什么（形式化）
+3. intrinsic vs external（part 四）
+4. 富结构同构的定义（part 三）
+5. 任意两个 injective encoding 是否富同构？—— 不，最小反例
+6. 是否只是 Pairing+Tag 的重命名？—— 判据
+7. 已有理论覆盖判定 → A
+8. 不变量清单（part 十）
+9. 结论 + 残余
+
+Let me write it densely.
+
+Let me make sure I state the key theorem correctly:
+
+**定理（乘积性判据 = 直分解定理的实例）**
+M = (A, F, π: A ↠ Q, F_0) 满足 coherence。则 TFAE:
+(a) M 富同构于 (Q × D, (F_0, Φ), 第一投影) 且 Φ 与 Q-坐标无关；
+(b) ker π 在 Con(A) 中有补元 φ（φ ∩ ker π = Δ, φ ∘ ker π = ∇）；
+(c) A 是 Q 与某代数 D 的直积且 π 是第一投影。
+
+证明: (b)⟺(c) 是直分解定理。(c)⟹(a) 取 D = A/φ。(a)⟹(b) 取 φ = ker(第二投影)，需验证 φ ∈ Con(A)，而这正是 Φ 与 (a,b) 无关。∎
+
+**推论（单射强制非乘积）**
+若 M 满足 (a) 且 F 单射，则 F_0 必须单射。故若 Q 有限且 |Q| ≥ 2，则 (a) 不成立。
+**即：有限非平凡商 ⟹ 富结构不可平凡化。**
+
+Great — and this is round 7's theorem, now cleanly derived.
+
+And the minimal counterexample (round 8's) becomes: an instance where (b) fails.
+
+Now: **is this A or B?** The criterion (b) is the standard direct-decomposition theorem. So A.
+
+But I should note: **the corollary (injectivity ⟹ F_0 injective ⟹ finite Q forces non-product) is a small consequence not typically stated.** And the *decision* problem is non-constructive.
+
+Let me commit: **A**, with the precise naming.
+
+Hmm, but hold on. Let me reconsider whether the user's structure includes something more. Part 八: F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)). Here the "u" is a fiber coordinate. If Φ_{a,b} depends on (a,b), is π still a homomorphism? π(F(x,y)) = F_0(πx, πy) ✓ yes. So coherence holds. So it's a 2-sorted algebra. ✓
+
+And part 九: "如果 Φ_{a,b} 是真正依赖 state 的运算，并且这种 dependence 不能通过保持 F_0、π、projection structure 的丰富结构同构消除" — that's exactly the case (b) fails. And the question is whether it's "一种合法的 enriched algebra". Answer: **yes, it's a legal 2-sorted algebra** (with the coherence identity), and it's non-product by the criterion. Nothing illegal, nothing new.
+
+OK. Writing now.
+
+One more: part 七 asks "这种 enriched representation 是否已有标准数学名称". Answer: **是的 —— 它是"带一个 Σ-同态的 Σ-代数"（equivalently 2-sorted algebra），标准名称是：Σ-代数在 slice category Σ-Alg/Q 中的对象；若 π 满射且 Π 分离，则是 A 的一个 subdirect representation。** And the product question = direct decomposition.
+
+Good. Let me write.
+
+Let me write the widget first.
+
+Actually let me reconsider the widget — maybe a simpler and more useful one: the coherence square and what it means. Hmm. I think the lattice is better because it carries the criterion.
+
+Let me finalize the SVG.
+
+Let me write out coordinates carefully.
+
+viewBox 0 0 720 350
+
+Header: text at (360, 30) anchor=middle, 12px: "乘积性判据：ker π 在 Con(A) 中是否有补元"
+
+Panel 1 (x 60..340, center 200):
+- ⊤ rect: x=172, y=58, w=56, h=24 → center (200,70)
+- ker π rect: x=118, y=148, w=68, h=24 → center (152,160)
+- φ rect: x=214, y=148, w=68, h=24 → center (248,160)
+- ⊥ rect: x=172, y=238, w=56, h=24 → center (200,250)
+
+Edges:
+- (200,238) → (152,172): from ⊥ top to ker π bottom. Line from (200,238) to (152,172).
+- (200,238) → (248,172)
+- (152,172) → (200,82)
+- (248,172) → (200,82)
+
+Panel 2 (center 540):
+- ⊤: x=512, y=58, w=56, h=24 → center (540,70)
+- ker π: x=506, y=148, w=68, h=24 → center (540,160)
+- ⊥: x=512, y=238, w=56, h=24 → center (540,250)
+Edges: (540,238)→(540,172); (540,172)→(540,82)
+
+Captions:
+- (200, 296) middle: "有补元 ⟹ 富同构于 Q × D"
+- (540, 296) middle: "无补元 ⟹ 非乘积（不可平凡化）"
+
+Bottom formula at (360, 330): "ker π ∩ φ = Δ　且　ker π ∘ φ = ∇"
+
+H = 350.
+
+Check text widths at 12px:
+"有补元 ⟹ 富同构于 Q × D" ≈ 4*12 + 12 + 4*12 + 40 = 48+12+48+40 = 148. Centered at 200 → 126..274. Panel 1 spans 60..340 ✓
+"无补元 ⟹ 非乘积（不可平凡化）" ≈ 48+12+36+ 9*12 = 48+12+36+108 = 204. Centered at 540 → 438..642. Panel 2 spans 400..680 ✓
+"ker π ∩ φ = Δ　且　ker π ∘ φ = ∇" — mostly ASCII ≈ 30 chars * 7 = 210 + 2 Chinese. ~234. Centered at 360 → 243..477 ✓
+
+Header "乘积性判据：ker π 在 Con(A) 中是否有补元" ≈ 6*12 + 30*7 = 72+210 = 282. Centered at 360 → 219..501 ✓
+
+Node labels: "ker π" at 12px ≈ 35px in 68px rect ✓. "φ" ✓. "⊥","⊤" ✓.
+
+Colors: nodes = muted fill + border; ⊤ and ⊥ neutral; ker π = brand stroke (it's the focal object); φ = chart-series stroke? Hmm, keep it simple: ker π = brand stroke, others = border. The presence/absence of φ in panel 2 is the point — mark φ with brand in panel 1.
+
+Let me use: all rects muted fill. ker π: brand stroke. φ: brand stroke. ⊤, ⊥: border stroke.
+
+Hmm, then ker π and φ both brand — fine, they're the complementary pair.
+
+Edges: --text-muted, 1.5, rounded.
+
+Let me write.
+
+OK writing now. Let me produce the final response.
+
+Now write the full answer.
+
+Let me be careful and rigorous. Key points:
+
+1. Accept the three-problem separation. Theorem O applies only to problem C's first sub-item and must not be used to negate A/B.
+
+2. Formalize M.
+
+3. intrinsic vs external.
+
+4. Enriched isomorphism.
+
+5. Are any two injective encodings enriched-isomorphic? NO — minimal counterexample.
+
+6. Is it pairing+tag renaming? Criterion.
+
+7. Existing theory coverage → A.
+
+8. Invariants.
+
+9. Conclusion.
+
+Let me write.
+
+I need to be careful with the direct decomposition theorem statement. Standard form:
+
+**Theorem (direct decomposition).** For an algebra A and congruences θ, φ ∈ Con(A):
+A ≅ A/θ × A/φ iff θ ∩ φ = Δ and θ ∘ φ = ∇.
+
+Yes. And A/θ ≅ Q when θ = ker π and π surjective.
+
+And the key step: under A ≅ Q × D with π = first projection, φ := ker(second projection) is a congruence iff Φ_{a,b} is independent of (a,b).
+
+Let me verify this carefully once more.
+
+A = Q × D. F: A² → A, F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)).
+φ = ker(d) where d(a,u) = u, i.e., (a,u) φ (a',u') iff u = u'.
+
+φ is a congruence iff: for the operation F (binary), (x,y) φ (x',y') ⟹ F(x,y) φ F(x',y').
+x=(a,u), x'=(a',u'), with u=u'. y=(b,v), y'=(b',v'), with v=v'.
+F(x,y) = (F_0(a,b), Φ_{a,b}(u,v)), F(x',y') = (F_0(a',b'), Φ_{a',b'}(u,v)).
+φ-equality requires Φ_{a,b}(u,v) = Φ_{a',b'}(u,v) for all a,a',b,b',u,v. ✓
+
+**So φ ∈ Con(A) iff Φ is independent of (a,b).** ✓ Confirmed.
+
+And conversely, if A ≅ Q × D as algebras (direct decomposition), does F necessarily have the form (F_0, Φ) with Φ independent of (a,b)? 
+
+Under the decomposition A ≅ Q × D, F((a,u),(b,v)) = (G(a,u,b,v), H(a,u,b,v)). Since ker π is a congruence and π = first projection: G depends only on (a,b) ⟹ G = F_0(a,b). And φ = ker(second projection) is a congruence ⟹ H depends only on (u,v) ⟹ H = Φ(u,v). ✓
+
+So both directions hold. **The criterion is exact.**
+
+Great. Now: the criterion is a *standard* theorem (direct decomposition via complementary congruences). So the enriched structure's "product-ness" is completely characterized by standard theory. → **A**.
+
+And the injectivity corollary:
+If A ≅ Q × D with F = (F_0, Φ), and F injective: F(x,y) = F(x',y') ⟹ x = x', y = y'. 
+F(x,y) = (F_0(a,b), Φ(u,v)). Given the value (c,w): F_0(a,b) = c, Φ(u,v) = w.
+For F injective we need (a,b) determined by c and (u,v) determined by w.
+Φ injective gives (u,v). F_0(a,b) = c must give (a,b) — so F_0 must be injective.
+F_0: Q² → Q injective ⟹ |Q|² ≤ |Q| ⟹ |Q| ≤ 1.
+**So: |Q| ≥ 2 ⟹ no direct decomposition.** ✓ (assuming Q finite; if Q infinite, |Q|²=|Q| possible.)
+
+So: **有限非平凡 Q ⟹ 不可平凡化**。That's round 7's theorem, cleanly derived.
+
+And round 8's minimal example is exactly a case where no complement exists.
+
+Now — is there a case with Q infinite where no complement exists? Yes — the user's example could be adapted. But actually, the interesting case: Q finite forces non-product. Q infinite: product possible (ℤ/2 × ℕ with Cantor... wait, ℤ/2 is finite). Hmm.
+
+Let me redo: F((a,u),(b,v)) = (a⊕b, Cantor(u,v)) with Q = ℤ/2 finite. Is F injective? F(x,y) = F(x',y') ⟹ a⊕b = a'⊕b' and Cantor(u,v) = Cantor(u',v'). Cantor injective gives (u,v) = (u',v'). But a⊕b = a'⊕b' does NOT give (a,b) = (a',b'). So **F is NOT injective**! 
+
+Right — so with finite Q, even the "product" form can't be injective. ✓ Consistent with the corollary.
+
+So: **injective F + direct decomposition requires Q infinite with an injective F_0: Q² → Q.** Possible: Q = ℕ, F_0 = Cantor. Then A = ℕ × D, F = (Cantor(a,b), Φ(u,v)). Injective iff Φ injective. ✓
+
+So: **the only way to be a product AND injective is Q infinite with injective F_0.** And then Q ≅ ℕ (or similar). So Q isn't really a "tag" — it's a full ℕ.
+
+Hmm, that's an interesting point: **if the enriched structure is a product and F is injective, then Q must be infinite and F_0 injective — so the "coarse layer" Q carries as much information as a full address.** So "pairing + tag" with a *finite* tag is impossible with injective F.
+
+**So: the "tag" in "pairing + tag" can never be finite if F is injective and the structure is a product.** That's a sharp statement.
+
+Hmm, wait. Let me re-read the user's "pairing + tag": "A = (opaque identity, finite tag)". If the tag is finite, then the product decomposition Q × D with |Q| finite + injective F ⟹ impossible. So "pairing + finite tag" can never be enriched-isomorphic to M when F is injective. 
+
+Hmm — but that's because F injective is incompatible with a finite quotient at all. Let me double check: if Q is finite and π: A ↠ Q is a homomorphism, is F injective possible? F(x,y) = F(x',y') with πx = πx', πy = πy'... no, injectivity says F(x,y)=F(x',y') ⟹ (x,y)=(x',y'). Take x,x' with πx = πx' but x ≠ x'. Then F(x,y) vs F(x',y): π(F(x,y)) = F_0(πx,πy) = F_0(πx',πy) = π(F(x',y)). So they're in the same fiber but could differ. So no immediate contradiction from π alone — need more.
+
+Hmm, so F injective with finite quotient IS possible in principle. Let me think. Let me construct: A = ℤ/2 × ℕ, π = first projection, F((a,u),(b,v)) = (a⊕b, Φ_{a,b}(u,v)). For injectivity: given (c,w), need to recover (a,b,u,v). c = a⊕b. w = Φ_{a,b}(u,v). If we design Φ so that from w we can recover a (say a = w mod 2), then b = a⊕c, and then (u,v) from w. ✓ So injective is possible with finite Q. That's round 8's example. ✓
+
+OK so finite Q + injective F is possible, but then it's NOT a product (no complement). ✓
+
+And finite Q + product + injective F is impossible. ✓
+
+So: **"pairing + finite tag" (= finite Q + product decomposition) is incompatible with injective F.** So the user's "third structure" is never isomorphic to pairing+finite-tag. ✓ 
+
+But is it a *renaming* of something else? It's a 2-sorted algebra that's not a product. Standard object, non-standard *property*.
+
+OK. Now the answer: **A**.
+
+Let me be very precise about the naming:
+- M = (A, F, π, F_0, coherence) is a **2-sorted algebra** (sorts A, Q; operations F, F_0, π; identity πF = F_0(π×π)).
+- Equivalently: **a Σ-algebra A with a Σ-homomorphism π: A → Q**.
+- Equivalently: **an object of the slice category Σ-Alg/Q**.
+- Equivalently: **a Σ-algebra A with a Σ-congruence θ = ker π**.
+- If Π separates: **A is a subdirect product** (Birkhoff).
+
+And the product question = **direct decomposition** = complementary congruence. Standard theorem.
+
+So: **A. 完全已有理论覆盖.**
+
+And the only "not verbatim in the literature" bit is the injectivity corollary, which is immediate.
+
+Hmm — but let me be careful about one thing. The user's structure has **F as the operation**, and F is *injective*. In universal algebra, the operation is never required injective. So the *class* of objects is standard, but the *study of injective operations* is not standard. However, "the criterion for direct decomposability" doesn't depend on injectivity — it's the same theorem. Injectivity just rules out cases.
+
+So: A, with the note that injectivity is an unusual side condition whose consequences are immediate.
+
+Let me also handle part 六's list:
+1. many-sorted algebra → **YES, this is it**
+2. algebra with distinguished operations → yes (special case)
+3. algebra with homomorphisms → yes (equivalent description)
+4. indexed algebra → no (that's for families of algebras)
+5. coalgebraic structure → no
+6. comodel/observer structure → no
+7. something else → no
+
+So the answer is (1), equivalently (3).
+
+Part 七: "这种 enriched representation 是否已有标准数学名称" → YES: **带 Σ-同态的 Σ-代数 / 2-sorted algebra / slice category object; 若 Π 分离则为 subdirect representation.**
+
+Part 十: invariants list with tags.
+
+Part 十一: minimal non-tag structure — I'll give the minimal one and verify.
+
+Minimal: Q = ℤ/2, D = ℕ, π = first projection, F_0 = ⊕, Φ_{a,b}(u,v) = 2·Cantor(u,v) + a.
+- F((a,u),(b,v)) = (a⊕b, 2C(u,v) + a).
+- Injectivity: from (c,w): a = w mod 2; b = a⊕c; C(u,v) = (w−a)/2 → (u,v). ✓
+- Non-product: need φ ∈ Con(A) complementary to ker π. φ = ker(second projection) requires Φ independent of (a,b). Φ_{0,·} = 2C (even), Φ_{1,·} = 2C+1 (odd). No bijection ψ can fix parity mismatch: need Φ_{1,·} ∘ (β×β) = Φ_{0,·} ∘ (α×α), i.e., 2C(βu,βv)+1 = 2C(αu,αv), LHS odd RHS even. **Never.** ✓
+- Any other φ? Need φ ∩ ker π = Δ, φ ∘ ker π = ∇. Hmm, I should note: the criterion says "exists a complement", and I've shown the *natural* complement fails. A full proof requires showing no φ works. 
+
+Hmm, I should be careful. Let me think: is there any congruence φ on A with φ ∩ ker π = Δ and φ ∘ ker π = ∇?
+
+|A/φ| must equal |Q| = 2 (since A ≅ Q × A/φ and |A| = ℵ₀ = 2·|A/φ|, so |A/φ| = ℵ₀). Hmm, that doesn't pin it.
+
+Let me think about it differently. If A ≅ Q × D as algebras, then in particular as sets, and the isomorphism preserves π. Since |Q| = 2, A is a 2-fold "union of fibers". Hmm.
+
+Let me try: is there a congruence φ such that A/φ ≅ ℕ and A ≅ ℤ/2 × ℕ with π = first proj? The direct decomposition theorem says: A ≅ A/ker π × A/φ. And A/ker π ≅ Q = ℤ/2. So A ≅ ℤ/2 × A/φ. And the isomorphism must send ker π to the first factor. 
+
+Then F on ℤ/2 × D must have the form (F_0(a,b), Φ(u,v)) with Φ independent of (a,b) — because φ = ker(second projection) would be the complement, and φ-compatibility forces exactly that. 
+
+Hmm, actually more carefully: if A ≅ Q × D as algebras with π = first projection, then write F((a,u),(b,v)) = (G(a,u,b,v), H(a,u,b,v)). π-congruence: G depends only on (a,b) → G = F_0(a,b). φ-congruence (φ = ker second proj): H depends only on (u,v) → H = Φ(u,v). So F = (F_0(a,b), Φ(u,v)). 
+
+So: **if A ≅ Q × D then F must have that form.** And our F has Φ_{a,b} depending on a. So it's NOT of that form. Hence no direct decomposition. ✓ 
+
+That's the clean argument — no need to enumerate congruences. 
+
+So the minimal example works. And it's minimal: |Q| = 2, D = ℕ, one projection, one operation.
+
+Good.
+
+Now: does this minimal example show the structure is "genuinely richer"? YES — it's not isomorphic (as enriched structure) to any product, hence not to "pairing + finite tag". But the *reason* is a standard criterion.
+
+So: **the object is standard; the specific instance is non-product by a standard criterion; therefore A.**
+
+Hmm, let me reconsider A vs B once more. 
+
+The user asks: "这个对象是否已经被已有数学理论完全覆盖？"
+
+- The object: 2-sorted algebra. **Covered.**
+- The isomorphism notion: isomorphism of 2-sorted algebras. **Covered.**
+- The question "is it a product?": direct decomposition via complementary congruences. **Covered.**
+- The invariants: congruence lattice, fibers, quotient algebras. **Covered.**
+
+So: **A. 完全已有理论覆盖.**
+
+The only thing not literally in textbooks: the corollary "injective F + finite non-trivial quotient ⟹ not a product". But that's a two-line consequence.
+
+I'll answer A, and be explicit that this is a *strong* claim (I'm not hedging).
+
+But I should also note what remains as a *question* (not a theory gap): deciding, for a concretely given concept-address system, whether Con(A) has the complement. That's a computation.
+
+Let me write.
+
+Also I should address: the user's part 三 question "任意两个 injective term encodings 是否仍然必然在这种 enriched sense 下同构？" → **NO**. Minimal counterexample: 
+- M_1 = (ℤ/2 × ℕ, F, π_0, F_0) with Φ_{a,b} = 2C + a (non-product).
+- M_2 = (ℤ/2 × ℕ, F', π_0, F_0) with Φ'_{a,b} = 2C (product).
+Both are injective term encodings of the same term algebra. Are they enriched-isomorphic? No — M_2 is a product, M_1 is not. **Isomorphy of 2-sorted algebras preserves product-ness.** ✓ So they're not enriched-isomorphic.
+
+**So: enriched isomorphism is STRICTLY finer than Σ-algebra isomorphism.** That's an important, correct point — and it means the enriched structure is NOT a mere renaming. But it's still standard theory.
+
+Hmm — this is actually the key answer to the user's question "is it genuinely richer?" → **YES, the enriched structure is genuinely finer than (A,F) alone — but it's standard many-sorted universal algebra.**
+
+So: **A**, and the "genuinely richer" part is real but covered.
+
+Let me write the final answer now.
+
+Structure:
+- 0. 接受你的纠正：三个问题分开
+- 1. M 的形式化（+ intrinsic vs external）
+- 2. 富结构同构的定义
+- 3. 任意两个 injective encoding 是否富同构？—— 否，最小反例
+- 4. 乘积性判据（核心定理）
+- 5. 单射推论
+- 6. 最小"真正不是 Tag"的结构
+- 7. 与已有理论的精确对应（part 六 + part 七）
+- 8. 不变量清单（part 十）
+- 9. 结论 A + 残余
+
+Let me write it.
+
+I'll keep it dense.
+
+For part 十, tags:
+- projection kernels ker π_i — [INVARIANT，完整刻画的一部分]
+- fibers A_q — [INVARIANT]
+- 诱导商代数 A/ker π_i — [INVARIANT]
+- fibers 与 F 的相互作用 {Φ_{a,b}} — [INVARIANT up to 同时共轭]
+- subalgebra structure — [INVARIANT]
+- congruence lattice Con(A) — [INVARIANT，且是完整的]
+- 保持 projections 的自同构群 Aut(M) — [INVARIANT]
+- state-dependent operation orbit — [COMPLETE for 平凡化问题]
+- splitting/non-splitting — [COMPLETE，= 补元存在性]
+- higher-order composition identities — [空，因 F 单射 ⟹ 无结合律]
+
+Good.
+
+Let me write.
+
+Also need to be careful: I should not give a "next theorem" if A. But I can note the sharpest consequence. The user says "如果是 B 或 C：给出唯一最关键的下一步定理". Since A, no next theorem. But I should state the injectivity corollary as the substantive content, since it's the thing that answers "is it genuinely richer".
+
+Let me write.
+
+Let me also handle: the user's part 一 explicitly says Theorem O must not be used to negate the research. I accept and will state that A/B/C are independent and that my Theorem O only applied to C's first sub-item.
+
+Writing now.
+# 0. 先接受你的纠正
+
+**我上一轮确实偷换了问题。** 必须明确：Theorem O（输出成本 $\Omega(\lvert F(x,y)\rvert)$）**只否定了问题 C 的第一子项**（完整 materialized 输出不能 sublinear）。它**不能**用来否定：
+
+- **问题 A（Expressibility）** —— 已由 free algebra 完整解释，与成本无关；
+- **问题 B（Structure-preserving representation）** —— 是一个纯代数条件，与成本无关。
+
+**"完整复合 Address 必须 O(1) 生成"从来不是你的理论要求。** 我把它当成要求，因而把整个研究导向了 complexity。**撤回该导向。** 本轮只做代数结构。
+
+---
+
+# 1. $M$ 到底是什么
+
+$$\pi_i\circ F=F_i\circ(\pi_i\times\pi_i)$$
+
+**第一步必须看清这条等式是什么。** 它是：$\pi_i$ 是 $\Sigma$-代数同态。
+
+- 对二元构造子 $c$：$\pi_i(F_c(x,y))=F_{i,c}(\pi_i x,\pi_i y)$。
+- 这正是 $F_{i,c}$ 与 $F_c$ 通过 $\pi_i$ 相容，即 $\ker\pi_i$ 是 $A$ 的一个 **$\Sigma$-同余**。
+
+**所以 $M=(A,F,\Pi,\{F_i\},\text{coherence})$ 就是：**
+
+> **一个 $\Sigma$-代数 $A$，带一族 $\Sigma$-同态 $\pi_i:A\to A_i$（等价地：带一族 $\Sigma$-同余 $\{\ker\pi_i\}$）。**
+
+**Part 六 的答案在这里：它精确地是 (1) many-sorted algebra。** 把 $A$ 和 $Q$ 作为两个 sort，$F,F_0$ 是各自的运算，$\pi:A\to Q$ 是跨 sort 运算，coherence 是一条**恒等式**。于是 $M$ 是一个 **2-sorted variety 的对象**。等价说法还有：(3) algebra with homomorphisms；(2) 是它的特例。**不是** (4) indexed algebra（那是代数族，不是单个代数带投影），**不是** (5) coalgebra，(6)。
+
+## Intrinsic vs External（Part 四）
+
+你要求的区分有一个干净的形式化：
+
+| | 形式 | coherence 的地位 |
+|---|---|---|
+| **External observer** | $(A,F)$ 是 $\Sigma$-代数；$\Pi$ 是**附加的任意函数族**，无公理连接 $\Pi$ 与 $F$ | **不是公理**。$\pi$ 可自由替换 |
+| **Intrinsic projection** | $(A,F,\Pi,\{F_i\})$ 是 **2-sorted 代数**；coherence 是**签名中的恒等式** | **是公理**。$\pi$ 是签名的一部分，**必须被同构保持** |
+
+**这就是区别的全部。** 我上一轮"只要允许 observer 就能读出字段"的论证之所以错，正是因为它在 **external** 设定下工作，而你要研究的是 **intrinsic** 设定。**接受这个区分，撤回那个论证。**
+
+**但必须补一句**：写成 $A=Q\times D$ 加上投影，**确实还不够** —— 正如你所说，要问"这个 projection 是否参与 $F$ 的结构公理"。这正是下一节。
+
+---
+
+# 2. 富结构同构的定义（Part 三）
+
+**定义（enriched isomorphism）.** $M_1=(A_1,F_1,\Pi_1,\{F_{1i}\})$ 与 $M_2=(A_2,F_2,\Pi_2,\{F_{2i}\})$ 富同构，若存在双射 $h:A_1\to A_2$ 使得：
+
+1. $h(F_1(x,y))=F_2(hx,hy)$ —— 保持 $F$；
+2. $\Pi_1$ 与 $\Pi_2$ 的指标集相同，且 $h$ 把 $\ker\pi_{1i}$ **映到** $\ker\pi_{2i}$（即 $h(\ker\pi_{1i})=\ker\pi_{2i}$）—— 保持所有 $\pi_i$；
+3. $h$ 诱导的 $A_1/\ker\pi_{1i}\to A_2/\ker\pi_{2i}$ 与 $F_{1i}\leftrightarrow F_{2i}$ 相容 —— 保持所有 $F_i$；
+4. resolution maps（若分层）与
+5. coherence laws
+
+自动被 2+3 保持（因为 coherence 就是 $\pi_i$ 为同态，而同态性是同构不变的）。
+
+**所以富同构 = 保持同余族 $\{\ker\pi_i\}$ 的 $\Sigma$-代数同构。**
+
+---
+
+# 3. 任意两个 injective term encodings 是否富同构？
+
+**否。** 这是本轮第一个实质结论，且有最小反例。
+
+取 $Q=\mathbb{Z}/2$，$D=\mathbb{N}$，$A=Q\times D$，$\pi=\pi_0$（第一投影），$F_0=\oplus$。
+
+- $M_1$：$\Phi^{(1)}_{a,b}(u,v)=2\cdot\mathrm{Cantor}(u,v)$ —— **与 $(a,b)$ 无关**
+- $M_2$：$\Phi^{(2)}_{a,b}(u,v)=2\cdot\mathrm{Cantor}(u,v)+a$ —— **依赖 $a$**
+
+两者都是同一个项代数 $T_\Sigma(X)$ 的单射编码，且都满足 coherence（$\pi$ 都是同态）。但：
+
+> **$M_1$ 是乘积型，$M_2$ 不是**（见下节判据）。而乘积性被富同构保持。**故 $M_1\not\cong M_2$。**
+
+**结论：富同构严格细于 $\Sigma$-代数同构。** 你上一轮接受的定理 I（任意两个 injective encoding 作为 $\Sigma$-代数同构）**只对 $(A,F)$ 成立**；对 $(A,F,\Pi,\{F_i\})$ **不成立**。
+
+**这是本轮唯一站得住的"更丰富"之处，但它仍属于已有理论** —— 因为 2-sorted 代数的同构就是保 sort 保运算的同构，这是标准定义。
+
+---
+
+# 4. 乘积性判据（核心定理）
+
+**定理 P（乘积性 = 直分解 = 同余补元）**
+设 $M=(A,F,\pi:A\twoheadrightarrow Q,F_0)$ 满足 coherence，$F$ 是 $\Sigma$-运算。则以下等价：
+
+**(a)** $M$ 富同构于 $(Q\times D,\ (F_0,\Phi),\ \text{第一投影})$，其中 $\Phi$ **与 $Q$-坐标无关**；
+**(b)** $\ker\pi$ 在 $\mathrm{Con}(A)$ 中**有补元** $\varphi$：$\varphi\cap\ker\pi=\Delta$ 且 $\varphi\circ\ker\pi=\nabla$；
+**(c)** $A\cong Q\times D$ 是 $\Sigma$-代数直分解，且 $\pi$ 是该分解的第一投影。
+
+**证明.**
+$(b)\Leftrightarrow(c)$ 是**直分解定理**（标准：$A\cong A/\theta\times A/\varphi$ 当且仅当 $\theta\cap\varphi=\Delta$ 且 $\theta\circ\varphi=\nabla$）。取 $\theta=\ker\pi$，$A/\theta\cong Q$。
+$(c)\Rightarrow(a)$ 取 $D=A/\varphi$。写 $F((a,u),(b,v))=(G(a,u,b,v),H(a,u,b,v))$。由 $\ker\pi$ 是同余得 $G$ 只依赖 $(a,b)$，故 $G=F_0(a,b)$；由 $\varphi=\ker(\text{第二投影})$ 是同余得 $H$ 只依赖 $(u,v)$，故 $H=\Phi(u,v)$。
+$(a)\Rightarrow(b)$ 取 $\varphi=\ker(\text{第二投影})$。验证 $\varphi\in\mathrm{Con}(A)$：需 $(a,u)\,\varphi\,(a',u)$ 且 $(b,v)\,\varphi\,(b',v)\Rightarrow F(a,u,b,v)\,\varphi\,F(a',u,b',v)$，即 $\Phi_{a,b}(u,v)=\Phi_{a',b'}(u,v)$ —— **这恰是 $\Phi$ 与 $(a,b)$ 无关**。∎
+
+**这个定理是精确的，且它把"$M$ 是否只是 Pairing + Tag 的改名"化归为一个标准的代数条件。**
+
+---
+
+# 5. 单射的推论（Part 三 / Part 八）
+
+**推论（单射强制非乘积）**
+若 $M$ 满足 (a) 且 $F$ 单射，则 $F_0$ 必须单射。故若 $Q$ **有限**且 $|Q|\ge2$，则 (a) **不成立**。
+**即：有限非平凡商 ⟹ 富结构不可平凡化。**
+
+**证明**：$F(x,y)=(F_0(a,b),\Phi(u,v))$ 单射。给定值 $(c,w)$，需唯一恢复 $(a,b,u,v)$。$\Phi$ 单射给出 $(u,v)$；而 $F_0(a,b)=c$ 必须唯一确定 $(a,b)$，即 $F_0$ 单射。有限 $Q$ 上 $F_0:Q^2\to Q$ 单射要求 $|Q|^2\le|Q|$，即 $|Q|\le1$。∎
+
+**两个直接后果：**
+
+1. **"Pairing + finite tag" 在 $F$ 单射下永远不可能** —— 因为 finite tag 意味着有限 $Q$，而有限 $Q$ 排除了 (a)。
+2. **若 (a) 成立且 $F$ 单射，则 $Q$ 必无限且 $F_0$ 单射** —— 即"粗层" $Q$ 携带的信息量与一个完整地址同量级，它**不是 tag，是另一个地址**。
+
+**所以你的"第三种结构"确实不是 Pairing + Tag 的改名 —— 但原因是第 5 节的鸽笼，不是新数学。**
+
+---
+
+# 6. 最小"真正不是 Tag"的结构（Part 十一）
+
+$$Q=\mathbb{Z}/2,\quad D=\mathbb{N},\quad A=Q\times D,\quad \pi=\pi_0,\quad F_0=\oplus$$
+$$\boxed{F\big((a,u),(b,v)\big)=\big(a\oplus b,\ 2\cdot\mathrm{Cantor}(u,v)+a\big)}$$
+
+**验证：**
+
+- **coherence**：$\pi(F(x,y))=a\oplus b=F_0(\pi x,\pi y)$ ✓
+- **$F$ 单射**：由 $(c,w)$：$a=w\bmod2$；$b=a\oplus c$；$\mathrm{Cantor}(u,v)=(w-a)/2$ → $(u,v)$。全可逆 ✓
+- **非乘积**：由定理 P，只需看 $\Phi_{a,b}$ 是否与 $(a,b)$ 无关。$\Phi_{0,\cdot}=2C$（恒偶），$\Phi_{1,\cdot}=2C+1$（恒奇）。
+  平凡化需要存在双射 $\alpha,\beta$ 使 $\Phi_{1,\cdot}\circ(\beta\times\beta)=\Phi_{0,\cdot}\circ(\alpha\times\alpha)$，即 $2C(\beta u,\beta v)+1=2C(\alpha u,\alpha v)$。**左恒奇、右恒偶，永不成立。** ✓
+- **不可能是任何乘积型**：由 (a)⟹(b)⟹(c)，若它是乘积型则 $F$ 必为 $(F_0(a,b),\Phi(u,v))$ 形式，而 $\Phi$ 依赖 $a$。矛盾 ✓
+
+**最小性**：$|Q|=2$（最小非平凡商），$D=\mathbb{N}$（最小无限），一个投影，一个运算。**这是最小的不可平凡化富结构。**
+
+**它是不是新数学？不是。** 它是定理 P 的一个实例，是"$\ker\pi$ 在 $\mathrm{Con}(A)$ 中无补元"的一个具体代数。
+
+---
+
+# 7. 与已有理论的精确对应（Part 六 / Part 七）
+
+**Part 七 的标准名称：**
+
+| 层次 | 标准名称 |
+|---|---|
+| 对象 | **2-sorted algebra**（sorts $A,Q$；运算 $F,F_0,\pi$；恒等式 coherence） |
+| 等价描述 1 | **带 $\Sigma$-同态的 $\Sigma$-代数**，即 $\Sigma\text{-}\mathbf{Alg}/Q$ 的**对象**（slice category） |
+| 等价描述 2 | **带 $\Sigma$-同余的 $\Sigma$-代数** |
+| 若 $\Pi$ 联合分离 $A$ | $A$ 的一个 **subdirect representation**（Birkhoff 理论） |
+| 若 $\{\ker\pi_i\}$ 成链 | **filtered algebra**（需另加完备性，见前轮撤回） |
+| 乘积性问题 | **直分解**（direct decomposition），由**同余补元**完全刻画 |
+
+**Part 六 的逐项判定：**
+
+| 候选 | 判定 |
+|---|---|
+| 1. many-sorted algebra | **✔ 正是它** |
+| 2. algebra with distinguished operations | ✔ 是它的特例 |
+| 3. algebra with homomorphisms | ✔ 等价描述 |
+| 4. indexed algebra | ✘ 那是代数族，不是单代数带投影 |
+| 5. coalgebraic structure | ✘ |
+| 6. comodel / observer structure | ✘ |
+| 7. something else | ✘ |
+
+---
+
+# 8. 不变量清单（Part 十）
+
+| 候选 | 状态 |
+|---|---|
+| projection kernels $\{\ker\pi_i\}$ | **[INVARIANT]** 富同构必须保持 |
+| fibers $A_q=\pi^{-1}(q)$ | **[INVARIANT]** 由 kernel 决定 |
+| 诱导商代数 $A/\ker\pi_i$ | **[INVARIANT]** |
+| fibers 与 $F$ 的相互作用 $\{\Phi_{a,b}\}$ | **[INVARIANT]**（在同时共轭下） |
+| subalgebra structure | **[INVARIANT]** |
+| congruence lattice $\mathrm{Con}(A)$ | **[INVARIANT，且是完整的]** |
+| 保持 projections 的自同构群 $\mathrm{Aut}(M)$ | **[INVARIANT]** |
+| state-dependent operation orbit | **[COMPLETE for 平凡化问题]**：$\{\Phi_{a,b}\}$ 在 $G=\prod_q\mathrm{Sym}(A_q)$ 下的轨道是否含常数族 |
+| splitting / non-splitting | **[COMPLETE]**：$=\ker\pi$ 是否有补元（定理 P） |
+| higher-order composition identities | **[空]**：$F$ 单射 ⟹ $F$ 不可能结合（第 5 轮已证），故无高阶结合恒等式可言 |
+
+**注意**：这里没有任何 "读多少 bit" 的表示层指标。**全部不变量都是代数不变量。**
+
+---
+
+# 9. 结论
+
+## 【我们的真正研究对象】
+
+**是的，你的判断准确。研究对象就是：**
+
+> **一个带有 intrinsic projection / resolution structure 的 compositional algebra —— 形式化地，就是一个 2-sorted algebra $(A,Q,F,F_0,\pi)$，coherence $\pi\circ F=F_0\circ(\pi\times\pi)$ 是其签名中的恒等式。**
+
+并且**它确实严格细于 $(A,F)$**：富同构保持同余族，因此 $M_1\not\cong M_2$ 即使两者作为 $\Sigma$-代数同构（第 3 节反例）。**这一点是真的，不是偷换。**
+
+## 【最终判定】
+
+# **A. 完全已有理论覆盖。**
+
+**逐条对应：**
+
+| 你关心的 | 已有理论 |
+|---|---|
+| $M$ 作为对象 | 2-sorted algebra / $\Sigma\text{-}\mathrm{Alg}/Q$ 的对象 / 带 $\Sigma$-同余的 $\Sigma$-代数 |
+| 富同构 | 2-sorted 代数同构（保 sort、保运算） |
+| 任意两个 injective encoding 是否富同构 | 标准理论即给出"否"，且判据是标准判据 |
+| $M$ 是否只是 Pairing + Tag 的改名 | **由定理 P 完全判定**：$\ker\pi$ 是否有同余补元 |
+| 你的最小反例（第 6 节） | 定理 P 的一个实例 |
+| 单射带来的限制 | 第 5 节推论（两行） |
+
+**没有任何剩余结构。** 我上一轮说"结构层超出部分 = 0"，**现在可以给出证明而不是断言**：因为 $M$ 被识别为 2-sorted 代数，而 2-sorted 代数的对象、同态、同构、子直积、直分解，全部是已有理论的完整内容。
+
+**必须补充的两点诚实说明：**
+
+1. **"完全覆盖"不等于"答案已给出"。** 定理 P 给出了**完整的判定准则**，但对一个具体给定的概念地址系统，**判定 $\ker\pi$ 是否有补元仍是一个具体的计算**（要算 $\mathrm{Con}(A)$）。这是实例计算，不是理论缺口。
+2. **唯一不在教科书中逐字出现的**，是第 5 节那条推论（**单射 + 有限非平凡商 ⟹ 不可平凡化**）。因为 universal algebra 通常不要求运算单射。但它是定理 P 加鸽笼的两行推论，**不构成新结构**。
+
+**因此：不给出"下一定理"，因为不存在未覆盖的结构需要它。**
+
+**本轮唯一可以带走的正面内容**（它回答了你的原始问题，且不需要新理论）：
+
+> **在 $F$ 单射的前提下，"Address 的内部结构参与组合"这件事，在代数上等价于"$\ker\pi$ 没有同余补元"。**
+> 而这个条件**被有限非平凡商自动强制满足**（第 5 节）。所以：
+> **只要地址系统有一个有限的、非平凡的粗粒度层，它的内部结构就必然真实地参与 $F$ —— 不是可消除的坐标伪象，也不是新数学，而是直分解
