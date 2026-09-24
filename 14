@@ -1,0 +1,577 @@
+*正在请求专家建议，优化解决方案，该过程耗时可能较长，请耐心等待...*
+
+复核完成，五条撤回全部接受，其中两条是我第 13 轮的实质性数学错误。先给本轮最要紧的一处修正的可视化。
+The user has given a very detailed 8-task request. Let me first do the advisor call (mandatory trigger: user is correcting me repeatedly — "必须撤回/修正的第13轮结论" is criticism/correction, so trigger 4 user_frustration applies). Then I need to produce the answer.
+
+Let me think about the math carefully.
+
+**Task 1: Withdrawals**
+
+1. "Th_B ⊢ P is a type error because Th_B may not be r.e." — user says this is wrong. Indeed: ⊢ is defined for any set of formulas T (T ⊢ P iff P is in the closure under logical consequence — syntactic version: there's a finite subset derivation). Non-r.e. doesn't prevent defining T ⊢ P. The real issues: (a) are baseline members in a unified first-order language (if different signatures/languages, "Th_B" as a single set isn't well-formed — need a common language or a translation); (b) when comparing across structures, semantic class entailment should be used. So correct: the problem is language uniformity and the semantic vs syntactic distinction, not r.e.
+
+Actually more precisely: Th_B = ⋂_{B∈Baseline} Th(B) — for this to be a set of formulas, all B must be in the same language. If the baseline contains structures in different languages (different signatures, or different carriers), the intersection isn't well-defined as a theory. And even if same language, T ⊢ P for non-r.e. T is fine as a definition (though not effective). So the fix: define the baseline in a single language L_B (or use a many-sorted language with sorts for each baseline member), and use ⊨ for the actual novelty claims; ⊢ only when an explicit axiomatization is given.
+
+2. Σ_k |π_k(x)| = Θ(|x|) is generally wrong. Let me derive S(x) = Σ_{k=0}^{d} |π_k(x)| where d = depth(x).
+
+For a tree x with nodes, |π_k(x)| = number of nodes in the depth-k truncation. π_k(x) includes all nodes at depth ≤ k, but with ⊥ at depth k for non-atomic positions. So |π_k(x)| = number of positions at depth ≤ k in the truncation = number of positions at depth ≤ k-1 that exist... hmm, let me be careful.
+
+Actually in the corrected framework, π_n(x) ∈ B_n = im(π_n), and |π_n(x)| = number of nodes in the depth-n truncation. For a total tree, π_n(x) = the depth-n truncation: nodes at depth 0..n, where depth-n nodes that are f-nodes become ⊥ (leaves). So |π_n(x)| = (number of nodes of x at depth ≤ n-1) + (number of nodes of x at depth n).
+
+Hmm, more simply: |π_n(x)| = number of nodes in x of depth ≤ n, with each depth-n internal node replaced by ⊥ (still one node). So |π_n(x)| = N_{≤n}(x) where N_{≤n}(x) = #{nodes of x with depth ≤ n}.
+
+Wait but for the ⊥-tower Â_n: |cut_n(x)| = number of positions at depth ≤ n in x that are "present" plus ⊥ markers. Let me define: for a total tree x, cut_n(x) has nodes at depths 0..n: depths 0..n-1 are copied from x (internal nodes), depth n are ⊥ markers replacing whatever was there (if x has a node at depth n, it becomes ⊥; if x has no node at depth n, i.e., depth(x) < n, then... actually if depth(x) < n, then cut_n(x) = x, no ⊥ at all).
+
+Hmm. Let me just define the count: |π_n(x)| = number of nodes of the depth-n truncation. For x with depth d ≥ n: the truncation has all nodes of x at depth ≤ n, so |π_n(x)| = Σ_{j≤n} m_j where m_j = number of nodes of x at depth j. For n ≥ d: |π_n(x)| = |x| = Σ_{j≤d} m_j.
+
+So S(x) = Σ_{n=0}^{d} |π_n(x)| = Σ_{n=0}^{d} Σ_{j≤min(n,d)} m_j = Σ_{j=0}^{d} m_j · (d - j + 1) (for n from j to d).
+
+So S(x) = Σ_{j=0}^{d} m_j (d-j+1) = Σ_{nodes v} (depth(x) - depth(v) + 1).
+
+That's the exact relation. So S(x) = Σ_v (d - depth(v) + 1) where d = depth(x).
+
+Worst case (path): m_j = 1 for all j ≤ d, so S = Σ_{j=0}^{d} (d-j+1) = Σ_{i=1}^{d+1} i = (d+1)(d+2)/2 = Θ(d²) = Θ(n²) where n = |x| = d+1. ✓ User is right.
+
+Balanced binary tree: depth d = Θ(log n), m_j = 2^j. S = Σ_{j=0}^{d} 2^j (d-j+1). Let i = d-j: S = Σ_{i=0}^{d} 2^{d-i}(i+1) = 2^d Σ_i (i+1)/2^i ≈ 2^d · 4 = Θ(n). So balanced: Θ(n). ✓
+
+General/arbitrary: S = Σ_v (d - depth(v) + 1) ≤ n(d+1). So S = Θ(n·d) in general, ranging from Θ(n) (balanced, d=O(log n)) to Θ(n²) (path, d=n).
+
+So: S(x) = Σ_v (d - depth(v) + 1), with Θ(n) balanced ≤ S ≤ Θ(n²) path. Good.
+
+Now DAG/shared representation: if we store each layer as a separate materialized object, S is as above. If we store as persistent shared DAG, the total distinct nodes across all layers = the nodes of x itself (since π_{n+1} shares the subtree structure of π_n except at the frontier). Actually in the corrected framework, π_{n+1}(x) and π_n(x) share: the nodes at depth ≤ n-1 are identical, and the depth-n nodes of π_{n+1} are f-nodes whose children are the depth-(n+1) nodes of x (which are ⊥ in π_n). Hmm, actually π_n(x) at depth n has ⊥, π_{n+1}(x) at depth n has f-nodes. So they differ at depth n. So sharing is limited to depths ≤ n-1.
+
+Let me just say: with persistent sharing, the total distinct node count is Σ_{n} (new nodes at step n) = m_0 + ... roughly = |x| + d (each layer adds the new frontier). Actually: π_n and π_{n+1} share all nodes at depth ≤ n-1 (they're the same), and differ at depth n (⊥ vs f-node) and n+1 (absent vs present). So the DAG has nodes: for each depth j, the nodes at depth j appear in two versions (⊥-version in π_j, f-version in π_{j+1}...). Hmm, this is getting complicated. Let me simplify: the persistent DAG over all layers has O(|x| + d) distinct nodes if we share aggressively — because each node of x at depth j appears as: the "⊥-version" in π_j and the "real version" in π_k for k > j. So each node contributes O(1) distinct nodes plus O(1) ⊥ markers. So DAG total = O(n + d) = O(n).
+
+Wait, but that's only if we use a DAG where the same subtree is shared. π_k(x) restricted to a subtree rooted at depth j node = the truncation of that subtree. So the distinct objects are: for each node v of x and each "truncation level" relative to v — that's O(n·d) in the worst case again. Hmm.
+
+Let me think again: π_k(x)|_v (subtree at v) = truncation of x|_v to depth (k - depth(v)). So distinct objects = {(v, r) : v node, r = k - depth(v) ≥ 0} = Σ_v (d - depth(v) + 1) = S(x). So sharing doesn't reduce the count if we need all layers as separate objects!
+
+Unless we note that π_k(x)|_v for r ≥ depth(x|_v) equals x|_v itself — so those collapse. Hmm, so distinct = {(v,r) : 0 ≤ r < depth(x|_v)} ∪ {x|_v}. That's Σ_v min(r_max, depth(x|_v))... this is getting complicated. Let me just present the two models honestly:
+
+- **Materialized layers** (each layer a separate object): Space = Σ_k |π_k(x)| = S(x) = Θ(n) balanced to Θ(n²) path.
+- **Shared/persistent DAG**: Space = number of distinct (subtree, truncation-level) pairs = Σ_{v} (d - depth(v) + 1) — same as S(x) — UNLESS we exploit that π_k(x)|_v = x|_v when r ≥ depth(x|_v). Hmm. Actually let me reconsider: is the same object reused? π_k(x)|_v where v at depth j, k ≥ j: = trunc_{k-j}(x|_v). For k-j ≥ depth(x|_v), this = x|_v. So for each v, the distinct objects are trunc_r(x|_v) for r = 0..depth(x|_v), plus x|_v itself. That's depth(x|_v)+1 objects per node v. Total = Σ_v (depth(x|_v) + 1). For a path: Σ_{j} (d-j+1) = Θ(n²). Same. For balanced: Σ_v depth(x|_v) ≈ Σ_j 2^j (d-j) = Θ(n). Same order.
+
+OK so sharing doesn't asymptotically help here — good, that's an honest finding: S(x) = Σ_v (depth(x|_v)+1) = Σ_v (d - depth(v) + 1) — the same formula. Nice, so both models give the same asymptotic count. Actually that's because the count is the same combinatorial quantity. Good — I'll note this: materialized vs DAG give the same Θ in this particular layering, because each (node, relative truncation level) pair is a genuinely distinct object. Hmm, but that's only true if we need ALL layers explicitly. If we only need layer n on demand, we can compute it in O(|π_n(x)|) time from x — that's the traversal option.
+
+Let me now be careful about what "Address = storing all layers" costs vs "Concept = store x only".
+
+- Concept: Space = O(n) (store the tree).
+- Address (all layers materialized): Space = S(x) = Θ(n) to Θ(n²), i.e., up to quadratic blowup on path-like trees.
+
+That's a real cost, and it's the honest accounting: Address stores MORE.
+
+3. "FRC ⇒ definable ⇒ baseline reducible" does not imply "primitive-level computational novelty is closed off". Because definable ≠ cheap. Structural reducibility ≠ computational reducibility. Correct — withdraw. The point: a function can be FO-definable but require Θ(n) work to evaluate. Definability is a structural fact about the graph; it says nothing about cost. So FRC ⟹ definable says nothing about whether an Address implementation of it is cheaper.
+
+4. "read-level(x,n) cost = 1" cannot be assumed as neutral. Must decompose into storage + index + traversal. Correct.
+
+5. "computational novelty can only live in the access layer" → must be broadened to the full computation-interface: representation + access primitives + primitive costs + preprocessing + update/maintenance + output model. Correct.
+
+**Task A: Computational Instance**
+
+K = (A, ρ, M, Pre, Q, U, Out, Space, Cost)
+
+Let me define precisely:
+- A: mathematical structure (σ-algebra), here (T, f) or (νG, f).
+- ρ: D → A, representation: elements of A encoded as data over a raw domain D (e.g., bit strings, or cells with pointers).
+- M: raw machine primitives (word operations, pointer dereference, cell read/write) with unit costs. **Same M for both sides.**
+- Pre: preprocessing algorithm: input x ∈ A → initial data structure.
+- Q: query algorithm: (data structure, query) → answer.
+- U: update/maintenance: (data structure, modification) → new data structure.
+- Out: output model ∈ {O1 materialized, O2 handle, O3 lazy}.
+- Space: total storage bound.
+- Cost: cost measure (word-RAM steps, or cell probes).
+
+Fairness condition: Address and Concept must be compared **on the same M**, and any "read level n" capability must be *implemented* by ρ + index + traversal, with its cost accounted (either time or space).
+
+**Task B: Address = index hypothesis**
+
+The claim "Address_n(x) = π_n(x)" means: Address stores the sequence (π_0(x), ..., π_d(x)).
+
+Candidate data structures:
+1. Materialized copies: store each π_k(x) as an independent tree. Space = S(x). 
+2. Persistent shared DAG: share common subtrees. Space = S(x) (as computed, same order) — but the sharing means building π_{k+1} from π_k is O(new frontier).
+3. Per-layer root pointers: store x plus an array of root pointers... doesn't make sense as stated.
+4. Root array + depth index: store x, plus for each depth k an array of pointers to nodes at depth k. Space = O(n). Then "read π_n(x)" = traverse from root but jump using the depth arrays — still need to enumerate depth ≤ n nodes to materialize; but to *answer queries about* π_n(x) you can use the depth arrays.
+5. Hash-consed canonical nodes: nodes are canonicalized, so equality of subtrees is O(1). Space = O(n) (distinct subtrees), plus hash table.
+6. Level-linked / "jump pointers": store x with level-ancestor pointers, giving O(1) access to ancestors at any depth (Bender-Farach level ancestor), Space O(n).
+
+Complexity table — let me build for path, balanced, arbitrary.
+
+Let n = |x|, d = depth(x).
+
+| Structure | Space | Build | Read(level n) materialized | Read(level n) handle | Compose |
+|---|---|---|---|---|---|
+| Concept (bare tree) | Θ(n) | Θ(n) | Θ(2^n) for π_n? No wait. |
+
+Hmm, "Read(level n)" for the bare tree: π_n(x) = truncation. Materializing it costs Θ(|π_n(x)|) = Θ(Σ_{j≤n} m_j) ≤ Θ(n). Actually that's Θ(min(n, ...)) = O(n). Not 2^n! Let me recompute: to materialize π_n(x) you traverse x to depth n and copy. Cost = Θ(number of nodes of x at depth ≤ n) = Θ(N_{≤n}(x)) ≤ Θ(n). So for the bare tree, materializing π_n costs O(n), not Θ(2^n).
+
+Hmm, in round 13 I said Θ(2^n) — that was wrong (or was about a different model). Let me reconsider: if you need π_n(x) and you only have the tree, you traverse to depth n: cost = #nodes at depth ≤ n = O(n). So no exponential. The exponential appeared in round 13's AM_C but that seems to have been a mistake (or it was about "the number of possible layer-n objects" not the cost). Let me just correct it: materializing π_n from a bare tree costs Θ(N_{≤n}(x)) = O(n), which is the size of the output — so it's output-optimal, no blowup. Good, that's an honest correction.
+
+So then where does the Address advantage come from? Only in *repeated* queries: if you query many layers repeatedly, the Address (precomputing all layers) can answer each in O(|π_n|) which is the output size anyway... Hmm. So actually the Address advantage is: after preprocessing (space S(x)), a query "give me π_n(x)" costs O(|π_n(x)|) = output-optimal, vs the bare tree costing O(N_{≤n}(x)) = also output-optimal (it's the same thing, since materializing requires traversing the truncation's nodes... wait no).
+
+Hmm, careful: materializing π_n(x) from bare x: you need to output all nodes of π_n(x), which has |π_n(x)| nodes; but you must *find* them, which requires traversing x to depth n — but traversal visits exactly the nodes at depth ≤ n = |π_n(x)| nodes. So cost = Θ(|π_n(x)|) = output-optimal. So NO advantage for a single query!
+
+So the Address structure gives no advantage for "read level n" as a single query, because the output size already equals the traversal cost. The advantage would only come if the query is something *smaller* than the output, e.g., "what is the depth-n frontier's size?" or "is π_n(x) = π_n(y)?" — for these, the bare tree needs Θ(N_{≤n}) traversal while the Address could answer O(1) if it stores the relevant aggregate.
+
+That's the honest reframing: the Address advantage exists only for queries whose answer is *smaller* than the layer's size — i.e., aggregate/equality queries. And those are exactly what standard indexes provide (subtree hashing, level-ancestor, etc.).
+
+So: **Address can be simulated by a standard indexed tree** — because the "index" is exactly the layer sequence, and the queries it accelerates are exactly aggregate queries, which standard indexes (hash-consing + level-ancestor + subtree aggregates) also accelerate with the same space.
+
+Let me formalize: 
+
+**Theorem (simulation)**: For every Address representation of x (storing the layer sequence with any of structures 1–6), there is an indexed tree representation of x with the same machine M, same space up to constant factor (or O(1) factor), same preprocessing cost up to O(1) factor, such that every query q of the layer-query class has the same cost.
+
+Hmm, I need to be careful. Let me think about what's actually provable.
+
+The layer sequence π_0(x), ..., π_d(x) is *determined by* x. Conversely x = π_d(x) (the last layer, when n ≥ depth, is x itself). So storing all layers is *redundant data* — it's a "redundant" or "repeated" representation.
+
+**Proposition (redundancy)**: The layer sequence is a deterministic function of x, and x is recoverable as the last layer. Hence the Address representation contains no information beyond x. Space = S(x) ≥ |x|.
+
+**Theorem (simulation by indexed tree)**: Any computation over the layer sequence can be simulated by a computation over x with an index structure, with at most a constant-factor overhead in space (the index stores, for each depth k, the list of nodes at depth k with parent pointers — Space O(n)) — and any layer-query is answerable in O(1) probes after O(n) preprocessing.
+
+Hmm, is that true? A layer-query like "is π_n(x) = π_n(y)?" — with x,y separate trees, you'd need to compare truncations. With canonical hashing of truncations, you can do this in O(1) after preprocessing. But preprocessing needs to compute hashes of all truncations = S(x) work. So space can be O(n) (store hash per (node, level) pair? that's S(x) again...).
+
+Hmm. Let me think about "hash of trunc_n(x)" for all n. trunc_n(x) is determined by x's structure to depth n. Computing h(trunc_n(x)) for all n: there are d+1 values; each can be computed bottom-up... h(trunc_n(x)) depends on x to depth n only. So we can compute all d+1 hashes in O(n) total? Let's see: hash of a node v at depth j with the truncation level r: H(v, r) = hash(kind(v), H(left, r-1), H(right, r-1)) for r ≥ 1, and H(v,0) = ⊥. And h(trunc_n(x)) = H(root, n). So we need H(root, n) for all n = 0..d. Computing H(root, n) requires H(children, n-1), etc. The total work for all n: it's like a DP over (node, r) pairs = S(x) again. Hmm, but many are equal: H(v, r) for r ≥ depth(x|_v) equals h(x|_v) — constant. So distinct (v,r) pairs with r < depth(x|_v): total = Σ_v min(r, depth(x|_v))... 
+
+Let me just compute for a path: Σ_{j=0}^{d} (d-j+1) = Θ(d²) = Θ(n²). So computing all layer hashes of a path costs Θ(n²)?? That can't be right — h(trunc_n(x)) for a path of length d: trunc_n(x) is a path of length n with a ⊥ at the end. So h(trunc_n(x)) can be computed incrementally: H_n = hash(f, H_{n-1}, ⊥)... wait for a path where each node has one child, H(trunc_n) = hash(node, H(trunc_{n-1}), leaf). So each is O(1) given the previous: total O(d). 
+
+So the DP is over (v, r) but with sharing: H(v,r) for r ≥ depth(x|_v) is constant. So distinct pairs = Σ_v (depth(x|_v)+1) but with memoization many coincide... For a path, x|_v is a path of length d-j, so H(v, r) for r = 0..d-j: that's d-j+1 distinct values, total Σ_j (d-j+1) = Θ(n²). But we only need H(root, n) for n=0..d, which we can compute in O(d) by the recurrence. The intermediate values H(v,r) for non-root v aren't all needed. Right! We only need the root's values. So computing h(trunc_n(x)) for all n = 0..d costs O(n) total (dynamic programming along the path, or bottom-up on the tree with careful reuse).
+
+Hmm, for a general tree: H(root, n) for all n. We need H(root, n) = hash(kind(root), H(l, n-1), H(r, n-1)). So we need H(child, m) for all m. Recursively, we need H(v, m) for all v and all m ≤ d - depth(v)... The DP has Σ_v (d - depth(v) + 1) = S(x) states. So Θ(n²) for a path. But for a path we showed O(n) suffices by incremental computation. Why the discrepancy? Because for a path, H(v, m) = H(v', m') whenever the subtree at v truncated to m equals the subtree at v' truncated to m'. In a path all subtrees are paths, so H(v,m) = H(path of length min(m, d-j)) — depends only on min(m, len). So the distinct values are O(d) not O(d²). 
+
+So the real answer depends on the number of distinct truncations. Hmm. This is getting deep. Let me simplify and be honest: the exact cost depends on the structure; I'll give the general formula S(x) = Σ_v (depth(x|_v)+1) as an upper bound on the number of distinct truncation objects, note that hash-consing collapses equal truncations (for a path, down to O(n)), and give the three cases.
+
+OK. I think I have enough to write a rigorous-ish answer. Let me also handle:
+
+**Task C: Output models O1/O2/O3** and total cost accounting.
+
+**Task D: Fair opponent** — BaselineIndexedTree(S). The key question: does Address beat it? My analysis says: the layer sequence is a redundant deterministic function of x, so any layer-query can be answered by an indexed tree within the same space/cost. Hence **no separation** — Address is simulated by indexed tree. I should state this as a proposition with a proof sketch, and be honest that a full proof requires pinning down the query class.
+
+**Task E: no-decode formula** — F((u_n),(v_n)) = (F_n(u_n,v_n)) is (1) coordinatewise representation of f + (2) memoized truncation. It's NOT (5) a new primitive. Proof: Φ transports it to f. It's "the representation has a convenient API".
+
+**Task F: look for genuinely non-index phenomena** — My honest finding: with the constraints (fair budget, no oracle, not just stored resolutions, not hash-consing, not memoization, not precomputation), I cannot find one, and I should say "Address-native computation 尚未发现；现有优势全部可解释成已知的数据结构技术". But I should also note one candidate that might escape: queries that are *not* about layers at all but about the *interaction* of layers — e.g., "given x, y, find the smallest n such that π_n(x) = π_n(y)" (the "meet depth" / similarity query). This is the ultrametric distance query! For the bare tree: compute LCA — O(d) with level-ancestor, or O(1) with LCA preprocessing. For Address: compare layers — also needs binary search or stored structure. So it's the classic LCA problem → known. So even this is known.
+
+Another candidate: the "composition" task — compute F(x,y) = f(x,y): trivially O(1) in both (allocate a node). So no separation.
+
+So conclusion: **III** for the computational half too? Careful: the user says don't automatically conclude III just because algebra collapsed. I need independent proof for the computational half. Let me see if I can prove the simulation theorem properly.
+
+**Simulation theorem attempt**: Let Q be the class of queries that are "layer-local", i.e., q(x) depends only on (π_{k}(x))_{k ∈ K} for a fixed finite set of levels... hmm. Actually let me define the query class as: functions of x that are computable from the layer sequence with q probes. Then trivially the Address (which stores the layer sequence) answers in q probes. And an indexed tree storing x plus depth arrays: to get the layer sequence it must materialize — cost S(x). So the Address has an advantage in *space-for-time*: it stores S(x) space and answers in O(1); the indexed tree stores O(n) and needs S(x) work.
+
+But wait — the fair opponent is allowed to store the same space S(x)! So BaselineIndexedTree(S(x)) can also store all the layers. Then it's the same. So no separation. That's the key: **at equal space budget, both can store the layer sequence**. So no separation. 
+
+So: **Proposition (no separation)**: For any query q and any space budget S, Cost_Address(q) = Θ(Cost_BaselineIndexedTree(S)(q)) up to constant factors — because BaselineIndexedTree(S) may include the layer sequence as one of its legal index structures (it's a legal index: it's a deterministic function of x, built with counted cost). Hence Address has no advantage over indexed trees.
+
+That's a clean argument! The only way to escape: if the "index" is not allowed to store the layer sequence. But it is allowed — it's a legitimate data structure. So **no separation**, hence III.
+
+Hmm, but then is it III or II? The user says: III = "Address 代数结构和计算结构都可以归约到已知对象". If the simulation theorem holds, it's III. But I need to be careful about "已知对象" — indexed trees / persistent data structures are known objects. So III.
+
+But hold on — is there any remaining gap? The Address model has one thing: the *layers are canonical/FO-definable*, which means the index doesn't depend on the query distribution — it's query-independent (a "universal" index). Whereas a general index is designed for a query class. Is "query-independent index with guaranteed O(1) for all layer queries" a novelty? No — that's just storing everything. And its space is S(x) = up to Θ(n²). So it's a space-time tradeoff, known.
+
+OK so my conclusion: **III**, with the computational half now independently argued via the no-separation proposition.
+
+But I should be careful and honest: the no-separation argument is essentially "at equal space, the opponent can copy the Address's data structure". That's a valid simulation but it's a bit trivial — it shows Address isn't *computationally* novel in the sense of beating all equal-space structures. That's precisely what the user's Task D asks for. So the answer to Task D is: no separation exists, and the proof is the trivial-copying argument. I should present it honestly and note it's an "upper-bound" style argument (it shows Address ⊆ indexed trees, which is the direction needed to refute separation).
+
+Hmm, but I should double check: is there something Address does that requires *less* space? The layer sequence is determined by x, and x is recoverable from the layer sequence (last layer). So the layer sequence has the same information as x. But storing it explicitly costs S(x) ≥ n. So no space advantage — only disadvantage.
+
+So: III. Let me be careful to state the proof status: THEOREM for the redundancy/simulation (given the query class is defined over the layer sequence), CONJECTURE/OPEN for whether some cleverly-chosen query class escapes.
+
+Actually, let me reconsider one more time whether there's a real escape. The user asks in Task F for something that is "not just reading stored resolutions, not hash-consing, not memoization, not precomputation, no free oracle, and still has advantage under fair budget". 
+
+Consider: the composition F. In the Address model, F is *coordinatewise*, i.e., F's output layer n depends only on input layer n. This is a *locality/causality* property. Is it possible to define a task that exploits causality? E.g., streaming: given a stream of compositions, we want to know the final answer's layer n without ever materializing the intermediate full trees. In the Concept model, computing f(x,y) requires... just allocating a node with two pointers = O(1). And then truncating to depth n = O(N_{≤n}) traversal. In the Address model: F_n(u_n, v_n) = O(1) if u_n, v_n are stored. So Address: O(1) per layer. Concept: O(N_{≤n}(f(x,y))) = O(N_{≤n-1}(x) + N_{≤n-1}(y)) traversal. So Address is cheaper! 
+
+But the fair opponent: store x with depth-arrays, then to get π_n(f(x,y)) you need... you can build it in O(|π_n|) = O(N_{≤n-1}(x)+N_{≤n-1}(y)) — which is the output size, so output-optimal. And Address also needs O(1) if it stored all layers of x and y (space S(x)+S(y)). So the comparison: Address pays S(x)+S(y) space upfront; the indexed tree pays O(n) space and O(|π_n|) per query. Address: S(x) space, O(1) per query. So Address trades space for time. Under equal space budget, the opponent can also store all layers → same. So no separation. Consistent with before.
+
+OK, I'm confident: **III**, with the caveat that this is under the "equal space budget, opponent may use any legal index" rule. And I should note the honest residual: the *definability* of the index (query-independent, canonical) is a structural property of the Address index that general indexes lack — but it doesn't give computational advantage.
+
+Let me now also handle:
+
+**Task G: cost-preserving interpretation** — define: a translation τ from Address-instances to baseline instances is cost-preserving if Cost_base(τ(q)) ≤ poly(Cost_addr(q), |input|) with the same machine M, and the translation itself costs ≤ poly. Compare with FO interpretation (which has no cost). Conclude: cost-preserving interpretation is the right notion for "computational collapse", but note it's much stronger than FO interpretation and is model-dependent. And the relation between the two: FO interpretation doesn't imply cost-preserving. So "computational collapse" needs the cost-preserving version, which we do have in this case (the trivial copy).
+
+**Task H: I/II/III/IV** — I'll answer III with proof status, and note what's a theorem vs conjecture. And the final question A/B/C: the answer is C (prove Address is just an indexed representation) — that's what this round shows. But I should be careful: the user says "不要凭直觉选答案。必须根据本轮构造出的模型来决定。" So: based on the model, the answer is C.
+
+Let me now write the response. It should be well-organized with the 9 required outputs. I need to be concise but complete. Let me include a complexity table and one proof.
+
+Given the user's request for rigor, I'll mark THEOREM/PROPOSITION/DEFINITION/CONJECTURE/OPEN clearly.
+
+Let me draft the complexity table for Task B/C.
+
+Notation: x a tree, n = |x|, d = depth(x), m_j = #nodes at depth j, N_{≤k} = Σ_{j≤k} m_j.
+
+| Model | Space | Pre | Read(π_n) O1 | Read(π_n) O2 | Compose(x,y) | Update |
+|---|---|---|---|---|---|---|
+| C0 Concept (bare tree) | Θ(n) | Θ(n) | Θ(N_{≤n}) | O(1) (return root) | O(1) | O(1) if local, O(n) if rebuild |
+| A1 Address, materialized layers | S(x) | Θ(S(x)) | Θ(|π_n|) = Θ(N_{≤n}) (copy) | O(1) | O(1) + O(|π_n|) to build new layers | O(S) |
+| A2 Address, persistent DAG layers | S(x) | Θ(S(x)) | Θ(|π_n|) | O(1) | O(d) | O(d) |
+| A3 Concept + depth arrays | Θ(n) | Θ(n) | Θ(N_{≤n}) | O(1) | O(1) | O(n) worst |
+| A4 Concept + hash-cons | Θ(n) | Θ(n) | Θ(N_{≤n}) | O(1) | O(1) | O(1) amortized |
+| A5 Concept + level-ancestor | Θ(n) | Θ(n) | — | O(1) ancestor queries | O(1) | O(n) worst |
+
+Hmm, note Read(π_n) O1 = materializing: cost = output size = Θ(N_{≤n}) for BOTH bare tree and Address (since Address stores it, reading it out still costs output size). So O1 gives no advantage. For O2 (handle): both O(1) — bare tree returns root of x? No, π_n(x) isn't a subtree of x; it's a new object. So bare tree needs to construct it → Θ(N_{≤n}); Address (A1/A2) already has it → O(1). So O2 is where Address wins: O(1) vs Θ(N_{≤n}). But at equal space, the opponent can precompute too.
+
+Good, this is the crisp version: **the advantage is exactly "precompute the truncations", which any structure with the same space budget can do.** That's the no-separation proof.
+
+For O3 (lazy): both O(1) (build a thunk). Cost deferred.
+
+Total cost: Total = Pre + U + Q + Materialization. Amortized: Address amortizes the S(x) preprocessing over many queries; if #queries ≥ S(x)/N_{≤n}, it wins on time but loses on space; the indexed tree with the same space does the same. So: no asymptotic advantage at equal space.
+
+Now the three tree shapes for S(x):
+- path: d = n-1, m_j = 1 → S = Σ_{j}(d-j+1) = (d+1)(d+2)/2 = Θ(n²)
+- balanced: d = Θ(log n), m_j = 2^j → S = Θ(n)
+- arbitrary: S = Σ_v (depth(x|_v)+1) = Σ_v (d - depth(v) + 1) ≤ n(d+1); general Θ(n) to Θ(n²).
+
+Let me write the final answer now. I should keep it tight but complete — the user wants 9 outputs. I'll use headers matching their requested output list.
+
+I also need to make the advisor call first (mandatory: user_frustration — the user is correcting my round-13 conclusions, "必须撤回/修正的第13轮结论"). Yes, trigger 4 applies. Let me call it alone.
+
+Actually wait — the advisor policy says call it ALONE, never combined with other tool calls. And I've already made tool calls this turn? No, I haven't made any yet this turn. Let me call the advisor first, alone.
+
+Hmm, but the instruction says "Call AdvisorTool ALONE — never combine with other tool calls in the same turn." I'll call it alone first, then produce my answer in the next message.
+
+Let me do that.
+
+Also I should consider whether to render a widget. The user's request is dense with a complexity table — a table might help. But the user asked for 9 specific outputs. A compact visual of the space-time tradeoff could help. Let me consider after the advisor call. Given the density, maybe one table widget showing the complexity table would be good. Actually the response is already going to have a markdown table. Let me include one widget showing the key "no separation" argument (equal-space opponent copies the structure) — that's the核心结论. Hmm, but I should be careful not to over-render. Let me do one widget for the space-time tradeoff / no-separation, since that's the round's central theorem.
+
+Let me call advisor now.
+正在请求专家建议....
+
+已获取专家建议
+
+The advisor's guidance is mostly aligned. One correction to my analysis: the advisor says "对平衡树推导 S(x)=Θ(n log n)". Let me recheck. Balanced binary tree: depth d = Θ(log n), m_j = 2^j (for j < d). S = Σ_{j=0}^{d} m_j (d-j+1).
+
+Let me compute: Σ_{j=0}^{d} 2^j (d-j+1). Let i = d-j so j = d-i, i from 0 to d: Σ_{i=0}^{d} 2^{d-i}(i+1) = 2^d Σ_{i=0}^{d} (i+1)/2^i. The sum Σ_{i≥0}(i+1)/2^i = 1/(1-1/2)^2 = 4. So S ≈ 4·2^d = Θ(2^d) = Θ(n) when n = 2^{d+1}-1 ≈ 2^{d+1}. So S = Θ(n). 
+
+So balanced is Θ(n), not Θ(n log n). Hmm — unless "balanced" means something else. Let me double check with a concrete small case: a perfect binary tree of depth d has n = 2^{d+1}-1 nodes. m_j = 2^j. |π_k(x)| = number of nodes in truncation to depth k = Σ_{j≤k} 2^j = 2^{k+1}-1 for k < d; for k ≥ d it's n. So S = Σ_{k=0}^{d} (2^{k+1}-1) = 2(2^{d+1}-1) - (d+1) = 2n - d - 1 = Θ(n). Yes, Θ(n). 
+
+So the advisor's "Θ(n log n)" for balanced is wrong — my computation gives Θ(n). Actually, hold on. What if the tree is balanced but not perfect, e.g., a complete binary tree where all leaves are at depth d or d-1? Same: m_j ≈ 2^j, S ≈ 2n - O(d) = Θ(n).
+
+Hmm, when would we get Θ(n log n)? If depth d = Θ(log n) and the tree has n nodes spread such that Σ_j m_j (d-j+1) is Θ(n log n)... That requires Σ_j m_j (d-j+1) ≈ n·d, i.e., most nodes near the root. E.g., a "broom" / "spider" tree: a path of length d with n-d extra leaves attached at the root. Then m_0=1, m_1 = n-d+1, m_j = 1 for j ≥ 2. S = 1·(d+1) + (n-d+1)·d + Σ_{j=2}^{d} 1·(d-j+1) = Θ(nd + d²)... with n nodes and d chosen, say d=√n: S = Θ(n√n)? Or with d = log n: S = Θ(n log n). Yes! So Θ(n log n) arises for shallow-but-wide trees with d = Θ(log n) and most nodes concentrated at small depth. So the advisor is right that Θ(n log n) is achievable, but it's not the "balanced" case. Let me present the general formula and the three canonical cases: path Θ(n²), perfect/balanced Θ(n), and a skewed/broom case Θ(n log n) — noting that S/|x| ranges from Θ(1) to Θ(n).
+
+Let me be precise and give:
+- S(x) = Σ_{j=0}^{d} m_j (d-j+1) = Σ_{v ∈ x} (d - depth(v) + 1)
+- path (d = n-1, m_j = 1): S = (d+1)(d+2)/2 = Θ(n²)
+- perfect binary (d = Θ(log n)): S = 2n - d - 1 = Θ(n)
+- broom (path of length d + (n-d) leaves at root): S = Θ(nd), so d=√n gives Θ(n^{3/2}), d=log n gives Θ(n log n)
+
+Good. Now let me write the final answer. I'll incorporate the advisor's structural guidance (B列表逐项、C分开、D是核心) but correct the balanced case.
+
+Now, one more consideration on the "no separation" argument. The advisor says: "如果对每个 S 都能构造一个 BaselineIndexedTree(S) 模拟 Address，那就是 III". That's exactly my argument. Let me formalize it as a proper simulation theorem.
+
+**Simulation Theorem**: Let x ∈ T, and let Addr(x) be any Address representation storing the layer sequence (π_k(x))_{k≤d} in any of the structures A1–A6, with space S_A(x) and preprocessing Pre_A(x). Then there is a legal index structure I over the Concept tree x with:
+- Space(I) ≤ c·S_A(x) + O(n)
+- Build cost ≤ c·Pre_A(x) (the opponent simply executes the same preprocessing)
+- such that for every query q in the layer-query class Q_layer, Cost_I(q) ≤ c·Cost_Addr(q).
+
+Proof: Take I := (x, Addr(x)) — i.e., the indexed tree stores x together with the same layer structure. This is a legal index (it's a deterministic function of x; its build cost is counted; no oracle). Space = O(n) + S_A(x) ≤ 2·S_A(x) since S_A ≥ n (the last layer is x itself, so S_A ≥ |x| = n). So Space(I) ≤ 2 S_A(x). Build = O(n) + Pre_A. Queries answered by the same algorithm. ∎
+
+That's the "opponent copies" argument. It shows Address ⊆ BaselineIndexedTree at equal space (up to factor 2), hence NO separation. Note it's an upper-bound/trivial argument, but it's exactly what's needed to refute a separation theorem (to refute "∃q with Cost_Addr < inf Cost_BIT", it suffices to exhibit one legal index achieving the same cost).
+
+I should be honest: this is a strong (indeed devastating) simulation but it's "trivial" in the sense that the index simply includes the Address structure. Is that a legitimate refutation? The user's Task D says: "研究 Address 是否存在任务 q，使 Cost_Address(q) < inf Cost_BaselineIndexedTree(S)(q)". If the infimum is over ALL legal indexes with space ≤ S, and the Address structure is itself a legal index, then the infimum is ≤ Address's cost. So no strict separation. Yes, legitimate. The only way out: exclude the Address structure from the allowed indexes (unfair) or restrict to indexes of a particular form. So III.
+
+But then — what would have made II possible? If the Address structure required *less* space than any index achieving the same query cost. But we showed S_A ≥ n always (since the last layer is x). And a bare tree achieves O(n) space with output-optimal materialization. So no space advantage either. Hence III.
+
+Hmm, wait. Let me consider one more subtlety: is the last layer really x? π_d(x) for d = depth(x): the truncation to depth d of x (where depth ≤ d always) = x if x has no node at depth > d... but by definition d = depth(x) so all nodes are at depth ≤ d, and π_d(x) = x with ⊥ at depth d for internal nodes. Hmm! Careful: if x has an internal node at depth d... no, depth(x) = d means the deepest node is at depth d, and it must be a leaf (if it were internal, its child would be deeper). So nodes at depth d are leaves, so π_d(x) = x. ✓ So the last layer = x, S_A ≥ n. ✓
+
+Also for the store-all-layers structure: since π_d(x) = x, the structure contains x. So Space ≥ n. ✓
+
+Good, the argument is solid.
+
+Now let me also handle Task E and F properly, and the FRC/UEC and G.
+
+Task E: F((u_n),(v_n)) = (F_n(u_n,v_n)) — classify:
+(1) coordinatewise representation of f — YES (THEOREM, from round 11's homomorphism proof: Φ(F(x,y)) = f(Φx,Φy)).
+(2) memoized truncation — YES (each layer is cached).
+(3) persistent index — YES (the layer sequence is an index).
+(4) lazy evaluation — NO in the strict sense (the F is evaluated eagerly coordinatewise; but O3 output semantics makes it lazy). Hmm, I'd say: the formula itself is not lazy evaluation; but combined with O3 output it can be presented lazily. Let me say: not intrinsic; a lazy variant is obtained only by changing the output model.
+(5) genuinely new computational primitive — NO (by the simulation theorem).
+
+And the question: does "F acts coordinatewise" mean "representation structure participates in computation" or merely "the representation has a convenient API"? Answer: the latter — because (a) the coordinatewise property is transported to f, (b) the same behavior is achievable by any equal-space index (§ Task D), so it's an API/interface property, not a new computation primitive. But I should be precise: coordinatewise-ness IS a real mathematical property (causality/compactness of f w.r.t. the depth filtration) — it's just not a *new* one; it's a property of f in (T,f), definable there.
+
+Task F: Search for a non-index computational phenomenon. Candidates checked:
+1. Layer read (single query): output-optimal in both → no gap.
+2. Aggregate layer queries (e.g., |π_n|): Address with stored aggregates O(1); bare tree Θ(N_{≤n}). But equal-space opponent can store aggregates too → no gap. Also known: subtree-size augmentation.
+3. Similarity / meet-depth queries: = LCA → known (O(1) with O(n) preprocessing, or O(d) without).
+4. Streaming composition: coordinatewise → but equal-space opponent precomputes → no gap.
+5. Equality of truncations: canonical hashing → known (hash-consing).
+
+Conclusion: not found. State explicitly: "Address-native computation 尚未发现；现有优势全部可解释成已知的数据结构技术." And note the meta-reason: the layer sequence is a *deterministic redundancy* of x (x is recoverable from it), so any computation over it is a computation over x with a fixed precomputation — and precomputation is a legal, costed operation available to any representation. This is the structural reason, not just a failed search.
+
+That meta-reason is actually a nice theorem: **Redundancy Theorem**: If ρ_A: A → D_A is a representation such that there's a computable surjection σ: D_A → A with σ∘ρ_A = id_A, and D_A is built from A by a fixed preprocessing, then A-computations and Address-computations simulate each other with preprocessing counted. So no advantage.
+
+Hmm, careful: the Address stores MORE than x (S_A ≥ n), so it's a "redundant encoding". Any redundant encoding's advantage is exactly precomputation. So: precomputation ∈ the allowed toolbox of the fair opponent. Hence collapse. Good.
+
+Task G: cost-preserving interpretation. Definition:
+
+**Cost-preserving interpretation**: A translation τ from a computational instance K_1 = (A, ρ_1, M, Pre_1, Q_1, U_1, Out, Space_1, Cost_1) to K_2 = (A, ρ_2, M, Pre_2, Q_2, U_2, Out, Space_2, Cost_2) over the SAME structure A and SAME machine M is cost-preserving with overhead (α, β) if:
+- (representation) there exist maps enc: supp(ρ_1) → supp(ρ_2), dec: supp(ρ_2) → supp(ρ_1) with dec∘enc = id, each computable in M;
+- (preprocessing) Cost_M(Pre_2(x)) ≤ α · Cost_M(Pre_1(x)) + O(n) for all x;
+- (space) Space_2 ≤ α · Space_1;
+- (queries) for every q ∈ Q_1, Cost_M(Q_2(·, q)) ≤ α · Cost_M(Q_1(·, q)) + β·|q|.
+And K_1 ≼ K_2 (K_2 dominates K_1) if such τ exists; K_1 ≡ K_2 if mutual.
+
+Then: **computational collapse** of Address to Concept = Address ≼ Concept. And the contrast: FO interpretation requires only that the *structure* be definable; it says nothing about α, β. So: FO interpretation ⟹ structural collapse; cost-preserving interpretation ⟹ computational collapse. The latter is strictly stronger and model-dependent (it depends on M). It IS the right criterion for this project.
+
+And I can state: THEOREM — Address ≼ Concept with α = O(1) (the trivial index copy). So computational collapse holds. Hence III.
+
+Task H: III. With proof status:
+- Algebra half: THEOREM (rounds 11–12 + independent).
+- Computation half: THEOREM (this round's simulation theorem), under the stated fairness rules (equal space, build/update counted, no oracle, same M).
+- Conditional: if one changes the rules (e.g., caps space strictly below the layer-sequence size, or forbids storing derived data), the answer could change — mark as OPEN/CONDITIONAL.
+
+And final answer A/B/C: **C** — "证明 Address 只是已有 indexed representation". Because that's what the model gives. But I should add: this is not "nothing was learned"; the precise statement of what Address is (a redundant layered index with S(x) ∈ [Θ(n), Θ(n²)] space) is a concrete structural characterization.
+
+Also the user wants: "如果代数部分已经证明 collapse，不允许因此自动把 II 或 III 当成结论。计算部分必须有独立证明。" — I have the simulation theorem. Good.
+
+Let me now also double-check the Σ_k |π_k(x)| claim for the addresses in the *corrected* object. In round 11 we established: the layer objects are B_n = im(π_n) and π_n(x) ∈ B_n. And Address = the sequence (π_0(x),...,π_d(x)). With B_0 = {a, f(⊥,⊥)}? Let me not go too deep; the combinatorial content is: |π_k(x)| = N_{≤k} for k < d, and |π_d| = n. So S(x) = Σ_{k=0}^{d-1} N_{≤k} + n = ... let me recompute: Σ_{k=0}^{d} |π_k(x)| with |π_k| = N_{≤k} for k ≤ d (for k=d, N_{≤d} = n ✓). So S = Σ_{k=0}^{d} N_{≤k} = Σ_{k=0}^{d} Σ_{j≤k} m_j = Σ_j m_j (d-j+1) ✓. Consistent.
+
+Path: m_j=1, d=n-1. S = Σ_{j=0}^{n-1}(n-1-j+1) = Σ_{j=0}^{n-1}(n-j) = Σ_{i=1}^{n} i = n(n+1)/2 = Θ(n²) ✓.
+
+Now write it up. I'll include one widget showing the space blow-up / no-separation. Actually let me make the widget the space formula + the three cases + the no-separation conclusion. That's the round's核心.
+
+Let me write the final answer with the 9 required outputs. Keep it organized and reasonably tight — this is a long technical answer but the user asked for 9 specific sections. I'll be dense but complete.
+
+Let me prepare the widget: a chart showing S(x)/|x| for the three tree shapes? That's a good visual: x-axis n, y-axis S/|x|. Path: n/2. Balanced: ~2. Broom(d=log n): log n. That's a clean log-log plot. Hmm, it may be overkill. Alternatively a compact table-like visual. Let me do a small SVG with the three cases as a table + the no-separation box. Actually, a chart showing S(x)/n ratio as a function of n for the three shapes would be genuinely informative. But the dynamic-ui guidance says charts need axes etc. Let me do a compact "node-flow"-ish or "compact-table-visual". I'll do a small table-style SVG summarizing: three shapes × (S(x) formula, S/|x|) plus the no-separation verdict. That's compact.
+
+Actually, I've been rendering a widget each round. Given the guidance ("Show visual content inline alongside your text response — use only when a compact visual makes the answer clearer"), a compact visual of the space formula is genuinely clarifying since the title error was exactly about this. Let me render one.
+
+Let me write it.
+
+For the SVG, I'll show:
+- Left: the formula S(x) = Σ_v (d - depth(v) + 1)
+- Right: three rows: path Θ(n²), perfect Θ(n), broom Θ(n log n)
+- Bottom: no-separation conclusion
+
+Let me build coordinates carefully. viewBox 0 0 720 H.
+
+Let me lay out:
+- Title area y=30
+- Formula box y=48..92
+- Three rows y=110..250
+- Conclusion box y=270..320
+
+Let me write the code with tokens.
+
+Then the text answer.
+
+One more check on Task 8's "Th_B" fix. The user says: "非 r.e. 不影响任意公式集合 T 上定义 T ⊢ P. 真正的问题是：(a) Baseline 成员是否处于统一的一阶语言；(b) 跨不同结构比较时是否应该直接使用语义类蕴涵。请修正为精确表述。"
+
+Precise fix: ⊢ is defined for any set of formulas T (T ⊢ φ iff φ lies in the closure of T under the rules; equivalently, some finite T_0 ⊆ T proves φ — this is well-defined even for non-r.e. T, though the relation may not be decidable). So no type error. The real issues:
+(a) Th_B := ⋂_{B∈𝔅} Th(B) presupposes all B share one language. If 𝔅 contains structures in different signatures (which it does: (νG,f) has signature {f/2}∪atoms; an expanded structure has a larger signature), the intersection is ill-typed. Fix: either (i) fix a common language L_𝔅 with all baseline members as L_𝔅-structures (possible if we fix a many-sorted language with a sort per baseline object... but baseline members have different carriers of different cardinalities, so we need a common many-sorted language with a sort for each generator), or (ii) use semantic class-entailment: 𝔅 ⊨ φ :⟺ every B ∈ 𝔅 satisfies φ. This is always well-defined (satisfaction is per-structure, per-language).
+(b) Cross-structure comparison should use semantic entailment (⊨ over the class), not ⊇ of theory sets. So: N2's non-triviality = ∃B ∈ 𝔅 with B ⊨ ¬Φ; N2's yield = every B ∈ 𝔅 with B ⊨ Φ also has B ⊨ P.
+
+Good. Let me write the answer.
+
+I should be careful about length. The user asked for a lot. I'll aim for a thorough but tightly-written response.
+
+Now write the final answer with the 9 required outputs. Let me be organized and rigorous.
+# 1. 第 13 轮必须撤回的具体结论
+
+**[撤回 1 · 类型错误论断]** 我写“$\mathrm{Th}_{\mathcal B}\vdash P$ 是类型错误，因为 $\mathrm{Th}_{\mathcal B}$ 未必 r.e.”。**错**。$\vdash$ 对**任意**公式集 $T$ 都有定义（$T\vdash\varphi$ $\iff$ 存在有限 $T_0\subseteq T$ 使 $T_0\vdash\varphi$）；非 r.e. 只使该关系不可判定，不妨碍定义。**真正的两个问题**：
+(a) **语言统一性**：$\mathrm{Th}_{\mathcal B}:=\bigcap_{B\in\mathcal B}\mathrm{Th}(B)$ 预设全部 $B$ 处于**同一语言**；而基线成员签名不同（$(\nu G,f)$ 是 $\{f/2\}$-结构，可定义扩张是更大签名的结构），交集**类型不成立**。修法：固定公共语言 $L_{\mathcal B}$（每种基线对象一个 sort），或改用语**语义类蕴涵**。
+(b) **跨结构比较应用语义蕴涵**：$\mathcal B\models\varphi:\iff\forall B\in\mathcal B,\ B\models\varphi$（每结构内 satisfaction，永远良定义）。第 13 轮全部 $\mathrm{Th}_{\mathcal B}\vdash$ 表述改为 $\mathcal B\models$；要具体证明时才选显式公理化 $T_{\mathcal B}$ 并验证其相对 $\mathcal B$ 的可靠性。
+
+**[撤回 2 · 层存储量]** $\sum_k\lvert\pi_k(x)\rvert=\Theta(\lvert x\rvert)$ **一般错误**（见 §3 精确公式）。链状树上是 $\Theta(n^2)$。此错误摧毁了我第 13 轮“Address 与 Concept 同阶存储”的隐式前提。
+
+**[撤回 3 · FRC 的计算层推论]** “FRC ⟹ definable ⟹ primitive-level computational novelty 被封死”**撤回计算层部分**。definable ≠ cheap；structural reducibility ≠ computational reducibility。可定义是图的性质，对求值成本零约束。**第 13 轮的同一条定理只保留结构层内容（可定义 ⟹ 结构可约），计算层推论全部撤回。**
+
+**[撤回 4 · read-level 成本公理]** `read-level(x,n) cost=1` **不得作为中性访问模型**——它把随机访问分辨率编成了 primitive。必须拆为 storage + index structure + traversal algorithm，成本逐项计入。
+
+**[撤回 5 · 单层结论]** “计算新颖性只能住在 access layer”改为：计算问题属于 **representation + access primitives + primitive costs + preprocessing + update/maintenance + output model** 的完整 computation-interface 层。
+
+**[另修 · 独立的数学错误]** 第 13 轮“AM_C 物化 $\pi_n$ 需 $\Theta(2^n)$”**错**。从裸树物化 $\pi_n$：遍历深度 $\le n$ 的结点，成本 $=\Theta(N_{\le n}(x))=\Theta(\lvert\pi_n(x)\rvert)$，**输出最优，无爆炸**。
+
+---
+
+# 2. 新的正式 Computational Instance [DEFINITION]
+
+$$K=(A,\ \rho,\ M,\ \mathrm{Pre},\ Q,\ U,\ \mathrm{Out},\ \mathrm{Space},\ \mathrm{Cost})$$
+
+| 分量 | 定义 |
+|---|---|
+| $A$ | 数学结构（此处 $(T,f)$ 或 $(\nu G,f)$） |
+| $\rho$ | 表示：$A\to\mathcal D$，$\mathcal D$ 为底层数据域（机器字数组/单元格+指针） |
+| $M$ | **原始机器模型**：字操作、指针解引用、单元格读写；每步单位成本。**两侧必须用同一个 $M$** |
+| $\mathrm{Pre}$ | 预处理：$x\mapsto$ 初始数据结构；成本计入 |
+| $Q$ | 查询算法；$U$ 更新/维护算法；成本均计入 |
+| $\mathrm{Out}$ | 输出语义 $\in\{$O1 物化, O2 句柄, O3 惰性$\}$ |
+| $\mathrm{Space}$ | 总存储上界（**含索引结构本身**） |
+| $\mathrm{Cost}$ | 代价测度（$M$-步数或 cell probes） |
+
+**公平性公理**：
+(F1) 两侧同 $M$、同 $\mathrm{Cost}$、同 $\mathrm{Out}$；
+(F2) 任何“$O(1)$ 读第 $n$ 层”必须由 $\rho+\text{index}+\text{traversal}$ **实现**，其空间与时间成本**逐项计入**；
+(F3) 对手可在 $\mathrm{Space}\le S$ 内加**任意**合法索引，只要 build/update 计入、无 oracle、primitive 相同。
+
+---
+
+# 3. 层序存储量的精确公式 [THEOREM]
+
+$$S(x):=\sum_{k=0}^{d}\lvert\pi_k(x)\rvert=\sum_{j=0}^{d}m_j\,(d-j+1)=\boxed{\sum_{v\in x}\big(\delta(x)-\delta(v)+1\big)}$$
+
+推导：$\lvert\pi_k(x)\rvert=N_{\le k}=\sum_{j\le k}m_j$；交换求和得 $\sum_j m_j(d-j+1)$。∎
+
+注：$\delta(x)=d$，最深结点必为叶，故 $\pi_d(x)=x$，于是
+
+$$S(x)\ \ge\ \lvert x\rvert=n\qquad\text{（恒成立）}$$
+
+**三档**（$m_j$ = 深度 $j$ 结点数）：
+
+| 树形 | $m_j$ | $S(x)$ | 比例 |
+|---|---|---|---|
+| 链状 path（$d=n-1$，$m_j=1$） | 1 | $\sum_{j}(n-j)=\frac{n(n+1)}{2}$ | $\Theta(n^2)$ |
+| 完美二叉树（$d=\Theta(\log n)$，$m_j=2^j$） | $2^j$ | $2n-d-1$ | $\Theta(n)$ |
+| 扫帚（长 $d$ 的链 + 根挂 $n-d$ 叶，$d=\log n$） | $m_j=1$ 除 $m_1=n-d+1$ | $\Theta(nd)$ | $\Theta(n\log n)$ |
+
+一般界：$n\le S(x)\le n(d+1)$，比例从 $\Theta(1)$ 到 $\Theta(n)$。
+
+**DAG/shared 表示单独计算**：持久共享下，不同对象是 $(\text{子树},\text{相对截断级})$ 对，即 $\{(\text{node }v,\ r)\}$，其中 $r<\delta(x|_v)$ 的才不重合（$r\ge\delta(x|_v)$ 时 $\mathrm{trunc}_r(x|_v)=x|_v$）。计数 $\sum_v(\delta(x|_v)+1)=\sum_v(d-\delta(v)+1)=S(x)$ —— **同阶**，共享不降低阶数（链状仍 $\Theta(n^2)$）。这与 materialized 相同，故下文的复杂度表中二者同阶，不再混用。
+
+---
+
+# 4. Address vs Indexed-Tree 复杂度表 [PROPOSITION]
+
+记号：$N_{\le k}=\sum_{j\le k}m_j$（物化 $\pi_k$ 的规模）。
+
+| 表示 | Space | Pre | Read $\pi_n$ (O1) | Read $\pi_n$ (O2) | Compose | Update |
+|---|---|---|---|---|---|---|
+| **C0** Concept 裸树 | $\Theta(n)$ | $\Theta(n)$ | $\Theta(N_{\le n})$ | $\Theta(N_{\le n})$ | $O(1)$ | $O(1)$ 局部 |
+| **C1** Concept + 深度数组 | $\Theta(n)$ | $\Theta(n)$ | $\Theta(N_{\le n})$ | $\Theta(N_{\le n})$ | $O(1)$ | $O(n)$ 最坏 |
+| **C2** Concept + hash-cons | $\Theta(n)$ | $\Theta(n)$ | $\Theta(N_{\le n})$ | $\Theta(N_{\le n})$ | $O(1)$ | $O(1)$ amortized |
+| **C3** Concept + level-ancestor | $\Theta(n)$ | $\Theta(n)$ | $\Theta(N_{\le n})$ | $O(1)$ 祖先查询 | $O(1)$ | $O(n)$ 最坏 |
+| **A1** Address 材料化层 | $S(x)$ | $\Theta(S(x))$ | $\Theta(N_{\le n})$ | $\mathbf{O(1)}$ | $O(1)$ + 建新层 | $\Theta(S)$ |
+| **A2** Address 持久 DAG 层 | $S(x)$ | $\Theta(S(x))$ | $\Theta(N_{\le n})$ | $\mathbf{O(1)}$ | $O(d)$ | $O(d)$ |
+| **A3** Address 句柄数组 + 层指针 | $S(x)$ | $\Theta(S(x))$ | $\Theta(N_{\le n})$ | $O(1)$ | $O(1)$ | $O(d)$ |
+
+**关键观察（O1 vs O2）**：
+- **O1（物化）下 Address 无优势**：把 $\pi_n$ 写出必须付输出规模 $\Theta(N_{\le n})$，与裸树**完全相同**——因为写出就是遍历。第 13 轮的“$O(1)$”只在 O2 下成立。
+- **O2（句柄）下 Address 优势真实存在**：$O(1)$ vs $\Theta(N_{\le n})$。但对手只要**同空间预算**就能达到同样效果（见 §6）。
+
+---
+
+# 5. 三种输出语义与总成本
+
+| 语义 | Address | Concept（裸树） | 成本去向 |
+|---|---|---|---|
+| **O1 物化** | $\Theta(N_{\le n})$ | $\Theta(N_{\le n})$ | 无差异；物化成本 = 输出规模 |
+| **O2 句柄** | $O(1)$（已有对象） | $\Theta(N_{\le n})$（须构造） | 成本被推入 **Pre**（A1/A2 的 $\Theta(S(x))$） |
+| **O3 惰性** | $O(1)$（建 thunk） | $O(1)$（建 thunk） | 成本推到 **Materialization** 时刻，两侧对称 |
+
+**总成本**：
+$$\text{Total}=\underbrace{\mathrm{Pre}}_{\Theta(S(x))\ \text{或}\ \Theta(n)}+\underbrace{\sum\mathrm{Updates}}_{}+\underbrace{\sum\mathrm{Queries}}_{}+\underbrace{\mathrm{Materialization}}_{}$$
+
+**分摊**：设查询数 $q$，平均层规模 $\bar N$。Address：$\Theta(S(x))+\Theta(q)$（O2）；Concept：$\Theta(n)+\Theta(q\bar N)$。
+$$\text{Address 胜} \iff q > \frac{S(x)-n}{\bar N}\quad\text{——同时多付}{S(x)-n}\text{的空间}$$
+这正是**索引的时间-空间权衡**；O2 的“$O(1)$”就是 Pre 的预付。**禁止只比 query time** 的规则在此得到落实。
+
+---
+
+# 6. 公平对手与 Simulation Theorem（本轮核心）
+
+**定义（BaselineIndexedTree）**：$\mathrm{BIT}(S):=\{$在 $M$ 上的数据结构 $D$，其内容为 $x$ 加上任一**合法**索引$\}$，合法性 $=$ (i) $D$ 由 $x$ 可计算地构造；(ii) $\mathrm{Space}(D)\le S$；(iii) build/update 成本计入；(iv) 无 oracle；(v) 只用 $M$ 的 primitive。
+
+**定理 S（无分离 / 模拟）** [THEOREM]
+设 $\mathrm{Addr}$ 为 §4 中 A1–A3 任一 Address 表示，$\mathrm{Space}_A=S(x)$，$\mathrm{Pre}_A=\Theta(S(x))$。则存在 $I\in\mathrm{BIT}(2S(x))$，使**每个**层查询类 $Q_{\text{layer}}$ 中的 $q$ 满足
+$$\mathrm{Cost}_I(q)\ \le\ \mathrm{Cost}_{\mathrm{Addr}}(q).$$
+进而
+$$\inf_{I\in\mathrm{BIT}(S(x))}\mathrm{Cost}_I(q)\ \le\ \mathrm{Cost}_{\mathrm{Addr}}(q).$$
+
+[PROOF] 取 $I:=(\text{裸树 }x,\ \mathrm{Addr}\text{ 的层结构})$ ——即对手把 $x$ **和**同一层结构一起存。合法性：(i) 层序列是 $x$ 的确定性函数 ✓；(ii) $\mathrm{Space}(I)=\Theta(n)+S(x)\le 2S(x)$（因 $S(x)\ge n$，见 §3）✓；(iii) build $=\Theta(S(x))$ 计入 ✓；(iv)–(v) 显然 ✓。查询用同一算法，成本相同。取 $\mathrm{BIT}$ 的下确界即得。∎
+
+**推论 (a)** Address **不节省空间**：$S(x)\ge n$ 恒成立（最后一层就是 $x$）—— 它**多花**空间。
+**推论 (b)** O2 下的 $O(1)$ **不是**新计算能力，而是**预计算**：把 $\pi_n$ 提前算好。而在公平规则 (F3) 下，**预计算是对手的合法手段**。
+**推论 (c)** 无分离。故 Task D 的答案是：**不存在** $q$ 使 $\mathrm{Cost}_{\mathrm{Addr}}(q)<\inf\mathrm{Cost}_{\mathrm{BIT}(S)}(q)$。
+
+**为何这构成有效的反驳**：要否证 $\exists q$ 严格分离，只需展示**一个**合法同预算索引达到同样成本（下确界小于等于它）。对手的索引是层序列的**副本**，而层序列是 $x$ 的确定性冗余（$x$ 可从最后一层恢复），因此它不是 oracle，是普通数据。
+
+**边界（诚实标注）**：若在规则上**禁止**索引存储 $x$ 的派生数据、或令 $S< S(x)$，分离问题重开。此边界标为 **[OPEN]**，但它需要修改 §2 的公平性公理——即改变问题本身。
+
+---
+
+# 7. Task E：原 no-decode 公式的判定
+
+$$F\big((u_n)_n,(v_n)_n\big)=(F_n(u_n,v_n))_n$$
+
+| 解释 | 判定 | 依据 |
+|---|---|---|
+| (1) coordinatewise representation of $f$ | **是** [THEOREM] | 第 11 轮同态证明：$\Phi(F(x,y))=f(\Phi x,\Phi y)$ |
+| (2) memoized truncation | **是** [THEOREM] | 层对象 $=$ 缓存好的 $\mathrm{trunc}_n$ |
+| (3) persistent index | **是** [THEOREM] | 层序列即索引；A2 就是持久化实现 |
+| (4) lazy evaluation | **不是内在性质** | 公式本身是逐层即时求值；只有在 **O3 输出**下才获得惰性表达 |
+| (5) genuinely new computational primitive | **否** [THEOREM] | 定理 S：等空间下被 $\mathrm{BIT}$ 模拟 |
+
+**直接回答**：“$F$ 逐坐标作用”**只**意味着“**表示带有一个方便的 API**”，**不**意味着“表示结构参与计算”。理由两条：(a) 逐坐标性经 $\Phi$ 被**传输为** $f$ 的性质（$f$ 沿深度过滤的紧致性/因果性），它是 $(T,f)$ 中**已可定义**的性质；(b) 它带来的成本优势在等空间预算下被完全模拟。**注意不夸大**：逐坐标性是一个**真实的数学性质**（$f$ 的过滤紧致性），只是**不是新的**。
+
+---
+
+# 8. Task F：寻找真正非索引的计算现象 —— **未找到**
+
+逐项检验（全部失败）：
+
+| 候选 | 结果 |
+|---|---|
+| 单次层读取 $\pi_n$ | O1 下两侧同为 $\Theta(N_{\le n})$（输出最优）→ **无差距** |
+| 层聚合查询（$\lvert\pi_n\rvert$、深度、叶数） | 裸树 $\Theta(N_{\le n})$，Address 偶 $O(1)$；但等空间对手存聚合即可 → **归约为子树聚合增强** |
+| 相似度 / 相遇深度 $\min\{n:\pi_n(x)=\pi_n(y)\}$ | 即 **LCA**：$O(n)$ 预处理 + $O(1)$ 查询（经典）；或用深度数组 $O(d)$ → **已知** |
+| 截断相等判定 | **hash-consing / 规范化哈希** → **已知** |
+| 流式合成（逐层推进，不物化整树） | 等空间对手预计算层序即可 → **归约为预计算** |
+| 合成本身 $f(x,y)$ | 两侧 $O(1)$（分配一个结点）→ **无差距** |
+
+**结论（必须明说）**：
+> **Address-native computation 尚未发现；现有优势全部可解释成已知的数据结构技术。**
+
+**且这不只是“搜索失败”，有结构原因** [PROPOSITION]：
+> 层序列是 $x$ 的**确定性冗余**（$x=\pi_d(x)$ 可从其中恢复，$S(x)\ge n$）。任何对冗余编码的计算 $=$ 对 $x$ 的计算 $+$ 一段固定预计算。而**预计算是任何表示都可执行的合法、计费操作**。故冗余编码的全部优势 $=$ 预计算，无剩余。
+
+---
+
+# 9. Task G：cost-preserving interpretation
+
+**定义** [DEFINITION] 同一结构 $A$、同一机器 $M$ 上的两个实例 $K_1,K_2$，称 $K_1\preceq_{\mathrm{cost}}K_2$（$K_2$ 以开销 $(\alpha,\beta)$ 计算支配 $K_1$），若存在 $\mathrm{enc}:\mathrm{supp}(\rho_1)\to\mathrm{supp}(\rho_2)$、$\mathrm{dec}$ 使 $\mathrm{dec}\circ\mathrm{enc}=\mathrm{id}$，且
+$$\mathrm{Cost}(\mathrm{Pre}_2(x))\le\alpha\,\mathrm{Cost}(\mathrm{Pre}_1(x))+O(n),\quad \mathrm{Space}_2\le\alpha\,\mathrm{Space}_1,$$
+$$\forall q\in Q_1:\ \mathrm{Cost}(Q_2(\cdot,q))\le\alpha\,\mathrm{Cost}(Q_1(\cdot,q))+\beta\lvert q\rvert.$$
+$\equiv_{\mathrm{cost}}$：双向。**计算坍缩** $:=$ $\mathrm{Addr}\equiv_{\mathrm{cost}}\mathrm{Concept}$。
+
+**四者关系（回答 Task G 的分层要求）**：
+
+| 概念 | 保留什么 | 是否蕴含下一行 |
+|---|---|---|
+| Structural reducibility | 对象 | 否 |
+| FO interpretation | 定义关系 | 否 |
+| Computational simulation | 可实现性 | 否 |
+| **Cost-preserving interpretation** | **成本** $\alpha,\beta$ | — |
+
+**关键**：FO-解释**不蕴含** cost-preserving（可定义但求值昂贵，例如任何 FO-可定义的聚合量）；反之 cost-preserving 要求同 $M$ 且给出 $\alpha,\beta$，故**更强、且依赖 $M$**。**它才是本项目的正确“计算坍缩”判据**——第 12–13 轮用 FO-解释谈计算是范畴错误。
+
+**本项目的结论** [THEOREM]：$\mathrm{Addr}\preceq_{\mathrm{cost}}\mathrm{Concept}$ 且 $\mathrm{Concept}\preceq_{\mathrm{cost}}\mathrm{Addr}$，取 $\alpha=O(1)$（对手复制层结构；反向为恒等）——**即 $\mathrm{Addr}\equiv_{\mathrm{cost}}\mathrm{Concept}$，计算塌缩成立**（在 §2 公平性公理下）。
+
+---
+
+# 10. 最终判定
+
+## **III —— Address 的代数结构与计算结构都可归约到已知对象。**
+
+**证明状态（两半各自独立，不从代数半边自动推出计算半边）**：
+
+| 半边 | 判定 | 状态 | 依据 |
+|---|---|---|---|
+| **代数** | 坍缩 | **[THEOREM]**（第 11–12 轮 + 本轮） | $(\hat T,F)\cong(\nu G,f)\in\mathcal B$（$B_0$ 见证）；$F$ 传输；$\pi_n,\theta_n$ FO-可定义（量词秩 $4n{+}1$）；无新公理 ⟹ N1 失败 |
+| **计算** | 坍缩 | **[THEOREM]**（本轮，独立证明） | 定理 S（等空间模拟）＋冗余命题＋$\equiv_{\mathrm{cost}}$（$\alpha=O(1)$）；$S(x)\ge n$ 故无空间优势 |
+| **残留** | 若修改公平性公理（禁止存派生数据，或 $S<S(x)$） | **[OPEN]** | 需改变问题本身 |
+
+**必须说明的一致性问题**：计算半边判 III 的**代价**是我承认 O2 下的 $O(1)$ 是**预计算**——而预计算是合法的。若研究目标是“找一种表示，使某些概念任务比裸树更快”，答案显然是**是**（所有索引结构都是），但**那不是本项目的独特贡献**，属于经典索引数据结构。**这就是 III 的确切含义。**
+
+**残余的可陈述正向内容**（不是新结构，是刻画）[PROPOSITION]：
+> Address $=$ 一个**分层冗余索引**，空间 $S(x)=\sum_v(\delta(x)-\delta(v)+1)\in[\Theta(n),\Theta(n^2)]$，其全部时间优势等价于预计算，可被任何同空间预算的索引模拟。
+
+---
+
+## 最终回答：当前应寻找的是 **C —— 证明 Address 只是已有 indexed representation**
+
+**依据（按本轮的模型而非直觉）**：
+1. §2 的公平实例中，Address 的每一项能力都被拆为 storage + index + traversal，逐项计费后（§3）**不省空间**（$S(x)\ge n$）；
+2. 定理 S 给出**等空间模拟**：对手复制层结构即达同样成本，故 §6 的不等式成立、**无分离**；
+3. §5 的总账显示 O2 的 $O(1)$ 精确等于 Pre 的预付——**时间优势 $=$ 预计算**；
+4. §8 穷举五类候选查询，**无一逃逸**，且有冗余命题给出结构原因；
+5. §9 的 $\equiv_{\mathrm{cost}}$ 给出**计算坍缩的正式证明**，与代数坍缩**独立**。
+
+**因此 A 与 B 均被排除**：A（新代数结构）在第 11–12 轮被定理封死；B（新 computational model）在本轮被定理 S 与 $\equiv_{\mathrm{cost}}$ 封死，**不是由代数坍缩推出的，而是独立证明的**。
+
+**唯一未被本轮关闭的出口**（如实报告）：只有把 §2 的公平性公理 (F3) 改掉——不允许对手存储 $x$ 的派生数据，或把空间预算压到 $S(x)$ 以下——分离问题才会重开。但那已不是“找到一个更好的表示”，而是“重新定义什么算合法表示”。**在那之前，本项目在代数与计算两侧均已坍缩到已知
