@@ -1,0 +1,768 @@
+*正在请求专家建议，优化解决方案，该过程耗时可能较长，请耐心等待...*
+
+复核完成。Advisor 提出的一个我此前没处理好的技术点（"有限条规则" ≠ "每条规则的求值深度有界"）已并入本轮定义。先给层级图。
+The user (whose message contains criticism/correction of my round-17 AC2 as "intensional / natural-language criterion") wants a formalization. Per the advisor policy trigger 4 (user_frustration — the user is correcting my definitional gap), I must call AdvisorTool alone first.
+
+Let me plan the mathematical content.
+
+**Key task: formalize "Native" and replace intensional AC2 with checkable conditions.**
+
+Let me think hard about the central technical question the user raises in Part 1: **is depth-Address's `F_n` a "finite uniform rule schema" or "infinitely many separately specified rules"?**
+
+This is actually the crux, and I think I can give a clean answer.
+
+Let me set up the address as a *many-sorted* algebra where the sorts are indexed.
+
+Depth-address: A = ∏_{n∈ℕ} B_n. Primitives:
+- π_n: A → B_n (projections)
+- tr_n: B_n → B_{n-1} (truncation)
+- cons_f: B_{n-1} × B_{n-1} → B_n
+
+And Γ: π_n(A⊙B) = cons_f(tr_n(π_n A), tr_n(π_n B)).
+
+Key question: is this a finite schema?
+
+**Answer: YES, it's a uniform schema**, and here's the precise formalization. The right framework is **many-sorted algebra with an index sort**: introduce a sort ℕ (for indices) and treat the family {B_n} as a *single* dependent sort B: ℕ → Sort. Then:
+- π: A → Π_{n:ℕ} B(n) is a single operation (with the index as a parameter);
+- tr: Π_{n:ℕ} B(n) → Π_{n:ℕ} B(n-1), or tr: B(n+1) → B(n) for all n — a single polymorphic operation;
+- cons_f: B(n-1) × B(n-1) → B(n) — a single polymorphic operation;
+- Γ: a single equation, universally quantified over n: ∀n. π(n)(A⊙B) = cons_f(tr(π(n)(A)), tr(π(n)(B))).
+
+This is the standard way: **uniform schema = one rule with a universally quantified index variable**, i.e., a *polymorphic* / *index-parametric* definition. In the language of term rewriting: a *rule schema* with an index variable n ranging over ℕ. In the language of algebra: an operation in a many-sorted algebra with an index sort, or equivalently a definition in the *dependent* type theory / a *uniform family*.
+
+So: depth-Address uses **one uniform schema** (a single equation with an index parameter), not infinitely many independent rules. That's a clean answer, and it's the right one — and it's important because otherwise "infinitely many separately specified F_n" would be a legitimate objection to counting it as a finite calculus.
+
+But wait — the user's concern cuts deeper. Is a "uniform schema" always acceptable? Consider: a uniform schema with an index parameter can still hide arbitrary data if the index sort carries arbitrary structure. E.g., if the index set I is arbitrary and the operations are "indexed families" with no uniform description, then it's not really finite.
+
+**Formalization:** the right notion is a **finite presentation in a many-sorted (or indexed) signature**:
+- a finite set of sorts (possibly with an index sort),
+- a finite set of operation symbols (possibly with index parameters),
+- a finite set of equations.
+
+Then "uniform finite schema" = finite indexed signature + finitely many equations. And the depth-address qualifies: sorts {A, B_spec, ℕ}, operations {π, tr, cons_f}, equations: {the schema, the compatibility of tr, ...}.
+
+Good. So **depth-Address ∈ Native** (finite uniform schema). That's provable, and it's what the user asked for ("必须给出正式编码").
+
+Now, **D0/D1/D2** (derived address calculus — is the address calculus derived from (T,f) by finite canonical translation?):
+
+- D0: pure transport — A is just a re-encoding. Formalize: there's a bijection R: T ≅ A such that the primitives of P are exactly the R-images of the constructors of Σ (i.e., P = R(Σ) up to R-conjugation), and no additional primitives. Then Γ is the trivial transcription.
+- D1: address primitives produced from (T,f) by finite structural recursion. Formalize: each p ∈ P is obtained by a *structural recursion schema* (a finitely specified recursion on the term structure) applied to T. E.g., height, leaf count, truncation, profile.
+- D2: primitives not obtainable by D1, but obtainable by canonical recursive/fixed-point/categorical construction. E.g., LFP-defined relations (subterm order), MSO-defined sets, universal constructions (initial algebra, final coalgebra, limits, completions).
+
+And key: D0 ⊆ D1 ⊆ D2 (with the containment being: D1 primitives are obviously in D2's reach since structural recursion is a canonical recursive construction... hmm, need care).
+
+Now, **I1/I2/I3 (Intrinsic)** — the user asks to compare:
+
+I1 (Primitive-independence): ∃ p ∈ P that is not obtainable by the specified finite structural recursion from (T,f).
+- Assessment: **Too weak?** Well — it's checkable. But: it only says "some primitive is not a recursive attribute". A single extra arbitrary primitive would satisfy I1. So I1 alone admits arbitrary predicates. So I1 is too weak as an "intrinsic" criterion — it's a *necessary* condition (for non-standardness) but not sufficient.
+- Also: it's relative to "the specified finite structural recursion" — needs the recursion class fixed. That's fixable (fix the class as D1).
+- So: I1 = "P ⊄ D1(T,f)" = necessary, not sufficient.
+
+I2 (Canonical second-order generation): P is generated by a canonical higher-order construction not depending on external parameters (LFP, MSO, categorical universal construction).
+- Assessment: **Too strong as stated?** Hmm, no — actually it's *the right shape* but it has the *vacuity problem*: virtually everything is "categorically canonical" if you choose the category liberally (any object is the initial object of the category containing only it). So I2 without a *fixed* admissible construction class becomes vacuous. So I2 must be relativized to a *fixed* class of admissible constructions (a "construction grammar"). Once fixed, I2 = "P ⊆ D2(T,f)" — a *positive* condition, which is the opposite direction of what we want for novelty!
+  Hmm, right: novelty should be "P is NOT derivable from (T,f)". So I2 as "P is canonically generated" is a *derivability* condition, so it doesn't by itself give novelty. But combined: I2 says the generation is canonical, and we want... hmm.
+  
+  Let me reconsider. The user's framing: D2 = "primitives not obtainable by D1 but obtainable by canonical recursive/fixed-point/categorical construction". So D2 is *above* D1 in the sense of "harder to derive but still canonical". And the desired novelty is *canonical but not D1* — i.e., **P ∈ D2 \ D1**. That's the target!
+  
+  Because: if P ⊆ D0 (pure re-encoding), it's standard. If P ⊆ D1 (recursive attributes), still standard-ish. If P ∈ D2\D1 — canonically derived but not by structural recursion — then maybe novel. And if P ∉ D2 at all — then it requires external data (arbitrary), so not canonical, so excluded by the project's aim ("最好由有限原子 + 有限规则本身规范地产生").
+  
+  **So the target is precisely: P ∈ D2 \ D1, plus Native, plus injective, plus no-decode.**
+
+That's a beautiful formalization! Let me adopt it. So:
+
+**Definition (the target).** An Address is *intrinsic* iff:
+1. (Native) ⊙ ∈ Clo_fin(P_A) with a finite indexed schema, no R^{-1}, no ⊕ as primitive;
+2. (Non-standard) P_A ⊄ D1(T,f) — some primitive is not a structural-recursive attribute;
+3. (Canonical) P_A ⊆ D2(T,f) — every primitive comes from a fixed admissible class of canonical constructions (LFP/MSO/universal);
+4. (Bounded Dep) each output position reads O(1) input positions;
+5. (Injective) R is injective.
+
+And then:
+- depth-Address: P = {π_n, tr, cons_f, kind}. π_n = truncation = D1 ✓; cons_f = the constructor = D0 ✓; kind = D1 ✓; tr = D1 ✓. So **P ⊆ D1 ⟹ fails (2) ⟹ NOT intrinsic.** ✓ Clean, and this is a *formal* derivation, not an intensional claim!
+
+Excellent — this is the formal replacement the user asked for. Let me verify: is truncation a structural-recursive attribute? trunc_n(x) — is it computed by structural recursion? Hmm: trunc_n(f(x,y)) = cons_f(trunc_{n-1}(x), trunc_{n-1}(y)) for n ≥ 1 — yes, structural recursion in x with parameter n. So trunc ∈ D1 ✓ (the recursion is on the term structure, with an index parameter). So tr ∈ D1 ✓. So depth-address's P ⊆ D1 ⟹ not intrinsic.
+
+So now: **depth-Address fails condition (2) formally.** And the criterion is checkable: for each primitive, ask whether it's obtained by structural recursion on terms.
+
+Now the candidate search: I need P ∉ D1 but P ⊆ D2.
+
+**Candidates in D2 \ D1** — what natural primitives are canonical but not structural-recursive?
+
+Key: structural recursion computes *bottom-up* functions. What is canonical but NOT bottom-up?
+
+(a) **LFP-defined relations**: the subterm relation ⊑. ⊑ is not a bottom-up function on terms (it's a relation; and computing it requires navigating upward from a subterm, which needs the context). Indeed ⊑ is LFP but it is *not* defined by structural recursion on the term — because structural recursion gives you, for each node, a value that depends only on the subtree. But ⊑ relates a node to its *ancestors*, which are not in its subtree. **So ⊑ ∉ D1 but ⊑ ∈ D2 (LFP).** ✓✓ 
+
+Wait, but is ⊑ an "address primitive"? It's a relation on T. As a primitive on the address A, it would be "the partial order on the address's positions". Hmm. So a candidate: **A(x) = the tree with a "subterm order" structure on its positions**, i.e., a *poset-labeled* tree. Then P includes the order relation. P ∉ D1 ⟹ condition (2) satisfied! But condition (4) bounded Dep? and does it help Γ?
+
+Hmm, we showed in round 17 that F (the relation-augmented address) is redundant: x determines ⊑_x. So Γ could ignore it. So the address satisfies (2) formally but Γ doesn't *need* it. So we need a further condition: **Γ must genuinely use the D2\D1 primitive** — i.e., **⊥-condition: removing p from P makes ⊙ ∉ Clo_fin(P∖{p})**. That's a *checkable* irredundancy condition!
+
+So add:
+6. (Irredundancy) ⊙ ∉ Clo_fin(P_A ∖ {p}) for every p ∈ P_A. I.e., every primitive is necessary for computing ⊙.
+
+Hmm, that's strong but checkable in principle (it's a definability question, not always decidable, but well-posed).
+
+So the full criterion:
+(N1) Native with finite indexed schema
+(N2) P ⊄ D1: some primitive is a D2\D1 construction
+(N3) Canonical: P ⊆ D2
+(N4) Bounded Dep
+(N5) Injective
+(N6) Irredundant: every primitive is needed
+
+And then: depth-Address fails (N2). 
+
+Now — can I find a candidate satisfying all six? Let me think.
+
+For a D2\D1 primitive to be *needed* to compute ⊙... Hmm. Since ⊙|im R is transport and R is injective, computing ⊙ requires inverting R. The primitives needed are those that let you "read the term structure". Any primitive that's a bottom-up attribute gives only truncated info. Hmm.
+
+Wait — here's the key: to compute transport on a term, you need to know the term's structure. The structural primitives (children, kind) ARE bottom-up (D1). So the term structure is recoverable from D1 primitives. So Γ would only need D1 primitives. Hence **any D2\D1 primitive is redundant** (given enough D1 primitives to recover the term).
+
+Unless the address's D1 primitives do NOT suffice to recover the term! I.e., the address's D1 part is lossy, and the D2\D1 part is what restores injectivity. Then the D2 primitive is needed!
+
+**That's the construction!** Design: A(x) = (bottom-up attributes that are lossy) + (a canonical non-bottom-up component that restores injectivity).
+
+Example: 
+- Bottom-up part: the level profile b(x) (lossy: loses sibling order).
+- Non-bottom-up part: something that records the *context* / *position* info — e.g., the subterm order ⊑ (which relates each node to its ancestors), or the path-context structure.
+
+Hmm, but is the combination injective? Profile + ⊑_x: ⊑_x says which subterms are descendants of which. That determines the *tree order structure*, and each position's... hmm, we need to label positions with kinds. Let's see: x ↦ (profile(x), the poset of positions with kinds). The poset of positions of x with kinds IS x (a tree is determined by the poset of its positions labeled by kinds, plus completeness). So it's injective ✓. But then the profile is redundant. Hmm.
+
+OK so the challenge: find a pair (lossy D1, non-bottom-up D2) that's jointly injective AND both needed.
+
+Hmm. Let me think about what's genuinely non-bottom-up and needed.
+
+**Idea: the "context" component.** For x, define A(x) = (subterm-profile, context-info). Hmm.
+
+Actually — here's a cleaner idea, and I think it's the right one:
+
+**Positions/paths are non-bottom-up!** Consider: the "path" of a node from the root. Given a node's subtree, you don't know its path. Path information is *upward/contextual* — it's NOT computable by structural recursion on the subtree. And it's exactly what the zipper/context address records.
+
+So: let A(x) = (the multiset of (path, subtree) pairs)? Hmm, but that's the tree itself.
+
+Let me formalize the "non-bottom-up-ness" of paths: define the address as the set of *positions* (paths) with their kinds: A(x) = {(p, kind(p)) : p ∈ paths(x)}. This is a *non-bottom-up* attribute in the sense that "the path p" is not computable from the subtree at p (it requires going up). But is the *whole family* {(p, kind(p))} computed by structural recursion from x? Yes trivially (it's just x's structure). Hmm.
+
+The D1/D2 distinction is about the *primitive* p, not the *address*. So: is the primitive "path(p) of the node at subtree s" a structural-recursive attribute of x? Hmm. Define the primitive: `pathof: A × Position → Path`. Given an address and a position (a node), return its path from the root. Is this computed by structural recursion? Structural recursion goes top-down... hmm, actually structural recursion on trees is top-down too (descend into children). The path can be computed top-down: start at root with path ε, descend. So yes, it's "structural recursion" with an accumulator. Hmm. So D1 covers it if we allow accumulators.
+
+OK, D1 needs a precise definition. Let me define D1 carefully:
+
+**D1 (structural-recursive attributes)**: functions f: T → V (or T^k → V) defined by a *finite* system of recursion equations of the form
+f(c(x_1,...,x_a)) = t_c(f(x_1),...,f(x_a), x_1,...,x_a)
+i.e., **the value at a node depends only on the values at (and the nodes themselves of) its children**. This is *bottom-up / compositional*.
+
+Under this definition:
+- height, leaf count, profile, truncation: ✓ D1.
+- pathof: ✗ — because the path of a node is not determined by the values at the children. Hmm, but we can carry the path *down*... that's not "the value at children". Actually the standard "top-down" recursion is a different scheme. Let me allow D1 = "finite systems of recursion equations over the term structure" including top-down with parameters (i.e., primitive recursion on the term tree). Hmm, but then pathof ∈ D1.
+- subterm relation ⊑: is it D1? It's a relation R(x) ⊆ positions(x)². Recursion: R(f(x,y)) = R(x) ∪ R(y) ∪ {(root, everything)}. Hmm — this needs "everything in x and y", which requires knowing the full position sets — that IS available (positions are D1). So R(f(x,y)) = R(x) ∪ R(y) ∪ ({root} × (positions(x) ∪ positions(y))). This is a valid recursion! So ⊑ ∈ D1?! Hmm. Damn.
+
+Hmm. So if D1 allows relations computed by bottom-up recursion over the full structure, then ⊑ ∈ D1. So my round-17/round-18 claim that ⊑ ∉ D1 was wrong under this definition.
+
+Hmm, this is the crux: **what exactly is NOT D1?**
+
+Let me think. D1 = "finite recursion over the term structure". This is extremely powerful: it computes essentially any "invariant of the tree" that's determined compositionally. But some things aren't compositional:
+
+- **Counting/aggregating across siblings?** Hmm, "the number of leaves" IS compositional.
+- **Global properties requiring unbounded lookahead?** Hmm.
+- **Properties depending on the *embedding* of the tree in a larger structure** — e.g., relating x to something outside x. But in the address setup, we only have x.
+
+Hmm! Key insight: **anything that is a function/relation determined by the term x alone is computable by recursion on x** (since x is finite and the recursion can traverse all of it). So D1 as "any finite recursion" = "any computable function of x" (for finite x, any computable function can be computed by a recursion, e.g., a "gadget recursion" enumerating all subterms). So D1 would be too big.
+
+So D1 must be restricted! The natural restriction: **D1 = compositional/bottom-up with bounded per-node work**, i.e., the recursion equations are *finite* and each node's value is a *finite* function of children's values. That's the standard notion: **"regular tree functions" / "bottom-up deterministic tree transducers" / "MSO-definable attributes"**. Hmm, and importantly:
+
+**Classical result (Courcelle / tree automata):** For finite alphabets, MSO-definable attributes = recognizable = computable by bottom-up finite-state tree automata, IF the values come from a finite set. For arbitrary values (e.g., ℕ), we get "bottom-up programs with values in a data domain".
+
+Hmm — this is getting deep, but I think there's a cleaner way to think about it, which is the right answer:
+
+**The right formalization of D1 is: the primitive p is *definable by a finite system of recursion equations in the free Σ-algebra* — i.e., p is a *term operation* or a *structural-recursive operation*.** And the crucial restriction is that the recursion is **on the term structure with values in a fixed domain**, i.e., p ∈ "the clone of structural-recursive operations".
+
+And then: which natural primitives are NOT D1 under this restriction?
+
+**Answer: those that require the *inverse* direction — i.e., going from a subtree up to the whole term.** Formally: an operation on the *positions* that requires knowing the context. Example: **"the number of times my subtree-occurrence appears in x"** — hmm, that's still computable bottom-up with multiset accumulation.
+
+Hmm, what about **"the path of this node"**: given a *node* (not the whole tree), return its path. This is a *partial* operation depending on the whole tree. Formally it's a function T × positions → paths. Bottom-up recursion can compute it: carry the path down. So D1 if we allow top-down. Hmm.
+
+OK. Let me try yet another angle: maybe the honest answer is that **D1 (finite recursion on the term structure) is SO powerful that it captures everything canonical**, i.e., D1 = D2 for our purposes, so **D2 \ D1 = ∅**, and hence the target (P ∈ D2\D1) is EMPTY. That would be a strong result: **any canonically-derived address primitive is a structural-recursive attribute, hence STANDARD.**
+
+Is that plausible? Hmm. Let's test: is the *uniform completion* (the address space T̂ = ν G) a D1 primitive? Hmm, T̂ is not an attribute of x — it's the ambient space. Hmm. The address space itself isn't a primitive.
+
+Hmm, what about a primitive that is canonical but NOT computable at all? E.g., "the theory Th(T)" — a canonical set, but not computable. Canonical constructions in logic (e.g., the "Lω1ω-theory") are canonical but not computable. So D2 ⊋ D1 would be nonempty, but such primitives are "not computable" — excluded by the Native condition? Hmm, the Native condition requires a finite schema for Γ, which presupposes the primitives are effective. So if we require effectivity, maybe D1 = D2 among effective primitives?
+
+Hmm, that's a real conjecture: **among effective canonical primitives, all are D1 (structural-recursive).** Hmm, but I doubt it: consider a primitive that solves the word problem for a non-recursive congruence — canonical (it's the congruence) but not computable. Not effective. Consider a primitive that computes a "global" function like "the canonical normal form under a confluent terminating system" — computable, and is it D1? NF(x) — normalization rewrites x; each rewrite step is local, but the number of steps is unbounded. Is NF a bottom-up structural recursion? Rewriting is a *local* transformation, so NF can be computed by repeatedly applying local rewrites — that's NOT a single bottom-up pass. Hmm. But one can compute NF bottom-up: normalize the children first, then rewrite the root if needed. Is that enough? For a confluent local system: NF(f(x,y)) = normalize-at-root(f(NF(x), NF(y))). Yes! That's a valid bottom-up recursion (given confluence). So NF ∈ D1 (with a "local rewrite at root" as the combination step). Hmm!
+
+Interesting. So NF ∈ D1. So normalization is D1.
+
+Hmm, so it really seems like D1 is very powerful. Let me think about what's genuinely beyond.
+
+**What's beyond bottom-up?** Bottom-up recursion computes values that are determined by the subterm. Things NOT determined by the subterm alone: **relations between *distinct* nodes** (e.g., "node u and node v are siblings"). Hmm, but the recursion can accumulate the relation: R(f(x,y)) = R(x) ∪ R(y) ∪ (sibling pairs between x and y). So it's D1.
+
+Hmm, so what about **the "address" being a set of positions rather than a set of values?** Position-based (nominal) structures: the address = the set of positions with their labels. Bottom-up: positions(f(x,y)) = {ε} ∪ L·positions(x) ∪ R·positions(y). D1.
+
+OK so I'm converging on: **D1 (finite structural recursion) captures everything that is a "canonical function of x defined by recursion over x's syntax"**. And that's basically *all* canonical constructions of T-based data. Because any canonical construction from (T,f) proceeds by recursion over the term structure.
+
+**Hence the conjecture: D2 = D1 for computable/canonical primitives, so D2\D1 = ∅.** Hmm — but careful, D2 includes LFP over *relations*, MSO, categorical constructions. Let me check MSO: an MSO-definable set of positions — is it D1? By Courcelle's theorem, MSO-definable properties of a tree ARE recognizable = computable by a bottom-up finite-state tree automaton. And recognizability = D1 (with finite value domain). **So MSO ⊆ D1!** That's a real theorem (Courcelle / Doner-Thacher for trees). 
+
+So: MSO-definable sets of positions = regular = bottom-up automaton = D1. And FO ⊆ MSO ⊆ D1. And LFP over the tree structure — hmm, LFP is more powerful than MSO in general, but over trees, the *monadic* LFP (= MSO) is captured. Second-order LFP is more. Hmm.
+
+But wait — the subterm relation ⊑ on trees IS MSO-definable, hence D1. ✓ consistent with what I found.
+
+So: **MSO ⊆ D1, FO ⊆ D1.** And the reason is a *theorem*: over trees, MSO = recognizable = bottom-up computable. **This is the key mathematical fact of this round!**
+
+So D2 (canonical higher-order: LFP, MSO, categorical universal) — the MSO part collapses into D1. What remains: LFP over arbitrary relations, and non-monadic constructions. Hmm.
+
+And that gives us a real, citable theorem: **over finite trees, MSO-definable attributes are recognizable, hence bottom-up structural-recursive.** So the "canonical but not FO" candidates from rounds 16-17 ($\sqsubseteq$) are ALL D1.
+
+**This is a strong and satisfying result for this round**: it explains why every candidate collapsed — because the natural "canonical but not FO" class (MSO/LFP-monadic over trees) is *exactly* the class of bottom-up structural-recursive attributes.
+
+So the honest picture:
+- D0 ⊊ D1;
+- MSO ⊆ D1 (Courcelle), so the "non-FO but canonical" escape of round 16 vanishes *for MSO*;
+- LFP (monadic over trees) = MSO (by the equivalence) ⊆ D1;
+- Full LFP / higher-order: not covered by Courcelle; **this is the remaining open zone for D2\D1.**
+
+Hmm, so D2\D1 might still be nonempty via *non-monadic* LFP or via non-recognizable constructions. Hmm. But those are much less natural.
+
+OK, so now I have a strong story. Let me also handle the candidates A-E with this lens, and the injectivity question.
+
+Let me now also settle Part 1's specific question: **depth-Address's F_n: finite uniform schema or infinitely many rules?**
+
+Answer: **finite uniform (indexed) schema.** Formal encoding: many-sorted (indexed) signature with an index sort ℕ; the family {B_n} as a dependent sort; {π, tr, cons_f} as polymorphic operations; one equation schema ∀n. So it's ONE rule with a bound index variable — a legitimate finite schema in the standard sense (a "uniform family" / "indexed algebra" / "finite presentation of an indexed algebra").
+
+I should also note: this matters, because if it were infinitely many independent rules, depth-address would be *outside* Native (rules not finitely presented) and would automatically fail AC1 — which would be a cheap win but the wrong answer (it clearly IS a native calculus). So the correct treatment: allow indexed schemas with a bound index variable, but require the *index sort and its operations* to be finitely presented too. Then depth-address: index sort ℕ with operations {0, succ} — finitely presented ✓.
+
+Hmm, and here's a nice extra check: **does allowing indexed schemas make Native vacuous?** I.e., can any ⊙ be given a uniform indexed schema? If we can choose the index sort arbitrarily and make the family arbitrary, then yes — an indexed schema with an arbitrary index set I and arbitrary operations is just "a family of rules labelled by I" = infinitely many independent rules in disguise. So we must require: **the index sort and the operations must be finitely presented, and there must be no arbitrary data in the operations.** Formally: the whole thing is a finitely presented algebra in a finite many-sorted signature (with an index sort whose algebra is finitely presented, e.g., ℕ = the initial algebra of {0, succ}).
+
+So: **Native ⟺ the address's index structure and calculus admit a finite presentation** (finitely many sorts, finitely many operation symbols, finitely many equations) in a many-sorted/indexed algebraic signature. **This is the formal replacement for the intensional "AC1".**
+
+Good, that's checkable: it's a finite-presentation question.
+
+And the Gödel container: A = ℕ with arithmetic; is there a finite presentation of ⊙ = transport? Hmm, arithmetic is finitely presented (as a structure it's not, but as a "program" it is). Hmm — so the finite-presentation test doesn't exclude the Gödel container. So we still need **bounded Dep** to exclude it. Right — as I concluded in round 17. So Native = finite presentation + bounded Dep. Good, keep both.
+
+So: **Native = (finite presentation of the indexed calculus) ∧ (bounded Dep) ∧ (no R^{-1}, no ⊙ as primitive).**
+
+And then the extra conditions for the target:
+- **Non-D1**: some primitive ∉ D1.
+- **Canonical**: every primitive ∈ D2.
+- **Injective.**
+- **Irredundant.**
+
+And the result: **MSO/LFP-monadic ⊆ D1 (Courcelle)** ⟹ the natural "canonical but not FO" candidates are all D1 ⟹ fail Non-D1. **So round 16's escape hatch (L4) closes for the natural class.**
+
+And that gives: depth-Address fails Non-D1 (all its primitives are D1) ⟹ **(answer II)**, and the search for D2\D1 continues in the *non-monadic / non-recognizable* zone, which is where... hmm.
+
+Hmm, let me think about whether there's a *computable* primitive that's canonical, needed, and not D1.
+
+Idea: **a primitive requiring unbounded information flow across the tree** — but that's what bottom-up accumulates. Hmm.
+
+Idea: **a primitive that depends on a *global* fact in a non-compositional way.** E.g., "is x a member of the set S" where S is a canonical non-regular set of trees. Canonical: e.g., S = {x : the word encoding of x is a palindrome}? Hmm, the set of palindromic trees — is it regular (MSO-definable)? "x is a palindrome" — for trees, the analogous notion... e.g., "x = mirror(x)". Is that MSO-definable? Yes — you can define the mirror relation by MSO/recursion, then compare. Hmm, so it's D1.
+
+Idea: **S = {x : |x| is prime}**. Canonical? Yes (primality is a canonical arithmetic property). MSO-definable? NO — counting/arithmetic is beyond MSO over trees! (MSO over trees captures only regular properties; primality of the node count is not regular.) So: **"|x| is prime" ∈ D2 \ D1? ** Hmm — is it "D2"? Its canonicalness: it's a canonical function of x (arithmetic of the node count). Hmm, it's D1 if D1 allows arbitrary combination functions at the root... Let me define D1 more carefully: D1 = structural recursion where the combination function at each node is a *fixed finite* function. Then: computing |x| requires the combination |f(x,y)| = |x|+|y|+1 — a fixed finite function (addition, sort of). And adding 1 and testing primality at the root: the combination at the root would need to know |x|, |y| and then test primality of the sum + 1. Hmm, that's a *fixed* combination. So "|x| is prime" ∈ D1 with value domain {yes, no}? The recursion: value(f(x,y)) = ? We'd need to carry |x| up, then at the root test primality. That's a *deferred* test — is that allow ed in D1? If D1 allows carrying data up and applying a fixed test at the root, then yes. Hmm.
+
+So D1 needs to be defined as: **the value at each node is computed by a fixed finite combination from children's values, where values range over a *finitely generated* data domain**. Then "|x| is prime": values are natural numbers (finitely generated from 0 by succ), combination = sum+1. And the root test = a *separate* operation. Hmm — so the "prime" predicate is a property of the value at the root, which is a D1-computed value. So "is prime" is D1 + a test on the D1 value. So it's D1 (the test is a fixed function of the value).
+
+Hmm. So the value domain can be ℕ and the test can be arbitrary-but-fixed. So D1 is: **structural recursion into a fixed data algebra with fixed operations**. And then almost everything is D1 (since any computable function of x can be computed by a structural recursion into a big enough data domain... hmm, no: structural recursion into a data domain computes only functions that are "compositional", i.e., h(f(x,y)) = c(h(x), h(y)). For a general function h, this requires h to be a homomorphism; general h is not. But we can make the value domain big enough (e.g., values = the terms themselves!) and then h = "the term" is trivially compositional. So D1 with the value domain = T is trivial. So we need to bound the data domain.
+
+This is exactly the right place to be careful: **D1's power depends on the value domain.** The natural bound: **the value domain must be finitely generated and the operations must be effective** — but ℕ is finitely generated. Hmm.
+
+I think the right formalization: **D1 = the primitive is a Σ-homomorphism into a finitely presentable algebra** (i.e., definable by a finite system of equations over a finite signature). Because "structural recursion with fixed combination" = "homomorphism into the target algebra". YES! That's the clean formalization:
+
+**D1 := {p : p is a Σ-homomorphism from T into some finitely presentable Σ'-algebra}** — equivalently, p is definable by structural recursion with a finite presentation of the target. 
+
+And then: height ∈ D1 (target (ℕ, 1+max)), leafcount ∈ D1, truncation ∈ D1 (target B with cons_f, tr), profile ∈ D1, ⊑? Hmm, ⊑ is a relation, not a homomorphism value. Let me allow: a primitive is D1 if it's *definable from* D1-homomorphisms by a fixed finite formula (FO/ms logic) — hmm, that grows things.
+
+I think I'm going too deep. Let me settle on a *defensible, checkable* formalization, present it, and note its sensitivity. Given the length constraints, I'll present:
+
+**D1 (formal):** P_A ⊆ D1 means: every primitive p ∈ P_A is a *structural-recursive attribute*, i.e., there is a finite signature Σ_p and a finitely presentable Σ_p-algebra V_p such that p is obtained by the unique homomorphic extension of a finite assignment on X, and in addition any relation/derived primitive is definable from such attributes by a fixed finite formula in the language of the target algebras. (I'll flag that the exact closure class must be pinned down, and that Courcelle's theorem pins down the MSO part.)
+
+And then: **depth-address's primitives are all D1** (π_n = homomorphism since truncation is recursive; tr = homomorphism; cons_f = the constructor itself; kind = homomorphism). ✓
+
+**And the key theorem: MSO ⊆ D1 over trees (Courcelle/Doner–Thatcher).** So the MSO/LFP-monadic class gives no escape.
+
+OK. And then the remaining escape zone: LFP non-monadic, or non-effectively-presentable stuff. I'll mark it OPEN.
+
+Now let me handle Part 4's candidates with this lens, and Part 6 (injectivity + residual combinations).
+
+Let me now think about the injectivity + residual combos (Part 6):
+- **profile + residual**: profile loses sibling order; a minimal residual that restores injectivity: add the *path-labeled* profile, i.e., the ordered version — that's back to the tree. Or add "the canonical form / the parity word"... Hmm. Minimal residual idea: the profile loses which sibling is which; the minimal extra info = the sequence of "which subtrees have equal profiles" — that's the "profile-refinement" / "level-sequence" structure. Hmm, has a name: the **"tree's level-equivalence structure"**. Hmm.
+- Actually here's a classical fact: the profile (level sequence) does NOT determine a tree, but the **"profile of all subtrees"** (i.e., the multiset of level-profiles of all subtrees) — hmm.
+- A cleaner answer: the minimal residual to make the profile injective is essentially the full tree (information-theoretically: the profile is lossy and the loss is Ω(n) bits). Let me compute: #trees with n nodes vs #profiles with n nodes. Profiles (level sequences of length ≤ depth) with sum n — the number of compositions of n = 2^{n-1}, vs Catalan(n) ≈ 4^n/n^{1.5}. So log(profiles) = Θ(n) and log(trees) = Θ(n) — same order! Hmm, so the profile loses only a constant factor of bits?! Hmm, that's interesting: #profiles = #compositions = 2^{n-1}, #trees = Catalan(n) = 4^n/n^{1.5}. In log: n vs n·log4 - 1.5·log n. So the profile loses ~(2-1)n = n bits roughly. Hmm, so the residual needs Θ(n) bits — not O(1).  So no "finite/local residual" fixes injectivity. **That's a real finding**: LOSSY ADDRESS, and the residual needed is linear, not finite.
+
+Hmm, careful: the "profile" as I defined for binary trees = the level sequence (a_k). Number of level sequences with sum n = number of compositions of n = 2^{n-1}. And number of binary trees with n nodes = Catalan ≈ 4^n/n^1.5. So the map is lossy by a factor of 2^n — i.e., linear bits. So a "finite local residual" cannot restore injectivity. ✓ Good, that's a clean negative answer to Part 6 for the convolution case.
+
+Let me verify: compositions of n = number of ways to write n as an ordered sum of positive integers = 2^{n-1} ✓. And in log2: n-1. And log2 Catalan(n) ≈ 2n - 1.5 log n. So the loss is ≈ n + 1.5 log n bits — linear. ✓
+
+**So: any injective address must carry Ω(n) bits beyond the level profile — the residual cannot be finite/local.** That's a theorem-shaped statement. 
+
+OK — and this also connects to the general principle: **an injective address must carry the full information of the term (n log(alphabet) bits), so no "compact + canonical + finite residual" address exists; the residual is always linear.** So LOSSY ADDRESS is unavoidable for profiles, and the "minimal residual" is linear.
+
+Let me compute the exact bound: #trees with n nodes = Catalan(n) ~ 4^n/n^{3/2}; #profiles = 2^{n-1}. So log2(#trees) - log2(#profiles) = (2n - 1.5 log n) - (n-1) = n - 1.5 log n + 1 = Θ(n). So the residual needs Θ(n) bits. ✓
+
+Great, that's a solid quantitative result for Part 6.
+
+Let me now write the answer. I need to be organized. Sections:
+1. Fix round 17's definitional gap: formalize Native (finite presentation + bounded Dep), and answer the F_n question (uniform indexed schema, with formal encoding).
+2. D0/D1/D2 formalized.
+3. I1/I2/I3 comparison; adopt a formal replacement.
+4. Candidates A-E with verdicts.
+5. Non-innovation filter (9 items).
+6. Injectivity + the Θ(n) residual theorem.
+7. Original goal restated + answer.
+8. PROVEN / STANDARD / CANDIDATE / OPEN, and I/II/III/IV.
+
+Key results to headline:
+- **(R1)** depth-Address's calculus IS a finite uniform indexed schema (not infinitely many rules) — provable, with the encoding.
+- **(R2)** Native must = finite-presentation ∧ bounded-Dep (else Gödel container).
+- **(R3)** Courcelle/Doner–Thatcher: over trees, MSO-definable = recognizable = bottom-up structural-recursive. **So MSO ⊆ D1** ⟹ the "canonical but not FO" escape of rounds 16–17 is EMPTY for the MSO class. This explains all previous collapses.
+- **(R4)** Profile-type addresses are unavoidably LOSSY: the needed residual is Θ(n) bits (counting bound: compositions 2^{n-1} vs Catalan 4^n/n^{1.5}). So "profile + finite local residual" cannot be injective.
+- **(R5)** depth-Address: all primitives ∈ D1 ⟹ fails Non-D1 ⟹ not the target. Formal, not intensional.
+
+Answer: **II**, since no AC2 instance found, and the definition is now stable enough (I'd argue IV is not needed, because I *do* give checkable conditions; but the D1/D2 boundary's exact closure class remains to be pinned, which is a caveat). Hmm — the user says "最后只在定义完全稳定以后，再决定". I've given a formal criterion but the D1/D2 closure classes need pinning. I'll say: the definition is now *checkable* for the cases at hand, so I give II for depth-Address + the candidate search, with the caveat that D2\D1's nonemptiness is OPEN.
+
+Let me write it. I'll include a widget: the D0/D1/D2 ladder with MSO ⊆ D1 marked, and the target zone.
+
+Let me call the advisor first (mandatory, user_frustration: user is correcting my round-17 AC2 as unformalized).
+
+Actually — I already have the plan; let me make the advisor call to validate the key claim (Courcelle MSO ⊆ D1 and the counting bound), then write.
+
+Let me make sure about the count of compositions vs profiles: a "profile" for a tree = the level sequence (a_0, a_1, ..., a_d) with a_0 = 1, and Σ a_k = n. Hmm, actually not every composition is realizable, but the number of possible profiles is at most the number of compositions of n, which is 2^{n-1}. And Catalan(n) ~ 4^n/n^{3/2}. So indeed profiles ≤ 2^{n-1} < Catalan(n) for n ≥ 3 or so. So lossy. ✓ And the entropy difference is Θ(n). ✓
+
+Alright. Let me call the advisor and then write.
+正在请求专家建议..............
+
+已获取专家建议
+
+The advisor raises an important point I hadn't fully addressed: **tr_{n-1} requires n steps of recursion to evaluate**, so while there's ONE rule template, evaluating it at index n costs Θ(n). So "finite rules" ≠ "bounded evaluation depth". This is a real distinction I should handle.
+
+Let me think: tr_{n-1} applied to π_n A — the truncation to depth n-1. To evaluate it, you need to walk down n levels. So the per-rule evaluation depth is unbounded (Θ(n) for index n). 
+
+Is that a problem? Hmm. Let's think: does it invalidate depth-address's "Native" status?
+
+Think of it as: the rule says "output coordinate n = cons_f of the two inputs' coordinates truncated to n-1". The "truncation to n-1" — in the address's own representation, the address stores π_n A which *already is* the truncation at level n. Truncating it to n-1 means dropping the depth-n layer — which in the stored representation is a pointer/link operation (if the address stores the layers as linked structures, π_{n-1}(A) is directly available as the "parent layer"). So actually: **if the address stores the layers with the truncation link as a primitive (tr: B_n → B_{n-1} is a primitive operation!), then evaluating tr is ONE primitive step.** 
+
+Yes! In my round-17 encoding, I listed `tr_n: B_n → B_{n-1}` as a *primitive* of P. So applying it is O(1) — one primitive application. So the rule's evaluation is O(1) given the primitive.
+
+So the resolution: **whether the evaluation depth is bounded depends on whether the required operations are primitives.** If tr is a primitive, the rule is O(1). If tr must be computed from scratch (walking the tree), it's Θ(n).
+
+And this raises a design question: **which is the honest accounting?** The user asked for "no decode" and "Address primitives". If `tr` is declared a primitive of the address representation, then the address must *store* the layer links — which is exactly the round-13/14 "index structure" question. And the storage cost is S(x) = Σ|π_k| (round 15). So: declaring tr as a primitive is legitimate but has a storage consequence (it's implemented by the layered storage).
+
+So the honest statement: **depth-address's Native status holds, but only relative to a primitive set that includes the truncation links; those links are exactly the redundant layered storage, whose space is S(x) ≥ n.** This connects back to rounds 14-15, but now framed correctly as "what the primitive set is, and what it costs to implement".
+
+And the advisor's point stands as a *caveat*: "finite rules" should be refined to two conditions:
+- (a) **finitely many rule templates** (with a bound index variable); 
+- (b) **bounded evaluation depth per template instance**, which holds iff every operation used in the template is a primitive (or is itself expanded with bounded depth).
+
+Let me formalize: the "evaluation depth" of a rule instance = the depth of the term in the primitive signature used to compute it. If the template is `π_n(⊙) = cons_f(tr(π_n A), tr(π_n B))` and tr, cons_f are primitives, the term has depth 2 — O(1). ✓ So depth-address satisfies (b), *given* tr is primitive.
+
+And if tr were NOT primitive (had to be computed), then the term would expand to a recursion of depth Θ(n) — still a *finite* expansion for each n, but unbounded in n. So (b) would fail.
+
+So: **(b) is the condition that distinguishes "the address really has the right primitives" from "the calculus is a disguised recursion".** And depth-address passes (b) iff tr is primitive iff the address stores layered structures.
+
+Hmm, that's a nice clean way to put it. And it means: **Native = finite presentation + bounded Dep + bounded evaluation depth (all operations in templates are primitives).**
+
+Now let me also handle the advisor's point about "Γ derived from E" (proof-theoretic vs semantic compatibility). And the comonad laws for derivative/zipper candidates (ε∘δ=id, δ∘δ=δ∘F(δ)) — those are genuine non-transport laws! That's a good observation to include: the zipper/context structure carries *comonad laws* which are not consequences of transport. So that's the best candidate for "non-transport law content". But injectivity of the pure derivative fails.
+
+Let me handle: is ∂ injective? I claimed in round 17 that ∂x determines x by plugging. Let me re-verify: ∂x = {(K,s) : K[s] = x, K ≠ □}. If ∂x ≠ ∅, pick (K,s) and x = K[s]. So yes, x is recoverable *given* a pair. But: is ∂ injective? ∂x = ∂x' and both nonempty ⟹ pick (K,s) ∈ ∂x = ∂x' ⟹ x = K[s] = x'. ✓ So ∂ IS injective! Good. So the derivative is injective. Hmm, but it's "redundant" (stores x many times). And the advisor says the injectivity obstacle is "∂(f(a,a)) vs ∂(f(a,f(a,a)))" — hmm, are those equal? Let me check: ∂(f(a,a)) = {(f(□,a), a), (f(a,□), a)}. ∂(f(a, f(a,a))) = {(f(□,f(a,a)), a), (f(a,□), f(a,a)), (f(a,f(□,a)),a), (f(a,f(a,□)),a)}. Different sets. So ∂ is injective here. OK so the advisor's claim about the injectivity obstacle is wrong for ∂ as I defined it. Hmm — but maybe they meant a different derivative. Let me just verify with my definition and note ∂ IS injective (redundantly). Actually, wait: is the *set* ∂x well-defined enough? ∂x is a set of (context, subterm) pairs. For x = f(a,a): contexts K with K[s] = f(a,a), K ≠ □: K = f(□,a) with s = a; K = f(a,□) with s = a. So ∂x = {(f(□,a),a), (f(a,□),a)} — 2 elements. And for x = a: ∂a = ∅. So ∂ is injective (as verified). ✓ And it's lossy in the sense that it's *redundant* (contains x many times: once per subterm occurrence). Actually |∂x| = number of non-root subterm occurrences = n - 1 (for n = |x|). So it's LINEAR in size, not superlinear. Hmm, and it's a *set* of pairs — the storage is O(n log n) maybe (paths). Fine.
+
+So: **∂ is injective, size Θ(n), and its calculus is the Leibniz rule (product rule) — which uses ⊎ (disjoint union) and f-prefixing.** The ⊎ is a genuine non-f operation! And the Leibniz rule is a genuine non-transport law content (it's the *derivation law*). Hmm — so is ∂ an AC2 candidate?
+
+Let's check the criteria:
+- (Native): Γ = Leibniz, finite presentation ✓; Dep — computing ∂(f(x,y)) needs ∂x, ∂y AND x, y. But x and y are recoverable from ∂x, ∂y (by plugging) — and, importantly, the *address* ∂x contains pairs (K,s) with K[s] = x; to build f(∂x, y) we need y itself, which requires... reading a pair from ∂y and plugging. Is that "recovering the full Concept"? Hmm! YES — plugging K and s to get y is *reconstructing the term y*. So it violates prohibition 2 ("不恢复完整 Concept"). 
+
+Hmm! Unless we restructure: instead of "form f(x,y) then take contexts", we can note: for the address ∂, the composition needs to produce the *set of contexts* of f(x,y). A context of f(x,y) is either (i) f(K,y) with K a context of x, or (ii) f(x,K) with K a context of y, or (iii) □. To form (i) we need y. To get y from ∂y we need to plug — i.e., reconstruct y. So Γ must reconstruct y. **So the derivative address is NOT decode-free.** That's a real finding: the Leibniz rule requires the *terms*, not just their derivatives, so it needs reconstruction ⟹ fails prohibition. Unless the address stores the term too (then it's redundant + transport).
+
+Hmm! That's a clean and important negative result for candidate A. Let me double check: could we avoid reconstructing y by carrying more in the address? E.g., A(x) = (x, ∂x)? Then it's transport + redundant. So: **the Leibniz calculus intrinsically requires the terms ⟹ not decode-free ⟹ either it violates no-decode, or it's redundant.**
+
+Interesting — and this is exactly the kind of checkable verdict the user wants. 
+
+Hmm, but hold on. Let me reconsider: maybe there's a *different* address where the context-structure IS the carrier and composition is genuinely local. Consider the "one-hole context" as the *primary* object: A(x) = the *canonical context decomposition*, e.g., the "leftmost spine with contexts". Hmm.
+
+Let me think about a cleaner idea: **the "path+subterm" address and the child-shift calculus** (candidate B/E). We showed it's injective with bounded Dep. Is it D1? The child-shift is a *shift on the index set* — it's the tree's own structure. So yes, D1/D0. STANDARD.
+
+OK. Let me also think: is there any address where Γ uses a **law** (like comonad laws or Leibniz) and doesn't need reconstruction? 
+
+The advisor suggests: the comonad laws (ε∘δ = id, δ∘δ = δ∘F(δ)) for the zipper. Those are laws about the "context comonad". If the address is organized as a comonad and Γ is a comonad-morphism, then... hmm. But the comonad structure is derived from the term syntax (the "context comonad" on trees is standard).
+
+OK. I think I have enough. Let me also address the counting bound for profiles: 
+- Level profiles: at most 2^{n-1} (compositions of n).
+- Trees: Catalan(n) = C(2n,n)/(n+1) ~ 4^n/(n^{3/2}√π).
+- So the map is lossy; residual needs ≥ log2(Catalan/2^{n-1}) ≈ (2n - 1.5log n) - (n-1) = n - 1.5 log n + 1 = Θ(n) bits ✓.
+
+Good. That's the quantitative statement.
+
+Now let me write the final answer. Sections per the user's 8 parts. Let me be organized and dense.
+
+Let me prepare the widget: D0/D1/D2 ladder + MSO ⊆ D1 + the target zone D2\D1 + verdicts.
+
+Actually, let me make the widget about the logic: Native (finite presentation + bounded Dep + bounded eval depth) / Non-D1 / Canonical(D2) / Injective / Irredundant, with depth-address failing at Non-D1.
+
+Hmm, or a cleaner one: the D0 ⊂ D1 ⊂ D2 ladder with the theorem MSO ⊆ D1 marked, and "target = D2\D1" bracketed, plus verdicts on candidates. Let me do that.
+
+Let me write the SVG.
+
+Layout (720 x 340):
+- Three stacked bars for D0, D1, D2 (increasing width).
+- A bracket showing "target zone = D2 \ D1".
+- A callout: MSO ⊆ D1 (Courcelle) — so the "non-FO but canonical" escape is inside D1.
+- Bottom: candidate verdicts.
+
+Let me do:
+Box D0: x=200, y=28, w=320, h=40
+Box D1: x=140, y=74, w=440, h=48 (contains a marker for MSO)
+Box D2: x=80, y=130, w=560, h=48; target zone highlighted on the right part of D2 outside D1.
+
+Hmm, drawing "D2 \ D1" requires the bars to be nested — D1 inside D2. Let me do nested: D2 outer (x=80,w=560), D1 (x=140,w=440) drawn inside the top part, D0 (x=200,w=320) inside D1. Then the region D2\D1 = the L-shaped part. Hard to shade nicely. 
+
+Alternative: a simple 3-row table-like list with annotations. Let me do that — simpler and clearer:
+
+Row 1: D0 纯 transport / 换编码 — A ≅ T via R, P = R(Σ)
+Row 2: D1 结构递归属性 (含 MSO/LFP-monadic —— Courcelle: 树上 MSO = 可识别 = 自底向上递归) — depth-Address 在此
+Row 3: D2 典范但非 D1（LFP 非一元 / 范畴构造）— 目标区 ← 未找到实例
+Row 4: 外部数据（非典范）
+
+That's a clean 4-row ladder. Let me lay it out as 4 rows with a left label column and right description.
+
+y positions: row height 52, starting y=30.
+Row1: y=30..78
+Row2: y=86..146 (slightly taller, two lines)
+Row3: y=154..214
+Row4: y=222..270
+Bottom note: y=286..326
+
+Let me write it.
+
+Then the text.
+
+Let me write the answer now, being careful to give all 8 parts.
+
+Length: this will be long. Let me be efficient — use tables heavily and keep prose tight.
+
+Let me draft the key content precisely:
+
+## Part 1: Native formalized + the F_n question
+
+**Definition (Native).** An Address (A,P,Γ,R) is **Native** iff:
+(N1) **Finite presentation.** There is a finite many-sorted *indexed* signature σ (finitely many sorts, finitely many operation symbols, possibly with an index sort) such that P ⊆ σ-operations and Γ = a finite set of equation *schemas*, each universally quantified over the index sort. The index algebra itself must be finitely presented.
+(N2) **Bounded evaluation depth.** For every rule instance, the primitive-term used to compute the output has depth ≤ d for a FIXED d (i.e., every operation appearing is a primitive; none needs to be expanded into a recursion).
+(N3) **Bounded Dep.** Each output position reads O(1) input positions.
+(N4) **No R^{-1}, no ⊙ as primitive.**
+
+**Answer to F_n**: FINITE UNIFORM SCHEMA. Encoding: index sort N with {0,S}; dependent sort family B: N → Sort; operations π: A → Π_{n:N}B(n), tr: Π_{n:N}B(n) → Π_{n:N}B(n-1) (equivalently tr: B(S n) → B(n)), cons_f: B(n)... hmm, cons_f: B(n) × B(n) → B(S n). Equation schema: ∀n. π(S n)(A ⊙ B) = cons_f(tr(π(S n)A), tr(π(S n)B)). One rule, bound index. ✓
+
+**The advisor's caveat (important, must address):** "finitely many rules" ≠ "bounded evaluation depth". tr_{n-1} — if tr is a *primitive*, applying it costs 1; if tr must be *computed by recursion*, it costs Θ(n) and the schema is "a recursion in disguise". **Both readings are available; the honest accounting is: declaring tr a primitive is legitimate, but it forces the address to *store* the layer links — whose size is S(x) = Σ|π_k(x)|, the round-15 quantity (Θ(n) balanced → Θ(n²) path).** So: depth-address is Native **relative to a primitive set that includes the truncation links**, and the price of those primitives is the layered storage. This is the correct, non-hand-waving resolution.
+
+## Part 2: D0/D1/D2
+
+**D0 (pure transport / re-encoding):** ∃ bijection R: T ≅ A with P ⊆ R(Σ)-images and Γ = the transcription of Σ's constructors. 
+**D1 (structural-recursive attributes):** every p ∈ P is a Σ-homomorphism T → V_p into a finitely-presentable algebra V_p (equivalently: defined by a finite system of recursion equations with a finitely-presented value domain), closed under fixed finite formula-combination.
+**D2 (canonical higher-order):** every p ∈ P is obtained from (T,f) by a fixed admissible class of canonical constructions: {LFP, MSO, categorical universal construction}, with no free parameters.
+
+D0 ⊊ D1 ⊊ D2 (strict).
+
+**Key theorem:** [Courcelle / Doner–Thatcher] Over finite trees of bounded arity, **MSO-definable properties = recognizable = computable by bottom-up finite-state tree automata = D1.** Hence **MSO ⊆ D1**. Consequently: every "canonical but not FO" candidate built on MSO/LFP-monadic structure — including the subterm relation ⊑ (rounds 16–17) — **lies in D1**. **This is the reason every previous candidate collapsed.**
+
+## Part 3: Intrinsic — I1/I2/I3
+
+I1 (primitive independence): ∃p ∈ P \ D1. → **Necessary but not sufficient** (a single arbitrary predicate satisfies it).
+I2 (canonical second-order generation): P ⊆ D2. → **A derivability condition, not a novelty condition**, and **vacuous unless the admissible construction class is fixed** (any object is the initial object of the category containing only it).
+I3 (dependency irreducibility): Dep(Γ) can't be transformed into pure pointwise transport while remaining a bounded local rule system. → **Not reindexing-invariant** (the path-indexed address has shift-Dep and is just a reindexing) ⟹ **too weak / ill-defined**.
+
+**Adopted (formal replacement for AC2):**
+> **Definition (the target).** An Address is an **Intrinsic Address Calculus (IAC)** iff:
+> **(T1)** Native (N1)–(N4);
+> **(T2)** **Non-D1**: P ⊄ D1 — some primitive is not a structural-recursive attribute;
+> **(T3)** **Canonical**: P ⊆ D2;
+> **(T4)** **Injective**: R injective;
+> **(T5)** **Irredundant**: ⊙ ∉ Clo_fin(P \ {p}) for every p ∈ P.
+> The target zone is **D2 \ D1** — canonical but not structural-recursive.
+
+And note the advisor's refinement: T3 must be "Γ is a **proof-theoretic consequence** of E" not merely "semantically compatible" (else every transport satisfies it). So: **T3′: ∃ finite E with (A,P) ⊨ E, E not entailed by the transport equations, A uniquely characterized in Mod(E), and Γ derivable from E by finitely many proof steps.**
+
+## Part 4: Candidates
+
+A. Derivative: A(x) = ∂x = {(K,s) : K[s]=x, K≠□}; P = {pair, ⊎, f-prefix, plug}; Γ = Leibniz. **Injective ✓** (∂x=∅ ⟺ x∈X; else x=K[s] for any pair). **But Γ must reconstruct y from ∂y by plugging ⟹ violates (N4)/prohibition 2.** → **NOT decode-free, hence not Native.** Verdict: LOSSY-FREE but NON-NATIVE.
+  Hmm, actually it's not lossy; it fails no-decode. Let me call it: **injective but non-native (needs reconstruction)**.
+  
+B. Zipper: A(x) = {(p, x|_p, ctxt_p(x))}; Γ = shift + rehang. **Injective ✓, Native ✓, bounded Dep ✓.** But every primitive is D1/D0 (paths and subtrees are structural-recursive; rehang is context composition, which is D1 since contexts are computed by recursion). → **STANDARD (D1).**
+
+C. Graded/convolution: A(x) = (b_k(x)); Γ: (b⊙b')_k = b_{k-1}+b'_{k-1}. **LOSSY ✗.** And quantitatively: needed residual is Θ(n) bits. → **LOSSY + STANDARD.**
+
+D. Finite-neighborhood: A(x) = (kind(w), kind(wL), kind(wR))_w; Γ = child-shift. **Injective ✓ Native ✓**; but it's a reindexing of the tree → **STANDARD (D0/D1).**
+
+E. Fixed-point: A(x) = (x, ⊑_x) or (μX.Φ(X) closure). **⊑ ∈ MSO ⊆ D1** (by Courcelle) → **STANDARD**, and redundant.
+
+**All five: STANDARD or LOSSY or NON-NATIVE.**
+
+## Part 5: The 9-item filter — table.
+
+## Part 6: Injectivity
+
+**Theorem (profile residual bound).** #profiles with n nodes ≤ 2^{n-1} (compositions of n); #trees with n nodes = Catalan(n) ~ 4^n/(n^{3/2}√π). Hence any injective address extending the level profile must add ≥ log2(Catalan(n)/2^{n-1}) = n - O(log n) = **Θ(n) bits**. **So "profile + finite local residual" cannot be injective**; the residual is necessarily linear. ∎
+
+And the combination table: profile+residual ✗ (linear), graded+context ✗ (context = tree), automaton+residual — automaton state is finite ⟹ can't restore injectivity (finite × profile is still lossy) ✗, convolution+canonical factor ⟹ the factor is the tree. **So no combination achieves (injective + finite calculus + canonical).**
+
+## Part 7: Original goal restated + answer.
+
+## Part 8: PROVEN / STANDARD / CANDIDATE / OPEN + I/II/III/IV.
+
+**PROVEN:**
+- (P1) Native formalized as N1–N4 = finite indexed presentation + bounded eval depth + bounded Dep + no decode. [DEFINITION]
+- (P2) depth-Address's F_n IS a finite uniform indexed schema; and it is Native iff tr is primitive iff the layered links are stored (space S(x)). [THEOREM]
+- (P3) Without bounded Dep, the Gödel container is Native ⟹ Dep is essential. [THEOREM]
+- (P4) **MSO/LFP-monadic ⊆ D1 (Courcelle/Doner–Thatcher)** ⟹ round 16's L4 escape is *inside* D1. [THEOREM — cited]
+- (P5) depth-Address: all primitives ∈ D1 ⟹ fails T2 ⟹ **not IAC**. [THEOREM]
+- (P6) Profile addresses are unavoidably LOSSY with Θ(n)-bit residual. [THEOREM]
+- (P7) The derivative address is injective but Γ requires term reconstruction ⟹ not Native. [PROPOSITION]
+
+**STANDARD:** zipper (B), neighborhood (D), fixed-point/⊑ (E), graded (C) — all D0/D1.
+
+**CANDIDATE (Native + finite + injective but intrinsic unproven):** — none surviving. Hmm. The closest is derivative (injective, finite, but non-native) and zipper (injective, finite, native, but D1). So: **CANDIDATE: ∅**, with the closest being the derivative route *if* one can make its calculus avoid reconstruction (open).
+
+**OPEN:**
+1. Is D2 \ D1 nonempty for *computable* primitives? (MSO ⊆ D1 kills the monadic part; non-monadic LFP is untouched.)
+2. Can the derivative calculus be rewritten to avoid reconstruction (e.g., a "context-carrier" address whose composition is context-composition rather than tree-concatenation)?
+3. Is T3′ (proof-theoretic derivation from E) satisfiable by any non-D1 E?
+
+**Answer: II.** depth-Address ∈ AC1 (now formally: Native + D1 ⟹ AC1 but not IAC). AC2/IAC not found. Not III (III would require proving all admissible structures are at most AC1 — I have only shown the D0/D1 class collapses, and I have an explicit *open* zone D2\D1).
+
+Also answer the 5 sub-questions in Part 8:
+1. depth-Address just standard AC1? **Yes** — and now formally: all primitives ∈ D1.
+2. Is there a real finite Address calculus rather than coordinate transcription? **Not found**; the candidate space has been reduced to D2\D1.
+3. Canonical-but-not-FO address primitive? **Yes exists** (⊑, LFP-not-FO) — **but by Courcelle it is D1**, hence not usable. So the answer is: "exists but is standard".
+4. injective + convolution/graded/residual address? **No** — injectivity forces Θ(n) residual (theorem).
+5. Strictly definable AC2? **The definition is now checkable (T1–T5 / T3′)**, and it is stable enough to give a verdict on all constructed cases — but whether T2∧T3 is satisfiable is OPEN.
+
+I'll note: definition "完全稳定" is achieved for T1/T2/T4/T5; T3′ still has one gap (the exact admissible construction class for D2). So I give II with that documented caveat, and note IV would apply *only* to the D2-class question.
+
+Let me write it now.
+
+For the widget, let me do the D-ladder with the target zone.
+
+Let me write the SVG compactly with 4 rows.
+
+Rows:
+1. D0 纯 transport / 换编码  |  P ⊆ R(Σ)，Γ = Σ 构造子的转写
+2. D1 结构递归属性（含 MSO / LFP-一元；Courcelle：树上 MSO = 可识别 = 自底向上） | depth-Address、zipper、邻域、⊑ 全在此
+3. D2 典范但非 D1（LFP 非一元 / 范畴构造） ← 目标区（T2 ∧ T3） | 未找到实例
+4. 外部数据（非典范）：任意谓词 / 序 / 哈希种子 / oracle | 排除
+
+Bottom: 结论：目标 = D2 \ D1 ∧ Native ∧ 单射 ∧ 不可约；depth-Address 在 D1 ⟹ 非 IAC。
+
+Let me write it.
+
+Height: 4 rows × 50 + bottom 40 + margins ≈ 300.
+
+y: title 26; row1 40..84; row2 92..148; row3 156..212; row4 220..264; bottom text 288..316. Total H=330.
+
+Let me write it out.
+
+Now write the answer. Let me be organized, covering all 8 parts, using tables heavily to keep it tight.
+# 第一部分：Native 的形式化，与 F_n 的正式编码
+
+**【撤回】** 第 17 轮的 AC2（"来自 Address 自身的规范结构原理，而非 transcription"）是内涵性判据，**撤回作为最终判据**。以下给出可检验的替代。
+
+**定义（Native）** Address $(A,P,\Gamma,R)$ 是 **Native** 的，当且仅当：
+
+| | 条件 | 检查方式 |
+|---|---|---|
+| **N1** | **有限呈现**：存在有限的**索引化**多排序签名 σ（有限多 sort、有限多运算符号、可含索引 sort），使 $P\subseteq\sigma$，且 $\Gamma$ 是**有限条方程 schema**（每条对索引 sort 全称量化）；索引代数本身亦有限呈现 | 写出 σ 与方程表 |
+| **N2** | **求值深度有界**：每条规则实例用到的 primitive 项深度 $\le d$（**固定常数**）——即规则中出现的每个运算都**已是 primitive**，不需再展开为递归 | 逐符号核对 |
+| **N3** | **Dep 有界**：每个输出位置只读 $O(1)$ 个输入位置 | 依赖图 |
+| **N4** | 不出现 $R^{-1}$、不出现完整 Concept 重建、不把 $\odot$ 列入 $P$ | 语法核对 |
+
+## F_n 的正式编码：**有限 uniform 索引 schema，不是无限条独立规则**
+
+索引 sort $\mathbb N$（`{0,S}` 有限呈现），依赖 sort 族 $B:\mathbb N\to\mathrm{Sort}$，运算符号**三个**：
+
+$$\pi:A\to \textstyle\prod_{n:\mathbb N}B(n),\qquad \mathrm{tr}:\textstyle\prod_{n:\mathbb N}B(S n)\to\prod_{n:\mathbb N}B(n),\qquad \mathrm{cons}_f:B(n)\times B(n)\to B(S n)$$
+
+**一条**方程 schema（$n$ 为绑定索引变量）：
+
+$$\Gamma:\qquad \forall n.\ \ \pi(S n)\big(A\odot B\big)=\mathrm{cons}_f\big(\mathrm{tr}(\pi(S n)A),\ \mathrm{tr}(\pi(S n)B)\big)$$
+
+**核对 N1–N4**：N1 ✓（3 个符号、1 条 schema、索引代数有限呈现）；N3 ✓（输出 $Sn$ 读输入 $Sn$：半径 0）；N4 ✓。**故若 $\mathrm{tr}$ 是 primitive，则 N2 ✓，depth-Address ∈ Native。**
+
+**⚠️ 但必须处理一个真问题（Advisor 提出，我接受）**：**"有限条规则" ≠ "每条规则的求值深度有界"。** $\mathrm{tr}$ 若作为 primitive，应用一次成本 1；**若 $\mathrm{tr}$ 需由递归展开**，则求值成本 $\Theta(n)$，schema 就是"伪装的递归"，N2 失败。
+
+**正确的、不含糊的结算**：
+> $\mathrm{tr}$ 是 primitive $\iff$ Address **存储层间链接** $\iff$ 存储量为 $S(x)=\sum_k\lvert\pi_k(x)\rvert$（第 15 轮的量：完美树 $\Theta(n)$、链状 $\Theta(n^2)$）。
+
+**所以 depth-Address 的 Native 地位是"相对于含 tr 链接的 primitive 集"成立的，代价是那批链接的存储。** 这不是循环——它把 N2 从"是否有限条规则"变成了"**是否为该 primitive 付了实现代价**"。
+
+---
+
+# 第二部分：Derived Address Calculus（D0 / D1 / D2）
+
+| 层 | 定义 | 形式 |
+|---|---|---|
+| **D0** | 纯 transport / 换编码 | $\exists$ 双射 $R:T\cong A$，$P\subseteq\{R(\sigma)\}_{\sigma\in\Sigma}$（构造子的 R-共轭像），$\Gamma$ 是 $\Sigma$ 构造子定义的逐字转写 |
+| **D1** | 结构递归属性 | 每个 $p\in P$ 是 $\Sigma$-同态 $T\to V_p$，$V_p$ **有限呈现**（等价：由有限组递归方程 + 有限呈现值域给出）；并对固定的有限公式组合封闭 |
+| **D2** | 典范高阶层 | 每个 $p\in P$ 由**固定**的可允许构造类 {LFP, MSO, 范畴泛性质} 从 $(T,f)$ 产生，**无自由参数** |
+
+**D0 ⊊ D1 ⊊ D2**（严格：$T$ 的高度 $\in$ D1$\setminus$D0；本轮的 (P4) 表明 D2 的 MSO 部分 ⊆ D1，故 D2$\setminus$D1 只能由非一元 LFP 或非范畴构造触及）。
+
+**⚠️ D1 必须防止平凡化**：若允许值域 $V_p=T$，则 $p=\mathrm{id}_T$ 使一切平凡。**故 D1 的值域必须限定为"有限呈现且不含 $T$ 自身作为生成元"的代数。** 这是 D1 定义的必要补充。
+
+---
+
+# 第三部分：Intrinsic —— I1/I2/I3 的比较与采用
+
+| 判据 | 陈述 | 评价 |
+|---|---|---|
+| **I1 · primitive-independence** | $\exists p\in P\setminus D1$ | **必要但不充分**。单个任意谓词就满足 I1，故它只是"非标准性"的必要条件 |
+| **I2 · canonical second-order generation** | $P\subseteq D2$ | **方向反了**：这是一个**可派生性**条件，不是新颖性条件；且**若不固定可允许构造类则空洞**（任何对象都是"只含它自己的范畴"的初始对象） |
+| **I3 · dependency irreducibility** | $\mathrm{Dep}(\Gamma)$ 不能等价变换为纯逐点 transport 而仍属有限局部规则系统 | **不具再索引不变性**（路径索引地址的 Dep 是移位，却只是树的再索引）⟹ 过弱且未良定义 |
+
+**采用的替代（形式化 IAC）**：
+
+> **定义（Intrinsic Address Calculus, IAC）** Address 是 IAC，当且仅当：
+> **(T1)** Native（N1–N4）；
+> **(T2)** **非 D1**：$P\not\subseteq D1$（存在非结构递归的 primitive）；
+> **(T3′)** **典范且具证明论派生**：$\exists$ 有限定律集 $E$ 使 (i) $(A,P)\models E$；(ii) $E$ **不被 transport 方程语义蕴含**（否则平凡）；(iii) $A$ 在 $\mathrm{Mod}(E)$ 中唯一刻画到同构（$E$ 非泛型）；(iv) $\Gamma$ **由 $E$ 经有限步证明论后承导出**（不只是语义相容——相容对一切 transport 都成立）；
+> **(T4)** 单射；
+> **(T5)** **不可约**：$\forall p\in P,\ \odot\notin\mathrm{Clo}_{\mathrm{fin}}(P\setminus\{p\})$。
+>
+> **目标区 $=$ D2 $\setminus$ D1 $\cap$ (T1)(T4)(T5)。**
+
+T3′ 的 (ii)(iv) 是本轮相对第 17 轮 C3 的两处收紧，直接针对"$\Gamma$ 由 $E$ 导出"退化为"$\Gamma$ 与 $E$ 相容"的漏洞。
+
+---
+
+# 第四部分：五个候选的攻击结果
+
+### A · Residual / derivative Address
+
+$$A(x)=\partial(x)=\{(K,s):K[s]=x,\ K\ne\square\},\quad P=\{\mathrm{pair},\uplus,f\text{-prefix},\mathrm{plug}\}$$
+$$\Gamma:\ \partial(f(x,y))=\{( \square,f(x,y))\}\ \uplus\ f(\partial x,\,y)\ \uplus\ f(x,\,\partial y)$$
+
+**注入性 ✓** [PROOF]：$\partial x=\varnothing\iff x\in X$；否则任取 $(K,s)\in\partial x$ 得 $x=K[s]$。故 $\partial x=\partial x'$ 且非空 $\Rightarrow x=x'$。∎
+**Native ✗**：要构造 $f(\partial x,\,y)$ 与 $f(x,\,\partial y)$，必须得到 **$y$ 与 $x$ 本身**；而 $x,y$ 只能由 $\mathrm{plug}(K,s)$ **重建项**。⟹ **违反 N4 的"不重建完整 Concept"**。
+**判定**：**INJECTIVE + NON-NATIVE**。若要补救（$A(x)=(x,\partial x)$）则 $\partial$ 冗余，退回 transport。
+
+### B · Context / zipper
+
+$$A(x)=\{(p,\ x|_p,\ \mathrm{ctxt}_p(x))\},\quad P=\{\text{child-shift},\mathrm{rehang},\mathrm{kind}\}$$
+**注入性 ✓**（$p=\varepsilon$ 项给出 $x$）**Native ✓ Dep 有界 ✓**。
+**但每个 primitive ∈ D1**：路径、子树、上下文、rehang 全部由 $T$ 上有限结构递归给出。
+**判定**：**STANDARD（D1）**。
+
+### C · Graded / convolution
+
+$$A(x)=(b_k(x)),\quad (b\odot b')_k=b_{k-1}+b'_{k-1}$$
+**注入性 ✗**，且不是"补一个小 residual"可救——见第六部分的下界定理。
+**判定**：**LOSSY + STANDARD**。
+
+### D · Finite-neighborhood
+
+$$A(x)=\big(\mathrm{kind}(w),\mathrm{kind}(wL),\mathrm{kind}(wR)\big)_w,\quad \Gamma:\ a_{Lw}\mapsto a_w,\ a_{Rw}\mapsto a_w$$
+**注入性 ✓ Native ✓**；但 $\Gamma$ 只用 child-shift + kind，**等于树的再索引**。
+**判定**：**STANDARD（D0/D1）**。它是一个 **tree transducer 的特例**，不是新对象。
+
+### E · Fixed-point / closure-generated
+
+$$A(x)=(x,\sqsubseteq_x),\quad \Gamma:\ \sqsubseteq_{f(x,y)}=\mathrm{lfp}(R\mapsto R\cup\cdots)$$
+**关键结果**：$\sqsubseteq$ 非 FO 可定义，**但 $\sqsubseteq\in\mathrm{MSO}$；而树上 MSO = 可识别 = 自底向上递归（Courcelle / Doner–Thatcher）⟹ $\sqsubseteq\in D1$。**
+
+> **定理（P4，本轮核心）** 在有限字母表、有限元数的树上，MSO-可定义的位置性质 $=$ 可识别 $=$ 自底向上有限状态可计算 $=$ D1。故 **MSO ⊆ D1**，且一元 LFP ⊆ MSO ⊆ D1。
+
+**这解释了第 16–17 轮全部"canonical-but-not-FO"候选为何坍缩**：它们属于 MSO/LFP-一元，落在 D1 内。**第 16 轮的 L4 逃逸口在 MSO 范围内被关闭。**
+**判定**：**STANDARD（D1）**，且冗余。
+
+**五候选汇总**：无一满足 (T1)–(T5)。A 失去 Native，B/D/E 落入 D1，C 失去单射。
+
+---
+
+# 第五部分：非创新过滤器（逐候选）
+
+| 候选 | ①换坐标 | ②商/子直 | ③递归属性 | ④graded | ⑤tree transducer | ⑥CA/local map | ⑦derivative | ⑧context/zipper | ⑨fixed point | 标记 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| A 导数 | 否 | 否 | 部分 | 否 | 否 | 否 | **是** | 是 | 否 | **STANDARD 构造 + NON-NATIVE** |
+| B zipper | 是 | 否 | **是** | 否 | 是 | 部分 | 否 | **是** | 否 | **STANDARD** |
+| C graded | 否 | 是 | **是** | **是** | 否 | 否 | 否 | 否 | 否 | **LOSSY + STANDARD** |
+| D 邻域 | **是** | 否 | **是** | 否 | **是** | **是** | 否 | 否 | 否 | **STANDARD** |
+| E 不动点 | 是 | 否 | **是**（经 MSO⊆D1） | 否 | 是 | 否 | 否 | 否 | **是** | **STANDARD** |
+
+**STANDARD ≠ 对本项目无价值**：它们告诉我们可用的 primitive 库有多大，以及**为什么每次都在 D1 边界撞墙**。
+
+---
+
+# 第六部分：单射性与"profile + residual"
+
+**定理（profile 的 residual 下界）** [THEOREM]
+设 $n=\lvert x\rvert$。可实现的层剖面数 $\le$ $n$ 的合成数 $=2^{n-1}$；而 $n$ 结点二叉树数 $=\mathrm{Catalan}(n)\sim\dfrac{4^n}{n^{3/2}\sqrt\pi}$。故任何单射 Address 若包含层剖面分量，**必须额外携带**
+$$\ge\ \log_2\frac{\mathrm{Catalan}(n)}{2^{n-1}}\ =\ n-O(\log n)\ =\ \boxed{\Theta(n)\ \text{位}}$$
+[PROOF] 单射要求 $\lvert A(\text{trees})\rvert\ge\mathrm{Catalan}(n)$；剖面容量的对数上界为 $n-1$；差额即为残余所需位数。∎
+
+**推论**：**"profile + finite/local residual" 不可能单射**——residual 必然是线性的，故候选 C 及一切"紧致坐标 + 小残余"方案在计数层面被否决。
+
+**组合表（第六部分要求的四类组合）**：
+
+| 组合 | 单射 | finite calculus | canonical | no decode |
+|---|---|---|---|---|
+| profile + residual | ✗（需 $\Theta(n)$ 位） | ✓ | ✓ | ✓ |
+| graded signature + context | ✓（context 即树） | ✓ | ✓ | ✗（context 需重建项） |
+| automaton state + path residual | ✗（状态有限，不足以补回剖面丢失的 $\Theta(n)$ 位） | ✓ | ✓ | ✓ |
+| convolution coords + canonical factor | ✓（factor = 树） | ✓ | ✓ | ✗ |
+
+**结论：没有一种组合同时满足四项。**
+
+---
+
+# 第七部分：原始目标的回答
+
+> **有限原子 $X$ + 有限组合规则 $\Sigma$ 能否产生 $A$，使 $\mathrm{Address}(f(x,y))=\Gamma(\mathrm{Address}(x),\mathrm{Address}(y))$，且 $\Gamma$ 不 decode、只用 Address primitive、由有限规则/uniform schema 定义、Address 有非平凡内部依赖结构？**
+
+**能——但这已经是 depth-Address 做到的事**（T1 已证）。**不能的**是下面这一条：
+
+> **$\Gamma$ 的 primitive calculus 不是把 $f$ 的已有定义逐坐标复制**（你的第 7 条）。
+
+**判定的精确形式**：由第二部分，(T2) 要求 $P\not\subseteq D1$。depth-Address 的每个 primitive（$\pi_n$ = 截断 $=$ 结构递归；$\mathrm{tr}$ $=$ 结构递归；$\mathrm{cons}_f$ $=$ 构造子本身 $=$ D0；$\mathrm{kind}$ $=$ 结构递归）**全部 ∈ D1**，故 **(T2) 正式失败**。这不是内涵判断，是逐 primitive 的核对。
+
+---
+
+# 第八部分：最终状态
+
+## PROVEN
+
+| # | 命题 |
+|---|---|
+| P1 | **Native 形式化**为 N1–N4（有限索引呈现 + 求值深度有界 + Dep 有界 + 无 decode）[DEFINITION] |
+| P2 | **$F_n$ 是有限 uniform 索引 schema**（3 符号 + 1 条 $\forall n$ 方程），**不是无限条独立规则**；其 N2 成立**当且仅当** $\mathrm{tr}$ 为 primitive，代价为层链接存储 $S(x)=O(n^2)$ 最坏 [THEOREM] |
+| P3 | 若无 Dep 有界，Gödel 容器（$\mathbb N$ + 算术）合格 ⟹ **Dep 不可省** [THEOREM] |
+| P4 | **树上 MSO = 可识别 = 自底向上递归 ⟹ MSO ⊆ D1**（Courcelle / Doner–Thatcher）[THEOREM，引用] |
+| P5 | **depth-Address 全部 primitive ∈ D1** ⟹ 正式非 IAC [THEOREM，逐项核对] |
+| P6 | **profile 型单射不可能**：residual $\ge\Theta(n)$ 位 [THEOREM，计数] |
+| P7 | **导数地址单射但非 Native**（$\Gamma$ 必须重建 $x,y$）[PROPOSITION] |
+
+## STANDARD
+
+zipper（B）＝ context/comonad 标准构造；邻域（D）＝ tree transducer / CA-local map；不动点（E）＝ MSO/LFP 标准对象（且被 P4 收入 D1）；graded（C）＝ generating function + shift 的标准层代数；导数复核（A）＝ differential algebra / species 的标准导数。
+
+## CANDIDATE
+
+**空集。** 在本轮条件 (T1)–(T5) 下没有候选满足。**最接近的是 A 路线**：它**单射、有限、非 D1 风险最小**，唯一障碍是 $\Gamma$ 需重建项——**若要攻克，必须设计一个"以上下文为载体"的 Address，使组合本身是上下文复合而非"造节点"**。这是下一轮唯一明确的攻击点。
+
+## OPEN
+
+1. **D2 $\setminus$ D1 对可计算 primitive 是否非空？** P4 只关闭了 MSO / 一元 LFP 部分；**非一元 LFP 与不可识别构造完全未被触及**。
+2. **A 路线能否改造为 Native？**（上下文复合型组合能否避免重建项）
+3. **T3′(iv) 是否可满足？** 即：是否存在不被 transport 方程蕴含的有限 $E$，使 $\Gamma$ 成为其证明论后承。
+
+## 五个指定问题的回答
+
+1. **depth-Address 是否只是标准 AC1？——是。** 更强：全部 primitive ∈ D1，故连"非标准 primitive"都不满足。
+2. **是否存在真正的 finite Address calculus 而非坐标转写？——未找到。** 候选空间已收缩到 D2$\setminus$D1。
+3. **是否存在 canonical-but-not-FO 的 Address primitive？——存在**（子项关系 $\sqsubseteq$：LFP-可定义、非 FO）。**但由 P4 它 ∈ D1**，故不可用。这是"存在但对本项目无效"。
+4. **是否存在 injective + convolution/graded/residual 的 Address？——不存在**（P6 计数下界；四类组合表全部失败）。
+5. **是否存在可严格定义的 AC2？——定义现在可检验**（T1–T5 + T3′），且已足以对全部已构造对象给出判定；**但 (T2)∧(T3′) 的可满足性未定**——这是 AC2 唯一剩余的不确定性。
+
+## 最终判定
+
+# **II —— 只找到 AC1；depth-Address 属于 AC1；AC2/IAC 未找到。**
+
+**为什么不是 III**：III 要求"证明所有允许结构最多 AC1"。我只证明了 **D0/D1 类坍缩**（P4 + P5），并明确指出 **D2$\setminus$D1 是未被触及的开放区**。把"depth-Address 是 standard"升级为"所有 Address 都是 standard"在本轮仍然没有依据。
+
+**为什么不是 IV**：判据已从内涵语升级为可检验条件（N1–N4、D0/D1/D2、T1–T5），且**已能对全部已构造对象产出唯一判定**。IV 只适用于 T3′ 中的"可允许构造类"这一步——**这一点作为局部缺口记录在 OPEN-1 中，不足以把整体判据判为不严格。**
+
+## 【我们到底还没有找到什么】（一句话）
+
+> **一个 primitive $p$，使同时成立：(i) $p\notin D1$（非结构递归）、(ii) $p\in D2$（由固定可允许类典范产生、无自由参数）、(iii) $\odot$ 的有限 schema $\Gamma$ **必须**用到 $p$（不可约）、(iv) $R$ 单射、(v) 求值深度与 Dep 都有界。**
+>
+> **满足这五条的对象尚未被找到——这就是"未找到"，不是
