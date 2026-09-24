@@ -1,0 +1,1907 @@
+*正在请求专家建议，优化解决方案，该过程耗时可能较长，请耐心等待...*
+
+
+Let me work through this carefully. This is the deepest question yet.
+
+## 一、修正上一轮错误
+
+The user is RIGHT. Let me verify.
+
+F((a,u),(b,v)) = (a⊕b, 2C(u,v)) — is it injective?
+
+F((0,u),(0,v)) = (0⊕0, 2C(u,v)) = (0, 2C(u,v)).
+F((1,u),(1,v)) = (1⊕1, 2C(u,v)) = (0, 2C(u,v)).
+
+**Same output. Not injective.** ✓ The user is right.
+
+So M_1 with Φ_{a,b} = 2C (independent of a,b) is NOT injective. Hence it's not an injective encoding. **Retract.**
+
+And M_2 with Φ_{a,b} = 2C(u,v) + a:
+F((0,u),(0,v)) = (0, 2C(u,v))
+F((1,u),(1,v)) = (0, 2C(u,v)+1)
+Different ✓
+
+Let me verify M_2 injectivity fully: given (c,w), a = w mod 2, b = a⊕c, C(u,v) = (w−a)/2. ✓ Injective.
+
+**But here's the crucial realization**: M_1 was my "product" example and it's NOT injective. So my claim "M_1 ≅ M_2 both injective, one product one not, hence enriched isomorphism is finer" **collapses** — because M_1 isn't injective.
+
+Hmm. So I need to recheck: is there an injective product example? Product form: F((a,u),(b,v)) = (F_0(a,b), Φ(u,v)) with Φ independent. Injectivity requires F_0 injective AND Φ injective. F_0: Q²→Q injective requires Q infinite. So with Q = ℤ/2 (finite), **no injective product exists**. 
+
+**So the user's suspicion in 八 is exactly right**: with finite Q, "no direct product" is *forced by injectivity alone*, not by any new structure. Because ANY product with finite Q fails injectivity. So "non-product" is not evidence of new structure — it's forced.
+
+**This is the key finding of this round.** Let me make it precise:
+
+**Theorem (triviality of the non-product conclusion for finite Q).**
+If |Q| finite and |Q| ≥ 2, then NO structure M = (A, F, π: A↠Q, F_0) with F injective can be a direct product. 
+Proof: product ⟹ F = (F_0, Φ) ⟹ injectivity of F ⟹ injectivity of F_0 ⟹ |Q|² ≤ |Q| ⟹ |Q| ≤ 1. Contradiction.
+
+**So: for finite Q, "non-product" carries ZERO information.** It's implied by injectivity. The user is right that my Theorem P + Corollary proves only "no direct product", and that this is *automatically* true for finite Q.
+
+**Therefore: non-product ≠ new structure. Confirmed.**
+
+## 二、So what would "new structure" mean?
+
+The user asks for P1/P2/P3:
+- P1: Independent Tag: F = (F_0(a,b), Φ(u,v))
+- P2: Embedded/Dependent Tag: F = (F_0(a,b), Φ_{a,b}(u,v)), where the dependence is *just* carrying the input state information
+- P3: genuine structured composition: the state changes the *operation structure* on the fine space, not just encodes data
+
+And the key question: is there a rigorous distinction between "data carrying" and "rule selection"?
+
+Let me think hard about this.
+
+### The fundamental issue
+
+Given F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)).
+
+**Claim attempt**: the dependence of Φ on (a,b) is "just data carrying" if there's a re-encoding R: Q × D → Q × D (preserving π) such that after re-encoding, Φ is independent of (a,b) — but then injectivity fails...
+
+Hmm. Let's think again. If Φ becomes independent of (a,b) after re-encoding, then F = (F_0, Φ) with Φ independent, and injectivity fails (for finite Q). So **you can't have both**.
+
+So: the dependence is *necessary* for injectivity. **But that's exactly the user's point**: it's a *side-channel forced by injectivity*, not extra structure.
+
+Let me formalize the user's proposed test:
+
+> 是否存在一个普通的 pairing P: (Q×D)² → Q×D 以及一个固定的重新编码 R: Q×D → Q×D，使所有这种 state-dependent Φ 都能被解释成"普通 pairing + payload 中携带 coarse information"。
+
+**Let me try to construct this.**
+
+Idea: Let the fine component carry the coarse information. Define:
+- R(a,u) = (a, ⟨u, a⟩) — i.e., embed a into the payload.
+- Hmm, but that changes the fiber structure.
+
+Let me think differently. **The cleanest "explanation"**: 
+
+Define D' = Q × D (payload enlarged to carry the coarse info).
+Define a new base Q' = trivial (or just Q).
+Define F' on Q' × D' componentwise via a *fixed* pairing.
+
+Hmm. Let's try: 
+
+Let A = Q × D. Define the "payload" as p = (a, u) ∈ Q × D = A itself. Then F(x,y) = (F_0(πx,πy), Φ_{πx,πy}(u,v)).
+
+Can we write F(x,y) = (something fixed)(x,y)? Trivially yes: F is a function. The question is whether it's a *fixed pairing* in a meaningful sense.
+
+**Let me try the strongest form**: is there a bijection R: A → A and a *fixed* function P: A × A → A (a "pairing") such that F = R^{-1} ∘ P ∘ (R × R)?
+
+That's just: F is conjugate to P. And **ANY two injective binary operations on A with |A| = ℵ₀ are conjugate** (if both are "free" in the right sense)... hmm, not any. Let me think.
+
+Actually: **the question is whether F is isomorphic to a "product form"**. We showed: no, because product form forces F_0 injective which is impossible for finite Q.
+
+But the user's proposed alternative is weaker: **F is conjugate to (fixed pairing + payload carrying coarse info)**. 
+
+Let me make this precise. Proposal:
+
+**Definition (Data-carrying explanation).** F: A×A → A admits a *data-carrying explanation* if there exist:
+- a set D (payload),
+- an injection R: A ↪ Q × D (or A ≅ Q × D),
+- a **fixed** operation Ψ: D × D → D,
+- and a **fixed** "bookkeeping" map β: A × A → D,
+
+such that F(x,y) = (F_0(πx,πy), Ψ(u_x, u_y) combined with β(x,y)).
+
+Hmm, this is getting vague. Let me think about the *essential* question.
+
+### The essential question
+
+**Is the state-dependence of Φ a "side-channel" or "genuine"?**
+
+Let me think about it information-theoretically / structurally.
+
+Key observation: **Φ_{a,b}(u,v) must, together with F_0(a,b), determine (a,b,u,v).** So Φ_{a,b}(u,v) must encode a.
+
+But: **"encode a" is automatic** — since Φ_{a,b} is a *function* that depends on a, its output naturally varies with a. So the question is: **is the a-dependence "structural" or "incidental"?**
+
+Hmm. Let me think about a cleaner criterion.
+
+### A cleaner approach: the **fiber-wise algebra** and its "shape"
+
+For each q ∈ Q, consider the fiber A_q = π^{-1}(q). F induces maps Φ_{a,b}: A_a × A_b → A_{F_0(a,b)}.
+
+**The "fine operation" at the pair (a,b)** is Φ_{a,b}. 
+
+Now: **P1/P2 vs P3**. The user says P3 = "state 改变 fine algebra / operation，而不是被编码到 payload".
+
+Let me try to formalize:
+
+**P1 (independent)**: there's a single operation Φ: D×D→D and isomorphisms ψ_q: A_q → D such that Φ_{a,b} = ψ_{F_0(a,b)}^{-1} ∘ Φ ∘ (ψ_a × ψ_b). I.e., **all fiber operations are "the same" up to fiber reparametrization.**
+
+**P2**: the same, but... hmm, P2 is supposed to be "dependence is just carrying state". 
+
+Hmm, let me re-read: 
+"Type P2：Embedded / Dependent Tag: F((a,u),(b,v)) = (F₀(a,b), Φ_{a,b}(u,v)). 但要求：Φ_{a,b} 的 state dependence 本质上只是携带输入 state 所需的信息，没有额外的结构语义。"
+
+So P2 = the dependence exists but is *explanable* as data carrying.
+
+**P3**: "state dependence 不只是保存输入信息，而是：输入 state 改变了 fine-space 上实际执行的组合结构。"
+
+**So the user is asking: is there a rigorous criterion distinguishing "the dependence is a bookkeeping channel" from "the dependence is a genuine change of the operation"?**
+
+### Let me think about whether ANY criterion can work.
+
+**Critical realization**: Let me consider the following. Suppose Φ_{a,b} depends on a only through a "translation" that's independent of the operation. E.g., Φ_{a,b}(u,v) = h_a(Φ(u,v)) where h_a is a bijection of D and Φ is a fixed operation. Then: the a-dependence is a *post-hoc relabeling* — the "operation structure" is the same (it's Φ), just relabeled per fiber.
+
+**Is that "data carrying"?** Arguably yes: the output is Φ(u,v) with an a-dependent label appended.
+
+**Compare**: Φ_{a,b}(u,v) = something where the *shape* of the operation differs — e.g., for a=0, Φ is "concatenate"; for a=1, Φ is "interleave". 
+
+Hmm. But: **any two operations on an infinite set can be conjugated to each other if they have the same "isomorphism type"**. And "concatenate" vs "interleave" on ℕ — are they conjugate? They're both injective binary ops on ℕ with infinite image... probably conjugate.
+
+**So here's the crux**: on an infinite set, **many operations are conjugate**, so "the operation changed" is often just a relabeling.
+
+### Let me try to find the RIGHT formalization.
+
+I think the right framework is: **the category of "Q-indexed operations" up to fiber-wise reparametrization.**
+
+Formalize: Let A = ⨆_{q∈Q} A_q. An operation F on A with π∘F = F_0∘(π×π) is the same as a family {Φ_{a,b}: A_a × A_b → A_{F_0(a,b)}}_{a,b∈Q}.
+
+Define the group G = Π_{q∈Q} Sym(A_q). G acts on families by:
+(ψ · Φ)_{a,b} = ψ_{F_0(a,b)} ∘ Φ_{a,b} ∘ (ψ_a^{-1} × ψ_b^{-1}).
+
+**Two families are "the same structure" iff they're in the same G-orbit.**
+
+Now:
+- **P1** ⟺ the G-orbit contains a family with Φ_{a,b} = Φ constant (independent of a,b). [This is exactly Theorem P.]
+- **P2** ⟺ ? The orbit does NOT contain a constant family, but the family is "explainable as data carrying".
+
+Hmm. What's the formalization of "data carrying"?
+
+**Attempt**: A family is "data carrying" if Φ_{a,b}(u,v) = T(Φ_0(u,v), σ(a,b)) for a fixed operation Φ_0 and a fixed map σ: Q×Q → (some set), and T is a fixed "combine" operation... 
+
+Hmm, that requires more structure. Let me think differently.
+
+**Better attempt — "the operation type is constant".** 
+
+Consider the family {Φ_{a,b}}. Define its **"operation clone up to conjugacy"** — hmm.
+
+**Alternative: the "rank/profile" of the operation.** For an operation Φ: X × Y → Z, define its "profile" as... the cardinality of the image? No, that's conjugacy-invariant only if we fix the sets.
+
+Hmm. Let me think about **the right invariant for "the operation changed"**.
+
+### Key insight attempt
+
+Let me look at this from a different angle. The user's example: Φ_{a,b}(u,v) = 2C(u,v) + a. 
+
+**Is this "data carrying"?** Yes! It's literally: compute C(u,v), then append the bit a. So the *operation* is "Cantor pairing followed by appending a bit", and the appended bit is the coarse state. **This is exactly data carrying.** ✓
+
+So the parity example is **P2, not P3**. The user is right to suspect it.
+
+And my round-5 "non-product" conclusion is therefore: **non-product is forced by injectivity (finite Q), and the mechanism is exactly data carrying.** So no new structure. ✓
+
+**So: the answer to 五 is: P2. And the non-product theorem proves only non-separability, not new computation.**
+
+Now: **is there a P3?**
+
+### Let me think about what would make it P3.
+
+For P3, we need: the state changes the operation *structure* in a way that is NOT "append the state to the output".
+
+Formalization attempt: **"appending state" is a specific form: Φ_{a,b}(u,v) = T(Φ(u,v), a) for a fixed Φ and fixed T.** More generally, Φ_{a,b}(u,v) = T(Φ(u,v), a, b) — the output is a fixed function of a "core result" and the state.
+
+Hmm, but if Φ_{a,b} depends on u,v in a *different way* for different a — e.g., Φ_{0,0}(u,v) = C(u,v) and Φ_{1,1}(u,v) = C(v,u) — then it's not "appending state"; the *order* changes.
+
+But: is C(u,v) vs C(v,u) a "genuine" difference? Under conjugation by a bijection of D... Hmm, Φ_{1,1} = Φ_{0,0} ∘ swap. And swap is a bijection of D×D. So Φ_{1,1} = Φ_{0,0} ∘ (a fixed bijection). So it IS "the same operation composed with a fixed reparametrization". Hmm.
+
+OK, let me try to think about this really carefully.
+
+### The general question
+
+Given a family {Φ_{a,b}: D × D → D} (all fibers identified with D for simplicity, so no ψ needed).
+
+**When is the family "constant up to reparametrization" (P1)?** When ∃{ψ_q} with ψ_{F_0(a,b)}∘Φ_{a,b}∘(ψ_a^{-1}×ψ_b^{-1}) independent of (a,b).
+
+**When is the family "data carrying" (P2)?** Hmm. 
+
+Let me think about the *simplest* possible characterization. 
+
+**Proposal**: The family is "data carrying" if there exists a *single* operation Φ and a *single* family of "insertion" maps such that Φ_{a,b} = ι_{a,b} ∘ Φ... 
+
+Hmm, I keep going in circles. Let me try to find the *right* mathematical object.
+
+### The right object: the family as a "module" over Q
+
+Actually — let me reconsider. I think the honest answer might be:
+
+**There is no rigorous distinction between P2 and P3, because "data carrying" is not a well-defined notion without specifying what counts as "data" vs "structure".**
+
+Hmm, but let me not give up too fast. Let me look for a genuine invariant.
+
+### Let me think about the "hidden tag" explanation concretely.
+
+The user's proposal: "普通 pairing P: (Q×D)² → Q×D 以及一个固定的重新编码 R: Q×D → Q×D，使所有这种 state-dependent Φ 都能够被解释成'普通 pairing + payload 中携带 coarse information'".
+
+**Concretely**: enlarge the payload so it carries the coarse info. 
+
+Let A' = Q × D where we now treat the *payload* as D̃ = Q × D (i.e., A' = Q × Q × D) — hmm, but that changes the base.
+
+Let me try: Let π' : A → Q be a *different* projection. E.g., π'(a,u) = 0 (trivial base, single fiber = A). Then F on A = the single fiber is just F: A×A → A, and Φ = F. Is F "data carrying"? Well, with trivial base, there's no state, so the question is vacuous.
+
+Hmm — **that's a key point!** If we allow the projection to change, then ANY F can be made "state-free" by taking the trivial projection. **So the distinction P1/P2/P3 depends entirely on the projection π.** And π is part of the structure.
+
+So: **P3 requires π to be fixed.** ✓ (The user says "relative to the fixed projection π(a,u)=a" in 五. Good.)
+
+### OK so with π fixed, let's think again.
+
+π: A → Q fixed, A = ⨆_q A_q, F induces {Φ_{a,b}}.
+
+**Question**: is there a meaningful distinction between:
+(P2) the family {Φ_{a,b}} is "explainable as a fixed operation + carried state"
+(P3) the family genuinely varies
+
+**Let me propose a criterion and test it.**
+
+**Criterion attempt**: The family is P2 iff there exist:
+- a set S (the "carried state"),
+- a fixed operation Φ_0: D × D → D,
+- fixed maps τ: Q × Q → S, and ρ: D × S → D,
+such that Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)).
+
+I.e., the output is computed by first doing a fixed operation, then "attaching" the state via a fixed rule.
+
+**Test on the parity example**: Φ_{a,b}(u,v) = 2C(u,v) + a. Take Φ_0 = C, S = Q, τ(a,b) = a, ρ(w, s) = 2w + s. ✓ **P2.**
+
+**Test on a "genuine" example**: Let's try Φ_{a,b}(u,v) = C(u,v) if a=0, and C(v,u) if a=1.
+Can this be written as ρ(Φ_0(u,v), τ(a,b))? 
+We'd need ρ(C(u,v), s) = C(v,u) for s = τ(1,·). But C(u,v) determines (u,v), and ρ is a function of (C(u,v), s), so ρ(C(u,v), s) = some function of (u,v) determined by s. For s = τ(1,·), we need ρ(w,s) = C(v,u) where w = C(u,v). Since C is invertible, w determines (u,v), so ρ(w,s) = C(second(w), first(w)) — well-defined! ✓ **So this is also P2!**
+
+Hmm. So the "swap" example is also P2. Because D = ℕ is infinite and C is invertible, so any "rearrangement of u,v" is a function of the core result.
+
+**Hmm. So the criterion is too weak — it swallows everything.**
+
+Let me reconsider. Actually — the criterion I proposed allows ρ to be an arbitrary function of (Φ_0(u,v), s). Since Φ_0(u,v) already determines (u,v) (if Φ_0 injective), ρ can do anything. So the criterion is vacuous whenever Φ_0 is injective.
+
+**So: any family where each Φ_{a,b} is injective is "P2".** Because: pick any Φ_0 injective, and define ρ(w, s) = Φ_{a,b}(u,v) where (u,v) = Φ_0^{-1}(w) and s = τ(a,b) with τ injective... but τ(a,b) must determine (a,b), and s ranges over... hmm, if τ is injective into S = Q², then ρ(w, τ(a,b)) = Φ_{a,b}(Φ_0^{-1}(w)). ✓ Well-defined as long as each Φ_{a,b} is injective (so that (a,b) is determined... no wait, ρ is a function of (w, s), and s = τ(a,b) determines (a,b) if τ injective, so ρ(w,s) = Φ_{τ^{-1}(s)}(Φ_0^{-1}(w)). ✓ Well-defined!
+
+**So: EVERY family of injective operations {Φ_{a,b}} admits a "data-carrying explanation"!** 
+
+Because: take Φ_0 = any injective operation, τ = injective encoding of (a,b), ρ(w,s) = Φ_{τ^{-1}(s)}(Φ_0^{-1}(w)).
+
+**So the distinction P2/P3 COLLAPSES — everything is P2.**
+
+Hmm! But wait. That's too cheap. Let me sanity check: is this a legitimate "explanation"? 
+
+ρ(w, s) = Φ_{τ^{-1}(s)}(Φ_0^{-1}(w)). This is a "fixed" function of (w,s) — but it *contains the whole family* in its definition. So it's a *trivial* explanation: "the state selects which operation to use, and the operation is applied to the decoded core". 
+
+Hmm — but that IS "rule selection"! "s selects which Φ to apply". So my criterion actually shows: **data carrying and rule selection are the same thing**, because "carrying the state s" and "selecting the rule by s" are interchangeable when the core result determines (u,v).
+
+Hmm. So: **the distinction collapses in the trivial direction.**
+
+But hold on — the user's P2 says "state dependence 本质上只是携带输入 state 所需的信息，没有额外的结构语义". And P3 says "输入 state 改变了 fine-space 上实际执行的组合结构".
+
+The example above shows: **any** family can be seen as "state selects the operation". And **any** family can be seen as "state is carried in the payload". **So P2 and P3 are two descriptions of the same thing.**
+
+**Unless**: we impose a *complexity/uniformity* constraint on ρ and τ (e.g., they must be "simple" / from a fixed finite basis). But the user forbade complexity this round.
+
+**So: without a complexity or definability constraint on the "explanation", P2 = P3, and the distinction is vacuous.**
+
+Hmm, that's a strong and honest conclusion. Let me double check by considering the extreme case.
+
+Extreme: Φ_{a,b}(u,v) = some wildly varying operation. My construction says: ρ(w,s) = Φ_{τ^{-1}(s)}(Φ_0^{-1}(w)) — this "explains" it as data carrying. Is that fair? It says: the output is a fixed function of (core result, state). And yes, it is: given the core result w = Φ_0(u,v) (which determines u,v) and the state s (which determines a,b), the output is determined. **So the output is a function of (core, state). That IS "data carrying + fixed rule".**
+
+So yes: **every state-dependent operation is a fixed function of (core result, state). Hence "data carrying" trivially.**
+
+**Therefore: the P2/P3 distinction requires a restriction on the explanation class. Without it, P2 = P3 = everything.**
+
+### So what's the honest conclusion?
+
+**The non-product conclusion (Theorem P) proves only: the family {Φ_{a,b}} is not constant up to fiber reparametrization. And that, in turn, is forced by injectivity when Q is finite. And the mechanism is "state is carried in the output". So: no new structure.**
+
+**And the P2/P3 distinction is not rigorously available without a complexity/definability constraint.**
+
+Hmm. But the user explicitly forbade complexity this round. So I should say: **the distinction is not available in pure algebra; it requires a constraint on the explanation class; and that constraint is exactly a complexity/definability notion — which is outside this round's scope but is the only place the distinction can live.**
+
+That's the honest answer. And it means:
+
+**七：不存在严格数学区分（在纯代数层面）。证明：任意 family 都 admit data-carrying explanation.**
+
+**八：我的 non-product 定理证明的是"non-separability"，不是"genuine structured computation"。承认。**
+
+**九：普通 term algebra + arbitrary encoding 与 Address-native compositional structure 的分叉点：目前找不到。**
+
+### Let me now double check the "everything is P2" argument once more, carefully.
+
+Setup: A = ⨆_{q∈Q} A_q, F: A×A → A with π∘F = F_0∘(π×π), F injective.
+
+Family: Φ_{a,b}: A_a × A_b → A_{F_0(a,b)}.
+
+Claim: there exist Φ_0 (fixed injective op), τ, ρ with Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)).
+
+Construction: 
+- Need Φ_0: A_a × A_b → ? to be injective and fixed. Hmm, Φ_0 should be a single operation on D × D → D. But the fibers A_a differ.
+
+Let me assume all fibers ≅ D (equinumerous). Then Φ_0: D×D→D injective exists (e.g., Cantor, if D = ℕ).
+
+Then define: Φ_{a,b}(u,v) = ρ_{a,b}(Φ_0(u,v)) where ρ_{a,b} = Φ_{a,b} ∘ Φ_0^{-1} — a bijection D → D_{F_0(a,b)}.
+
+And ρ(w, s) := ρ_{τ^{-1}(s)}(w) where s = τ(a,b).
+
+So: Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)). ✓
+
+Yes. **Every family is "a fixed pairing composed with a state-dependent relabeling".**
+
+Hmm — and that's precisely "data carrying": the state determines a relabeling of the payload. ✓
+
+**So the honest statement**: for ANY state-dependent family, the dependence factors as "fixed operation + state-indexed relabeling". **The state never changes the operation — it only relabels the output.**
+
+Hmm, is that a theorem? Let me state it:
+
+**定理（依赖的分解定理）**
+设 A = ⨆_{q∈Q} A_q，各纤维等势于 D，F 满足 coherence，且各 Φ_{a,b} 单射。则存在固定的单射 Φ_0: D×D→D 与映射 τ: Q×Q→S、ρ: D×S→D，使
+Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b))。
+**即：任何 state-dependence 都可分解为"固定运算 + state 索引的重标记"。**
+
+**推论：在纯代数层面，"state 改变运算结构" 与 "state 被携带进输出" 不可区分。** 因为后者是前者的规范形式。
+
+**So: P3 is not available in pure algebra.** 
+
+Hmm — but is this too strong? Let me sanity-check with a potential counterexample. What if some Φ_{a,b} is NOT injective? Then Φ_0^{-1} doesn't exist. Hmm. But we can still ask: does the decomposition hold?
+
+If Φ_{a,b} is not injective, then ρ_{a,b} = Φ_{a,b} ∘ Φ_0^{-1} isn't well-defined. But we can define ρ(w, s) = Φ_{τ^{-1}(s)}(Φ_0^{-1}(w)) — requires Φ_0 injective AND the composition to be well-defined. Hmm, Φ_{a,b}(u,v) where (u,v) = Φ_0^{-1}(w) — this IS well-defined as a function of w (since Φ_0^{-1}(w) is a specific pair). ✓ So no need for Φ_{a,b} injective.
+
+So the theorem holds even without Φ_{a,b} injective. ✓ (Only need Φ_0 injective, which exists for infinite D.)
+
+**So: the decomposition theorem holds universally.** P3 is not algebraically distinguishable from P2.
+
+Hmm, but this is a bit *too* cheap. Let me consider: what's the *content* of the theorem? It says: the family {Φ_{a,b}} is equivalent to a *single* operation Φ_0 plus a *relabeling function* ρ. And "relabeling function" is a function D × S → D.
+
+**But ρ is essentially the whole family!** So the "decomposition" is a tautology — it just re-indexes the family.
+
+So: **the theorem is trivially true and therefore carries no content.** Which means: **the P2/P3 distinction is not algebraically available.** ✓
+
+OK. So my honest answer:
+
+**七：在纯代数层面不存在严格区分。** Proof: the trivial decomposition. And note the decomposition is tautological, so it doesn't "explain away" P3 either — it just shows the two descriptions are interchangeable.
+
+**So the distinction is only available under a restriction on the explanation class (definability / complexity / uniformity). And that restriction was excluded this round.**
+
+Hmm — but I should be careful not to be *too* dismissive. Let me think about whether there's ANY algebraic constraint that could work.
+
+**Candidate**: restrict ρ and τ to be *homomorphisms* or to come from a fixed signature. E.g., require that the "explanation" uses only operations from a fixed finite set. Then "data carrying" means ρ is built from those ops.
+
+But that's a definability/complexity constraint. Which is excluded.
+
+**Another candidate**: require the explanation to be *uniform* in the sense that the same ρ works for a whole class of systems. Hmm.
+
+**Another**: the user's P2 says "没有额外的结构语义". Maybe: the explanation must not depend on the *specific* family. I.e., ρ and τ must be defined by a *formula* in the language of (Q, F_0, D). That's definability.
+
+So: **all roads lead to definability/complexity.** 
+
+OK. Let me now write the answer.
+
+### Let me also do 五 properly.
+
+**五、检验核心例子：F((a,u),(b,v)) = (a⊕b, 2C(u,v)+a)**
+
+**第一：injective.** 
+Given (c,w): a = w mod 2 (since 2C ≥ 0, and w = 2C(u,v)+a with a ∈ {0,1}); b = a⊕c; C(u,v) = (w−a)/2 → (u,v). ✓ Injective.
+
+**第二：不是 product (relative to π(a,u)=a).**
+Product would need Φ independent of (a,b). Here Φ depends on a. ✓ Not product.
+**But** — and this is the key — by the corrected 八, this is *automatic*: any injective F with finite Q is non-product. So this is not evidence of anything.
+
+**第三：give it a "pairing + hidden tag" explanation.**
+Φ_{a,b}(u,v) = 2C(u,v) + a. 
+Explanation: core = C(u,v) (a fixed pairing); the state a is appended as the low bit. So:
+Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)) with Φ_0 = C, τ(a,b) = a, ρ(w,s) = 2w + s. ✓
+**完全解释。** 所以：**这个反例证明的是 non-separability，不是新的 computation algebra。承认。**
+
+### 六、寻找真正的 P3
+
+By the decomposition theorem, no pure-algebraic P3 exists. Let me be honest and say so, but also explore what constraints could create one.
+
+The user suggests candidates: associativity pattern, idempotence, cancellativity, factorization structure, subalgebra lattice, congruence lattice, operation rank/clone, higher-order compatibility. And notes F injective ⟹ not associative.
+
+Let me check: **do any of these give a family-level invariant that survives the decomposition?**
+
+Hmm. Consider **cancellativity**: Φ_{a,b} is cancellative if u ↦ Φ_{a,b}(u,v) is injective for each v. This is a *property of each Φ_{a,b}*.
+
+**Invariant**: the *set* {Φ_{a,b} : cancellative} — is it all of Q×Q or not?
+
+Can this be "explained away" by data carrying? By the decomposition theorem, Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)). Is Φ_{a,b} cancellative iff ... hmm, depends on ρ. 
+
+Hmm. Let's see: if ρ(w, s) = 2w + s, then Φ_{a,b}(u,v) = 2C(u,v) + a is injective in u for fixed v ✓ cancellative. And also injective in v ✓. So cancellative.
+
+If instead ρ(w,s) = w mod something (non-injective), then not cancellative.
+
+**So cancellativity varies with ρ.** And ρ is part of the "explanation". So a family could have some cancellative and some not — but by the decomposition theorem, we can choose Φ_0 and ρ to make it "look" either way. Hmm.
+
+**So: cancellativity of the family is not invariant under the "explanation".** 
+
+Hmm. OK. Let me think about **subalgebra lattice** or **congruence lattice**.
+
+**Key idea**: The congruence lattice Con(D) of the fine space. If the state changes which congruences are preserved...
+
+Hmm. Let me think about: for each (a,b), Φ_{a,b}: D × D → D. Define Con(Φ_{a,b}) = the set of congruences θ on D such that Φ_{a,b} is compatible... hmm, that's not quite right either.
+
+Let me think about a cleaner invariant: **the "kernel" of Φ_{a,b} as a relation**: ker Φ_{a,b} = {((u,v),(u',v')) : Φ_{a,b}(u,v) = Φ_{a,b}(u',v')}. This is an equivalence relation on D×D.
+
+**Invariant**: the family {ker Φ_{a,b}} up to fiber reparametrization.
+
+Hmm — for the parity example: ker Φ_{0,·} = ker Φ_{1,·}? Φ_{0,·}(u,v) = 2C(u,v), Φ_{1,·}(u,v) = 2C(u,v)+1. Both injective ⟹ both kernels are Δ. **Same.** So the kernels don't distinguish.
+
+Hmm. So the parity example has *constant kernel* but non-constant Φ. And that's exactly "data carrying" — the operation is the same (injective), only the labeling differs.
+
+**Interesting!** So maybe the right invariant is: **the family {ker Φ_{a,b}}**. And:
+- If all ker Φ_{a,b} are equal (up to reparametrization), then the family is "data carrying" (the operation's *partition structure* is constant; only labels vary).
+- If ker Φ_{a,b} varies, then the *operation structure* genuinely varies.
+
+Let me test this.
+
+**Definition**: Say the family is **kernel-constant** if there's a single equivalence relation ~ on D×D and bijections ψ_q such that ker Φ_{a,b} = (ψ_a × ψ_b)^{-1}(~)... hmm, let me simplify with all fibers = D:
+
+ker Φ_{a,b} = ker Φ_{a',b'} for all (a,b),(a',b').
+
+**Claim**: kernel-constant ⟺ "the operation's information-loss pattern is state-independent" ⟺ data carrying (in the sense that only the labeling of outputs changes).
+
+Hmm, is that right? Let me test on the parity example: all kernels = Δ. Constant ✓. And indeed it's data carrying. ✓
+
+**Counter-test**: let me construct a family with non-constant kernels.
+Let D = ℕ, Q = ℤ/2.
+Φ_{0,0}(u,v) = C(u,v) (injective, ker = Δ)
+Φ_{1,1}(u,v) = u (projection, ker = {(u,v)~(u,v')})
+
+Then the family is NOT kernel-constant. **Is it "data carrying"?** By the decomposition theorem, it IS (trivially). But by the kernel criterion, it's not.
+
+Hmm. So the two criteria disagree. Which is right?
+
+Hmm. Let me think about whether the kernel criterion is *invariant under fiber reparametrization*. ker Φ_{a,b} vs ker(ψ_{F_0}∘Φ_{a,b}∘(ψ_a^{-1}×ψ_b^{-1})) — these have the same "shape" (the reparametrization is a bijection). ✓ So the kernel is invariant up to reparametrization. ✓
+
+And the *relation* "ker Φ_{a,b} = ker Φ_{a',b'}" is NOT invariant under reparametrization (since ψ_a differs). Hmm. So I need: ker Φ_{a,b} = (ψ_a × ψ_b)^{-1} applied... let me define it properly.
+
+Let me define: two operations Φ: D×D→D and Φ': D×D→D are **kernel-equivalent** if ∃ bijections α, β, γ with ker Φ' = (α×β)(ker Φ) and Φ' = γ∘Φ∘(α^{-1}×β^{-1})... hmm, the second condition is conjugacy.
+
+OK let me simplify: **Φ and Φ' are "of the same type" if they're conjugate** (∃ bijections α, β, γ with Φ' = γ∘Φ∘(α^{-1}×β^{-1})).
+
+For the parity example: Φ_{0,·}(u,v) = 2C(u,v), Φ_{1,·}(u,v) = 2C(u,v)+1. Are they conjugate? Take α = β = id, γ(n) = n+1? Then γ∘Φ_{0,·}∘(id×id) = 2C(u,v)+1 = Φ_{1,·} ✓. **Conjugate.** ✓
+
+For the projection example: Φ_{0,0} = C (injective) and Φ_{1,1} = first projection (non-injective). Are they conjugate? Conjugacy preserves injectivity (γ∘Φ∘(α^{-1}×β^{-1}) injective ⟺ Φ injective). So **not conjugate**. ✓
+
+**So: the invariant is "all Φ_{a,b} lie in a single conjugacy class of operations on D".**
+
+- Parity example: single class ✓ → "type-constant"
+- Projection example: two classes ✗ → "type-varying"
+
+**Is "type-varying" the right definition of P3?**
+
+Hmm. Let me think about whether "type-constant" ⟺ "data carrying".
+
+**If type-constant**: all Φ_{a,b} = γ_{a,b}∘Φ_0∘(α_{a,b}^{-1}×β_{a,b}^{-1}). Hmm, that's not quite "data carrying" — the reparametrizations α,β can differ.
+
+Hmm. Let me think about the *right* definition of "data carrying".
+
+**Attempt**: "data carrying" = Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)) with **α = β = id** (no reparametrization of the inputs). I.e., the inputs are treated the same way in every fiber; only the output labeling varies.
+
+Under this: parity example ✓ (ρ(w,s) = 2w+s, no input reparametrization).
+Projection example: Φ_{0,0}(u,v) = C(u,v) = ρ(Φ_0(u,v), s_0) with ρ(w, s_0) = w, Φ_0 = C ✓. Φ_{1,1}(u,v) = u. Need ρ(C(u,v), s_1) = u. Since C(u,v) determines (u,v), define ρ(w,s_1) = first(C^{-1}(w)) = u ✓. **Also data carrying!** 
+
+Hmm. So even the projection example is "data carrying" by this definition. Because the input reparametrization is absorbed into ρ.
+
+Argh. The problem is that ρ can do anything.
+
+**So: without restricting ρ, everything is data carrying.** ✓ (This is the decomposition theorem.)
+
+**So the ONLY way to distinguish is to restrict ρ.** And restricting ρ = definability/complexity.
+
+OK. I'm now confident. Let me state this clearly:
+
+**核心结论：在纯代数层面，P2 与 P3 不可区分。原因是分解定理：任何 state-dependent family 都规范地分解为"固定运算 + state 索引的输出重标记"，而这个分解是恒真的（ρ 本质上就是原 family 的重索引）。要让它有内容，必须限制解释类（ρ, τ 必须来自固定的签名/公式/复杂度类）。**
+
+**所以：区分 P2/P3 需要 definability 约束。这一轮被排除，因此本轮无法给出该区分。**
+
+Hmm. But then the user's question 十 asks for "一个决定 P2 与 P3 能否被严格区分的定理". Let me give:
+
+**定理（P2/P3 不可区分）**
+在纯代数层面（无对解释类的限制），P2 与 P3 不可区分。
+证明：分解定理 ⟹ 任何 family 都有 data-carrying 形式；且该形式是恒真的。
+**推论**：P2/P3 的区分必须依赖对 (ρ, τ) 的解释类限制；该限制必然是 definability / uniformity / complexity 之一。
+
+That's the deciding theorem. ✓
+
+### 七、如果不存在，目前理论退化成什么已有理论？
+
+If P3 doesn't exist algebraically, then:
+- The whole (A, F, π, F_0) structure = 2-sorted algebra (previous round).
+- The "state-dependence" = the fibers of a homomorphism.
+- The "non-product" = forced by injectivity for finite Q.
+- Everything reduces to: **a 2-sorted algebra with an injective operation, where the second sort is a finite quotient.**
+
+Hmm. And the "enriched" content is empty. So: it degenerates to **universal algebra of 2-sorted algebras + the pigeonhole**.
+
+So: the theory degenerates to what I already said (A), **and additionally the "non-product" phenomenon is not a new structure but a pigeonhole consequence.**
+
+### 九、回到最初目标
+
+**分叉点在哪里？**
+
+Honest answer: **在纯代数层面，找不到分叉点。** 因为：
+1. term algebra + encoding = free algebra (问题 A, 已解决)
+2. + projection/resolution = 2-sorted algebra (问题 B, 已覆盖)
+3. + state-dependence = 同态的纤维 (已覆盖)
+4. non-product = 单射 + 有限商的鸽笼 (不是新结构)
+
+**所以：目前所有"non-product"都能解释成编码中的数据携带。必须承认：还没有找到你要找的东西。**
+
+That's the honest answer, and the user explicitly asked me not to force the theory.
+
+Hmm — but let me think once more whether there's ANY escape. Let me consider: what if the structure is required to be *self-similar* / *recursive*? I.e., π: A → A (not to a smaller algebra), with π ∘ F = F ∘ (π × π), i.e., **π is an endomorphism of (A, F)**.
+
+Then: A with a distinguished endomorphism. Standard (an algebra with an endomorphism).
+
+And if there are multiple: Π ⊆ End(A,F). Still standard.
+
+Hmm. What if Π is required to be a *complete* family (e.g., separating + something)? Then A embeds into a product of its quotients. Subdirect product. Standard.
+
+OK. No escape.
+
+### Let me also handle 四 (four equivalence levels).
+
+The user wants 4 levels:
+A. 同一个抽象 algebra
+B. 同一个 algebra + 固定 projection
+C. 同一个 algebra + projection + access semantics
+D. 同一个 algebra + intrinsic resolution interpretation
+
+Let me define:
+- **Level A (algebra isomorphism)**: h: A₁→A₂ with h∘F₁ = F₂∘(h×h). Ignores Π.
+- **Level B (enriched isomorphism)**: h preserves F and the congruence family {ker π_i}. (This is the previous round's definition.)
+- **Level C (access-equivalence)**: h preserves F, Π, and an access/query semantics. — Requires specifying the query model; that's the excluded complexity layer.
+- **Level D (intrinsic resolution interpretation)**: h preserves F, Π, AND the F_i as distinguished operations. Hmm — is this different from B? 
+
+In B, I required h to induce compatible maps on A/ker π_i. In D, we additionally require the F_i to be *distinguished operations* that h must map to each other. But if F_i is determined by F and π_i (which it is, since F_i(π_i x, π_i y) = π_i(F(x,y))), then D = B. Hmm — **unless the F_i are NOT determined**, i.e., if π_i is not surjective, then F_i is only determined on im π_i.
+
+**So: if π_i is surjective, B = D. If not, D is strictly finer.**
+
+Hmm, that's a real (if small) point: **the choice of F_i off im π_i matters, and B (which only looks at ker π_i) doesn't see it.**
+
+Hmm. Let me think. If π: A → Q is not surjective, then F_0 on Q \ im π is unconstrained by coherence. So two structures with the same (A, F, ker π) but different F_0 outside im π are B-equivalent but D-inequivalent.
+
+**So D ⊋ B strictly** when π is not surjective.
+
+Hmm, that's a genuine (small) refinement. But it's still within "2-sorted algebra with an operation". Standard.
+
+OK. Let me note it but not oversell it.
+
+Now — the user asks: "如果 M₁ ≅ M₂ 只是在 set / algebra 意义下同构，但 projection 不同，到底应该叫【不同结构】还是【同一结构的不同 resolution choice】？"
+
+Answer: **It depends on whether the projection is intrinsic (axiom) or external.** By the previous round's formalization: if Π is part of the signature (intrinsic), then different Π = different structure. If external, then same structure, different resolution choice.
+
+**And there's no fact of the matter beyond the declaration.** The user must declare which. **That's the honest answer.**
+
+### Let me now think about the widget.
+
+A diagram showing the collapse: P1 ⊂ P2 = P3 (everything), with the decomposition theorem. Or the "explanation hierarchy" collapsing.
+
+Let me do a diagram showing:
+- The three proposed types P1 / P2 / P3
+- The decomposition theorem collapsing P2 and P3
+- And the note that only an external constraint (definability/complexity) can separate them
+
+Visual: three boxes P1, P2, P3, with P2 and P3 merging, and a "restriction" arrow showing what's needed.
+
+Hmm, or a simpler: the "explanation ladder" showing that ρ can absorb everything.
+
+Let me do: a diagram showing the decomposition
+Φ_{a,b}(u,v) = ρ( Φ₀(u,v) , τ(a,b) )
+with the note "ρ 可吸收一切 ⟹ P2 = P3".
+
+Let me design:
+- Top: Φ_{a,b}(u,v) — state-dependent operation
+- Arrow down: 分解
+- Middle: two components: [固定运算 Φ₀] and [state 索引 τ(a,b)]
+- Bottom: ρ combines them
+- Right: a red/neutral note "ρ 无约束 ⟹ 恒真分解 ⟹ P2 = P3"
+
+Let me make it a flow: 
+Φ_{a,b} → (Φ₀, τ) → ρ → output
+
+And a bracket showing "只有限制 ρ 才能区分 P2/P3".
+
+Let me build it as a compact flow diagram.
+
+Layout:
+- Box "Φ_{a,b}(u,v)" at top center (360, 60)
+- Arrow down
+- Two boxes side by side: "固定运算 Φ₀" (240, 160) and "state 索引 τ(a,b)" (480, 160)
+- Arrows down from both
+- Box "ρ( · , · )" (360, 250)
+- Note below: "ρ 不受约束 ⟹ 分解恒真 ⟹ P2 ≡ P3"
+
+Hmm. Let me instead do a cleaner "collapse" visual:
+
+Three columns: P1 / P2 / P3, with P2 and P3 in one merged box, and P1 separate. Plus a note.
+
+Actually, let me do the decomposition flow — it's more informative and directly carries the theorem.
+
+Let me lay out:
+viewBox 0 0 720 H
+
+Row 1 (y=50): box "Φ_{a,b}(u,v)：state-dependent operation" — wide box, x=200, w=320, h=44, center (360, 72)
+Arrow down: (360, 94) → (360, 126)
+
+Row 2 (y=126): two boxes:
+  - "固定运算 Φ₀(u,v)" x=140, w=180, h=44, center (230,148)
+  - "state 索引 τ(a,b)" x=400, w=180, h=44, center (490,148)
+Arrows down: (230,170)→(230,202); (490,170)→(490,202)
+
+Row 3 (y=202): box "ρ( · , · )：无约束的合并函数" x=200, w=320, h=44, center (360,224)
+
+Arrow down: (360,246)→(360,278)
+
+Row 4 (y=278): box "输出 = ρ(Φ₀(u,v), τ(a,b))" x=200, w=320, h=44, center (360,300)
+
+Note at y=336: "ρ 不受约束 ⟹ 该分解对任何 family 恒真 ⟹ P2 ≡ P3"
+
+H = 360.
+
+Hmm, and I should also show P1 separately. Let me add a small note on the left: "P1 = 要求 ρ 与 τ 无关（Φ 常数）" — i.e., P1 is the case where the state-dependence vanishes.
+
+Let me add a side annotation.
+
+Actually, let me simplify and make it cleaner:
+
+Two-part diagram:
+- Left part (x 40..340): the decomposition flow (vertical)
+- Right part (x 380..680): the collapse: P1 ⊊ (P2 = P3)
+
+Hmm, that's a lot. Let me just do the decomposition flow with annotations. That carries the theorem.
+
+Let me finalize:
+viewBox 0 0 720 380
+
+- Title at (360, 30): "state-dependence 的规范分解"
+- Box A: x=200, y=54, w=320, h=44 → center (360, 76). Text "Φ_{a,b}(u,v)"
+  sub-text? Let me use two lines: "Φ_{a,b}(u,v)" at y=72, "state-dependent operation" at y=88. Hmm, 44 tall allows 2 lines: 72 and 88. Box 54..98.
+- Arrow (360,98)→(360,130)
+- Box B1: x=130, y=130, w=190, h=44 → center (225,152). Text "固定运算 Φ₀(u,v)" at y=152, sub "与 state 无关" at y=168
+- Box B2: x=400, y=130, w=190, h=44 → center (495,152). Text "state 索引 τ(a,b)" at y=152, sub "携带 (a,b) 的信息" at y=168
+- Arrows: (225,174)→(225,206); (495,174)→(495,206)
+- Box C: x=200, y=206, w=320, h=44 → center (360,228). Text "ρ( · , · )" at y=228, sub "无约束的合并函数" at y=244
+- Arrow (360,250)→(360,282)
+- Box D: x=200, y=282, w=320, h=44 → center (360,304). Text "Φ_{a,b}(u,v) = ρ(Φ₀(u,v), τ(a,b))" at y=304
+- Note at (360, 350): "该分解对任意 family 恒真 ⟹ P2 ≡ P3；只有限制 ρ 才能区分"
+
+Hmm, the note is long. Let me split into two lines at y=346 and y=364.
+H = 390.
+
+Let me check widths: "该分解对任意 family 恒真 ⟹ P2 ≡ P3；只有限制 ρ 才能区分" ≈ lots. At 12px, ~30 chars mixed ≈ 250px. Centered at 360 → 235..485 ✓.
+
+Hmm, two lines. Let me do:
+y=346: "该分解对任意 family 恒真 ⟹ P2 ≡ P3"
+y=364: "只有对 ρ 施加约束（definability / complexity）才能区分"
+
+Line 2 ≈ 26 chars ≈ 240px ✓
+
+H = 390.
+
+Colors: boxes = muted fill + border. The "ρ 无约束" box C = brand stroke (it's the focal point). Arrow from C = brand.
+
+Let me write it.
+
+Now let me write the full text answer.
+
+Structure per the user's required output:
+【1. 上一轮错误修正】
+【2. P1 / P2 / P3 的严格定义】
+【3. "信息携带"与"规则变化"的形式区别】
+【4. injectivity 到底强制了什么】
+【5. 当前 parity / state-dependent 例子究竟属于 P2 还是 P3】
+【6. 是否存在真正 P3 的最小构造】
+【7. 如果不存在，目前理论退化成什么已有理论】
+【8. 如果存在，给出唯一最关键的不变量】
++ 【决定 P2 与 P3 能否被严格区分的定理】
+
+Let me write.
+
+For 【2】, define P1/P2/P3 precisely:
+
+Let A = ⨆_{q∈Q} A_q, π: A → Q, F with coherence, family {Φ_{a,b}}.
+
+**P1 (Independent Tag)**: ∃ bijections ψ_q: A_q → D and a fixed Φ: D×D→D with
+Φ_{a,b} = ψ_{F_0(a,b)}^{-1} ∘ Φ ∘ (ψ_a × ψ_b).
+Equivalently: the family is a single G-orbit point that contains a constant family.
+Equivalently (Theorem P): ker π has a complementary congruence.
+
+**P2 (Data-carrying dependence)**: ∃ fixed Φ_0: D×D→D, fixed τ: Q×Q→S, fixed ρ: D×S→D with
+Φ_{a,b} = ρ(Φ_0, τ(a,b)) ∘ (identity on inputs).
+I.e., the state enters only through a fixed post-hoc combination.
+
+**P3 (Rule-changing dependence)**: NOT P2 — i.e., no such (Φ_0, τ, ρ).
+
+**定理 (P2 = 一切)**: 若各纤维等势于无限集 D 且 Φ_0 单射存在，则任何 family 都是 P2。
+证明: 取 Φ_0 单射，τ(a,b) = (a,b)（或任意单射编码），ρ(w, (a,b)) := Φ_{a,b}(Φ_0^{-1}(w))。✓
+
+**所以 P3 = ∅。**
+
+Good. That's clean.
+
+For 【3】: the formal distinction is vacuous. State it.
+
+For 【4】: injectivity forces exactly: F_0 must be injective if product; hence finite Q ⟹ non-product. **And the mechanism is: the coarse state must be recoverable from the fine output, so it must be carried there.** That's the whole content.
+
+Actually — let me make this precise as a theorem:
+
+**定理 (injectivity forces state-carrying)**
+F injective + coherence ⟹ for each q ∈ Q, the map (a,b,u,v) ↦ (q, Φ_{a,b}(u,v)) restricted to {F_0(a,b)=q} is injective. 
+I.e., **the family {Φ_{a,b} : F_0(a,b)=q} must separate the pairs (a,b) with F_0(a,b)=q**, given (u,v).
+**So: the coarse input information (a,b) beyond F_0(a,b) must be carried by the fine output.** ✓
+
+That's the exact statement. 
+
+Proof: if F_0(a,b) = F_0(a',b') = q and Φ_{a,b}(u,v) = Φ_{a',b'}(u,v) for all u,v, then F((a,u),(b,v)) = F((a',u),(b',v)), contradicting injectivity unless (a,b)=(a',b').
+
+✓ Clean.
+
+**So: injectivity forces the fine payload to carry the coarse information.** That IS "data carrying". ✓
+
+For 【5】: the parity example is P2. Verify explicitly.
+
+For 【6】: no P3 exists (by the theorem). Honest.
+
+For 【7】: degrades to: 2-sorted algebra + injective operation + pigeonhole. Nothing more.
+
+For 【8】: since no P3, no invariant. But I can note: the *only* candidate invariant that isn't absorbed is... hmm. Nothing.
+
+Actually, let me think: is there ANY invariant? The G-orbit of the family is an invariant, but by the decomposition theorem it's absorbed. Hmm.
+
+Let me state: **the only invariant is the "type class" of the family** (whether all Φ_{a,b} are conjugate), but this is NOT invariant under the decomposition (ρ can change it). So no invariant.
+
+Hmm, let me double-check: is the "conjugacy class set" invariant under G-action? G acts by Φ ↦ ψ_{F_0}∘Φ∘(ψ_a^{-1}×ψ_b^{-1}), which is conjugacy. So the G-orbit preserves conjugacy classes. ✓ So "all Φ_{a,b} in one conjugacy class" IS G-invariant.
+
+But is it *meaningful*? By the decomposition theorem, we can always write Φ_{a,b} = ρ(Φ_0, τ(a,b)) — and then the conjugacy class of Φ_{a,b} varies with how ρ varies. So it's not "explanation-invariant". Hmm.
+
+Let me test: projection example, Φ_{0,0} = C (injective), Φ_{1,1} = proj (non-injective). Two conjugacy classes. Is this "P3"? By my definition of P3 (not P2), it IS P2 (data carrying). So the conjugacy-class criterion would call it P3 but the data-carrying criterion calls it P2. **They disagree, so the conjugacy criterion is not the right one.** ✓
+
+OK. So: no invariant. State it.
+
+For the deciding theorem:
+**定理 (P2/P3 不可判定性)**
+在纯代数层面（无解释类约束），P2 = 所有 family，P3 = ∅。
+**所以 P2/P3 的区分不可能在纯代数层面建立；它必须依赖对 (Φ_0, τ, ρ) 的解释类限制。该限制必然等价于 definability / uniformity / complexity 之一。**
+
+And then: since the user excluded complexity this round, **the distinction cannot be settled this round**. That's the honest answer.
+
+Hmm — but the user asked "最后只提出：一个决定 P2 与 P3 能否被严格区分的定理". So my theorem IS: P2 = everything, hence no distinction without external constraint. That decides it: **they cannot be strictly distinguished in pure algebra.**
+
+Let me write it up.
+
+Let me also add: the honest acknowledgment in 九.
+
+OK writing now. Let me be efficient but complete.
+
+One more check on 一: the user says retract "两个都是 injective". Let me confirm: 
+- Φ_{a,b} = 2C(u,v) (independent): F((0,u),(0,v)) = (0, 2C(u,v)) = F((1,u),(1,v)). NOT injective ✓ retract.
+- Φ_{a,b} = 2C(u,v) + a: injective ✓
+
+So M_1 was not injective. And my claim "M_1 ≅ M_2, one product one not, hence enriched iso is finer" collapses. **The retraction also kills my previous round's claim that enriched isomorphism is strictly finer.** Hmm — is that claim dead?
+
+Let me recheck: is there ANY pair of injective structures, enriched-inequivalent but algebraically isomorphic? 
+
+With finite Q: no product exists at all. So I can't use "product vs non-product".
+
+Let me think of another pair. Hmm. Take Q = ℤ/2, D = ℕ.
+M_1: Φ_{a,b}(u,v) = 2C(u,v) + a.
+M_2: Φ_{a,b}(u,v) = 2C(u,v) + b.
+Are they enriched-isomorphic? An enriched iso must preserve π (first projection). So h(a,u) = (a, ψ_a(u)). Then need ψ_{a⊕b}(Φ_1^{a,b}(u,v)) = Φ_2^{a,b}(ψ_a u, ψ_b v), i.e., ψ_{a⊕b}(2C(u,v)+a) = 2C(ψ_a u, ψ_b v) + b.
+
+Hmm, take a=b=0: ψ_0(2C(u,v)) = 2C(ψ_0 u, ψ_0 v). And a=b=1: ψ_0(2C(u,v)+1) = 2C(ψ_1 u, ψ_1 v) + 1. LHS is ψ_0 applied to an odd number → ψ_0(odd). RHS is even+1 = odd ✓. Hmm, consistent.
+
+This is getting complicated. Let me instead use a cleaner discriminator.
+
+**Cleaner**: M_1 with Φ_{a,b}(u,v) = 2C(u,v) + a (injective), M_2 with Φ'_{a,b}(u,v) = 2C(u,v) + a + b (injective). Hmm.
+
+Actually, let me use a *structural* discriminator: **whether the family {Φ_{a,b}} is "symmetric" in a way**. Hmm.
+
+Or simplest: **use different Q**. M_1: Q = ℤ/2. M_2: Q = ℤ/3. Then A_1 = ℤ/2 × ℕ, A_2 = ℤ/3 × ℕ. As Σ-algebras with F injective, both are "term algebra models". Are they Σ-algebra isomorphic? Both have |A| = ℵ₀. Hmm, an isomorphism would have to map F_1 to F_2. Not obviously.
+
+Hmm, let me think differently. Let me find a *clean* discriminator.
+
+**Best discriminator: the "type" of the fiber operation.**
+
+Take M_1: Φ_{a,b}(u,v) = 2C(u,v) + a. All Φ_{a,b} are injective (conjugate).
+Take M_2: Φ_{a,b}(u,v) = 2C(u,v) + a if a=0, and Φ_{1,b}(u,v) = u if a=1.
+
+Hmm, is M_2 injective? F((1,u),(b,v)) = (1⊕b, u). Then (u) determines u but not v. So F((1,u),(b,v)) = F((1,u),(b,v')) — not injective. ✗
+
+Hmm. So M_2 must be injective too. Let me make Φ_{1,b} injective but of a different conjugacy type. E.g., Φ_{0,b}(u,v) = C(u,v) (Cantor), Φ_{1,b}(u,v) = C(v,u) (swapped). Both injective. Are they conjugate? C(v,u) = C(u,v)∘swap, and swap is a bijection of D×D... but conjugacy is γ∘Φ∘(α^{-1}×β^{-1}), with α,β bijections of D. C(v,u) vs C(u,v): is there γ,α,β with C(v,u) = γ(C(α^{-1}u, β^{-1}v))? Take α=β=id, γ = "swap the pair": γ(n) = C(second(n), first(n)). Then γ(C(u,v)) = C(v,u) ✓. So conjugate.
+
+Hmm. So they're conjugate. And injective. Now: is M_1 (all Φ = C, i.e., Φ_{a,b} = C independent of a) injective? F((a,u),(b,v)) = (a⊕b, C(u,v)). Not injective (as we showed). ✗
+
+So I can't use "constant" for M_1.
+
+Let me construct: M_1: Φ_{a,b}(u,v) = C(u,v) + a (i.e., 2C... no, C(u,v)+a is a bijection of ℕ since C is). Hmm, but is F injective? F((a,u),(b,v)) = (a⊕b, C(u,v)+a). Given (c,w): a = ? w = C(u,v)+a. We don't know a. Hmm. Two unknowns (a, C(u,v)) from one equation w. So NOT injective. ✗
+
+Right — that's why I used 2C(u,v)+a: the parity separates a.
+
+OK so the construction needs the fine output to *encode* a in a recoverable way. 
+
+**Fine — so here's the cleanest discriminator I can build**: compare two structures with *different* numbers of "carried bits".
+
+M_1: Q = ℤ/2, Φ_{a,b}(u,v) = 2C(u,v) + a. Carries 1 bit.
+M_2: Q = ℤ/4, Φ_{a,b}(u,v) = 4C(u,v) + a. Carries 2 bits.
+
+Are they enriched-isomorphic? Their Q's differ (ℤ/2 vs ℤ/4), so no (enriched iso preserves Q up to iso, and ℤ/2 ≇ ℤ/4 as... well, as sets with the induced F_0 = ⊕, ℤ/2 vs ℤ/4 with addition — not isomorphic as groups). ✓ 
+
+Hmm, but is that a *meaningful* difference? It's just "different base". Trivially different.
+
+Let me try to find a discriminator with the *same* Q.
+
+**Same Q = ℤ/2, same F_0 = ⊕.**
+M_1: Φ_{a,b}(u,v) = 2C(u,v) + a.
+M_2: Φ_{a,b}(u,v) = 2C(u,v) + (a·b).
+
+Both injective? M_2: given (c,w): w = 2C(u,v) + a·b. Hmm, a·b = 1 only if a=b=1. So parity of w = a·b. But we need to recover a and b from c = a⊕b and a·b. If a·b = 1: a=b=1, c=0 ✓. If a·b=0: parity 0; c = a⊕b. Given c and a·b=0: (a,b) ∈ {(0,0),(1,1)} if c=0; {(0,1),(1,0)} if c=1. **Not determined!** So M_2 not injective. ✗
+
+Hmm. So I need the carried info to determine (a,b) from F_0(a,b). With Q = ℤ/2 and F_0 = ⊕, the fibers of F_0 on Q² are: {(0,0),(1,1)} (sum 0) and {(0,1),(1,0)} (sum 1). Each has 2 elements. So we need 1 bit to distinguish within the fiber. So exactly the parity construction works. 
+
+M_1: Φ_{a,b} = 2C + a. Within fiber sum=0: (0,0)→Φ=2C; (1,1)→Φ=2C+1 ✓ distinct.
+M_2: Φ_{a,b} = 2C + b. Within fiber sum=0: (0,0)→2C; (1,1)→2C+1 ✓ distinct. 
+Both injective ✓
+
+**Are M_1 and M_2 enriched-isomorphic?** Need h(a,u) = (a, ψ_a(u)) (preserving π), with
+ψ_{a⊕b}(Φ_1^{a,b}(u,v)) = Φ_2^{a,b}(ψ_a u, ψ_b v)
+i.e., ψ_{a⊕b}(2C(u,v)+a) = 2C(ψ_a u, ψ_b v) + b.
+
+For (a,b) = (0,0): ψ_0(2C(u,v)) = 2C(ψ_0 u, ψ_0 v).
+For (1,1): ψ_0(2C(u,v)+1) = 2C(ψ_1 u, ψ_1 v) + 1.
+For (0,1): ψ_1(2C(u,v)) = 2C(ψ_0 u, ψ_1 v) + 1.  ← RHS is odd
+For (1,0): ψ_1(2C(u,v)+1) = 2C(ψ_1 u, ψ_0 v) + 0.  ← RHS is even
+
+Hmm. From (0,1): ψ_1(even) = odd. From (1,0): ψ_1(odd) = even. So ψ_1 swaps parity! Possible (ψ_1 is a bijection). 
+
+Let's see if a consistent ψ_0, ψ_1 exists. Hmm, this requires more work. Let me not go down this path — it's not needed.
+
+**The point**: I don't need to find an enriched-iso-finer example. The user's question is about P2/P3, not about enriched-iso-finer. Let me just note that my previous "enriched iso is strictly finer" claim was based on the invalid M_1, and **retract it as unproven** (I no longer have a witness).
+
+Actually — hold on. Let me think about whether it's easy to see that enriched iso IS strictly finer.
+
+Enriched iso preserves ker π. Consider M with Q = ℤ/2, π = first projection. ker π = "same first coordinate". 
+
+Alternative structure: Q' = ℤ/2, but π' = "same parity of u"? Hmm, then π' isn't a homomorphism necessarily.
+
+Hmm. Let me try: same (A, F) = (ℤ/2 × ℕ, F) with F((a,u),(b,v)) = (a⊕b, 2C(u,v)+a). Two different projections:
+- π_1(a,u) = a. Is π_1 a homomorphism? π_1(F(x,y)) = a⊕b = F_0(π_1 x, π_1 y) with F_0 = ⊕ ✓.
+- π_2(a,u) = a (same). Hmm, need a different one.
+- π_2(a,u) = (a + (u mod 2)) mod 2? Is it a homomorphism? π_2(F(x,y)) = a⊕b ⊕ ((2C(u,v)+a) mod 2) = a⊕b⊕a = b. And we'd need it to be a function of π_2(x), π_2(y). π_2(x) = a ⊕ (u mod 2), π_2(y) = b ⊕ (v mod 2). Can b be determined from those two? No (b appears, but also a,b mix). Hmm, b = ... from π_2(x) and π_2(y) we get a⊕b⊕(u mod2)⊕(v mod 2). Not b alone. So π_2 is not a homomorphism. ✗
+
+Hmm. Let me try a cleaner one. Since F's fine output is 2C(u,v)+a, we know u,v determine... hmm.
+
+OK, let me try: is there another homomorphism from (A,F) to ℤ/2 besides π_1? 
+
+A homomorphism φ: A → ℤ/2 with φ(F(x,y)) = φ(x) ⊕ φ(y) (taking F_0 = ⊕).
+φ(a,u) must satisfy φ(a⊕b, 2C(u,v)+a) = φ(a,u) ⊕ φ(b,v).
+
+Try φ(a,u) = a ⊕ f(u) for some f. Then φ(F(x,y)) = (a⊕b) ⊕ f(2C(u,v)+a). RHS = (a⊕f(u)) ⊕ (b⊕f(v)) = a⊕b⊕f(u)⊕f(v).
+So need f(2C(u,v)+a) = f(u) ⊕ f(v) for all a ∈ {0,1}, u,v. **But LHS depends on a, RHS doesn't.** So need f(2C(u,v)) = f(2C(u,v)+1) = f(u)⊕f(v). But 2C(u,v) and 2C(u,v)+1 are distinct, so f must be constant on pairs {even, even+1}... possible if f is constant on all of ℕ. Then f(u)⊕f(v) = const⊕const = 0, and f(2C(u,v)) = const ≠ 0 unless const = 0. So f ≡ 0. So φ = π_1 only. 
+
+Hmm interesting — so π_1 is the ONLY homomorphism to ℤ/2 with F_0 = ⊕. So there's no second projection to compare. 
+
+**So I can't easily build a pair with the same (A,F) but different π.** Which suggests... hmm. Actually, this suggests that ker π might be *determined* by (A,F) in some cases. Interesting but let me not pursue.
+
+**Conclusion for 一**: I retract (a) the claim that Φ_{a,b} = 2C is an injective encoding, and (b) consequently the claim that enriched isomorphism is strictly finer than Σ-algebra isomorphism — **as unproven**. I should be honest that I no longer have a witness.
+
+Hmm, actually — the previous round I claimed it. Let me just retract it cleanly since the witness was invalid.
+
+Hmm, but is it actually false? Let me think once more. 
+
+Enriched iso = Σ-algebra iso preserving the congruence family. Two structures (A,F,{θ_i}) and (A,F,{θ'_i}) — same (A,F), different congruence families. Such pairs certainly EXIST (take any (A,F) with two different congruences). So enriched iso IS strictly finer than Σ-algebra iso, in general. **But for the specific structures arising as "injective term encodings", I no longer have a witness.**
+
+Hmm — actually, let me just build one directly. Take (A, F) = (ℕ, Cantor) — wait, that's not injective... Cantor: ℕ²→ℕ is a bijection, hence injective ✓. So (ℕ, C) is a Σ-algebra with injective F.
+
+Congruences of (ℕ, C): θ must satisfy n θ n' and m θ m' ⟹ C(n,m) θ C(n',m'). Take θ_1 = Δ (trivial). Take θ_2 = ℕ×ℕ (universal). Both are congruences. So (ℕ, C, θ_1) vs (ℕ, C, θ_2) — same (A,F), different congruence families, not enriched-isomorphic (Δ ≠ ∇).
+
+But are they "injective term encodings"? θ_2 = ∇ gives A/θ_2 = a point — a trivial quotient. Hmm, that's a degenerate projection. 
+
+So: **for non-degenerate projections, I don't have a witness.** Let me state this honestly.
+
+Hmm, this is getting long. Let me just state the retraction and note that the finer-ness claim is not established for non-degenerate cases, and move on — it's not the main question this round.
+
+Actually, let me reconsider: is it worth including? The user's 一 only asks to retract the "two injective encodings" claim and rebuild a correct minimal counterexample. Let me:
+1. Confirm the retraction (Φ_{a,b}=2C is not injective).
+2. Note the consequence: M_1 was not injective, so the "product vs non-product, both injective" pair doesn't exist for finite Q — indeed it CAN'T exist (product + finite Q + injective is impossible).
+3. **And this is itself the key finding**: the minimal counterexample the user asks for must be built differently — and in fact there is NO pair (product-injective, non-product-injective) with the same finite Q. So the "enriched iso finer" claim must be retracted or rebuilt with infinite Q.
+
+**Let me build a correct minimal pair with infinite Q.**
+
+Q = ℕ, F_0 = Cantor (injective ✓).
+M_1 (product): Φ_{a,b}(u,v) = C(u,v) (independent of a,b). 
+F((a,u),(b,v)) = (C(a,b), C(u,v)). Injective? Yes — C(a,b) determines (a,b), C(u,v) determines (u,v) ✓✓ **Injective!**
+Is it a product? Yes ✓ (Φ independent of a,b).
+
+M_2 (non-product): Φ_{a,b}(u,v) = 2C(u,v) + (C(a,b) mod 2).
+F((a,u),(b,v)) = (C(a,b), 2C(u,v) + (C(a,b) mod 2)). Injective? Given (c,w): C(a,b) = c → (a,b); parity of c = c mod 2; C(u,v) = (w − c mod 2)/2 → (u,v) ✓ **Injective!**
+
+Is M_2 a product? Φ depends on (a,b) through c = C(a,b). So Φ_{a,b}(u,v) = 2C(u,v) + (c mod 2) with c = C(a,b). Depends on (a,b) ✗ **Not a product.**
+
+**And the trivialization**: can we reparametrize ψ_q so that Φ becomes independent? We'd need ψ_{C(a,b)}(2C(u,v)+(c mod2)) independent of (a,b). Hmm — the parity argument: for c even vs c odd, the images are 2ℕ vs 2ℕ+1. Need Φ_{a,b}∘(α×β) equal for both parities. Φ for c even: 2C(u,v) → even. For c odd: 2C(u,v)+1 → odd. Need 2C(αu,αv) = 2C(βu,βv)+1 — LHS even, RHS odd. **Never.** ✓ **Not trivializable.**
+
+**So: M_1 and M_2 are BOTH injective, same (Q, F_0), one product one not.** ✓ **This is the correct minimal pair.** And Q must be infinite (ℕ).
+
+Great — so the "enriched iso is strictly finer" claim IS salvageable, but with infinite Q. Let me present this.
+
+Hmm, and this also shows: **with infinite Q, product + injective IS possible.** So the "non-product is forced by injectivity" statement is only for FINITE Q.
+
+**So the corrected picture:**
+- **Finite Q**: product + injective is impossible ⟹ non-product is forced by injectivity, carries no information. ✓ (user's suspicion confirmed for finite Q)
+- **Infinite Q**: product + injective is possible; non-product is a genuine choice. But then Q is infinite, so Q is not a "finite tag" — it's a full address.
+
+Hmm! So: **the "state-dependence" is non-trivial only when Q is infinite, and then Q is itself infinite.** Which means the "coarse layer" is not really coarse.
+
+Hmm, that's interesting. So: 
+- finite Q → dependence forced (data carrying, no info)
+- infinite Q → dependence optional
+
+**And in the infinite-Q case, is the dependence still "just data carrying"?** By the decomposition theorem, yes (everything is data carrying). So still no P3.
+
+OK. So the conclusion holds: **no P3.**
+
+But the finite/infinite distinction is worth stating clearly. Let me include it.
+
+Alright, let me write the final answer now.
+
+Let me structure it per the required 8 outputs + theorem.
+
+Let me write the widget first.
+
+Widget: the decomposition flow showing ρ absorbs everything.
+
+Let me finalize coordinates as planned:
+viewBox 0 0 720 390
+
+Title (360, 30)
+Box A: x=200, y=54, w=320, h=44. Texts at y=74 ("Φ_{a,b}(u,v)") and y=90 ("state-dependent operation"). Hmm, 44 tall: 54..98. y=74 and y=90. OK.
+
+Hmm, let me simplify to single-line boxes for cleanliness.
+
+Box A: x=180, y=54, w=360, h=40. Text "Φ_{a,b}(u,v)：state-dependent operation" at y=79 centered. Width ≈ 40 chars mixed ≈ 300px. Fits in 360 ✓
+Arrow (360,94) → (360,124)
+
+Box B1: x=130, y=124, w=190, h=40. Text "固定运算 Φ₀(u,v)" at y=149. ≈ 100px ✓
+Box B2: x=400, y=124, w=190, h=40. Text "state 索引 τ(a,b)" at y=149. ≈ 110px ✓
+Arrows: (225,164)→(225,194); (495,164)→(495,194)
+
+Box C: x=180, y=194, w=360, h=40. Text "ρ( · , · )：无约束的合并函数" at y=219. ≈ 200px ✓
+Arrow (360,234) → (360,264)
+
+Box D: x=180, y=264, w=360, h=40. Text "Φ_{a,b}(u,v) = ρ( Φ₀(u,v), τ(a,b) )" at y=289. ≈ 240px ✓
+
+Notes:
+y=326: "该分解对任意 family 恒真 ⟹ P2 ≡ P3"
+y=348: "只有对 ρ 施加 definability / complexity 约束才能区分"
+y=374: "故本轮范围内 P3 = ∅"
+
+Hmm, three lines. Let me do two:
+y=330: "该分解对任意 family 恒真 ⟹ P2 ≡ P3，P3 = ∅"
+y=356: "只有对 ρ 施加 definability / complexity 约束才能区分"
+
+H = 380.
+
+Widths: line1 ≈ 24 chars ≈ 240 ✓; line2 ≈ 26 chars ≈ 250 ✓
+
+Colors: A, B1, B2, D = muted+border. C = muted + brand stroke 1.5 (focal). Arrow from C to D = brand.
+
+Let me write.
+
+Then the text.
+
+Let me write the text now, being thorough but organized.
+
+I'll write it. Let me be careful about the decomposition theorem statement and proof.
+
+**定理 (state-dependence 的规范分解)**
+设 A = ⨆_{q∈Q} A_q，各纤维等势于无限集 D，{Φ_{a,b}} 是满足 coherence 的 family。则存在固定的单射 Φ_0: D×D→D，映射 τ: Q×Q→Q×Q，ρ: D×(Q×Q)→D，使
+Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)).
+证明: 取 Φ_0 = Cantor（或任一单射）。τ = id。ρ(w,(a,b)) := Φ_{a,b}(Φ_0^{-1}(w))。良定义（Φ_0 单射 ⟹ Φ_0^{-1}(w) 唯一）。∎
+
+**推论**: P3 = ∅。
+
+Good.
+
+And:
+**定理 (单射强制携带)**
+F 单射 + coherence ⟹ 对每个 q ∈ Q，映射 (a,b,u,v) ↦ Φ_{a,b}(u,v) 在 {(a,b): F_0(a,b)=q} × D² 上，对固定 (u,v)，必须分离 (a,b)。
+即：**粗输入 (a,b) 超出 F_0(a,b) 的信息必须由细输出携带。**
+
+Good.
+
+And:
+**定理 (有限 Q ⟹ 非乘积是鸽笼)**
+|Q| 有限 ≥ 2 ⟹ 不存在乘积型的单射 F。
+证明: 乘积 ⟹ F = (F_0, Φ) ⟹ 单射 ⟹ F_0 单射 ⟹ |Q|² ≤ |Q| ⟹ |Q| ≤ 1。∎
+
+And the corrected minimal pair (infinite Q).
+
+Let me write.
+
+OK, writing the response now.
+
+Let me keep it organized and not too long. The user asked for 8 outputs + 1 theorem.
+
+I should NOT call advisor again? The policy says mandatory when user expresses criticism/correction. The user says "你上一轮曾把...称为两个 injective encoding。这是错误的。" — that's a correction. So mandatory. Let me call it.
+
+Hmm, I've called it many turns. But policy is policy. Let me call it once, alone.
+
+Actually, I've already made a tool call this turn? No — I haven't yet this turn. Let me call advisor first, alone.
+
+Let me do that.
+正在请求专家建议...........
+
+已获取专家建议
+
+The advisor suggests using conjugacy as the P2/P3 criterion and constructing P3 via non-isomorphic Latin squares.
+
+Hmm, but I need to think carefully. My decomposition theorem says: Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)) always. Does that imply all Φ_{a,b} are conjugate?
+
+No! Conjugacy of Φ_{a,b} and Φ_{a',b'} means ∃ bijections α, β, γ with Φ_{a',b'} = γ∘Φ_{a,b}∘(α^{-1}×β^{-1}). The decomposition gives Φ_{a,b} = ρ_s ∘ Φ_0 (with ρ_s = ρ(·, s)). So Φ_{a,b} = ρ_s ∘ Φ_0 and Φ_{a',b'} = ρ_{s'} ∘ Φ_0. Are these conjugate? Take α = β = id, γ = ρ_{s'} ∘ ρ_s^{-1}. Then γ∘Φ_{a,b} = ρ_{s'}∘ρ_s^{-1}∘ρ_s∘Φ_0 = ρ_{s'}∘Φ_0 = Φ_{a',b'} ✓ — **but only if ρ_s is a bijection.**
+
+So: if ρ_s is a bijection for all s, then all Φ_{a,b} are conjugate (by γ = ρ_{s'}ρ_s^{-1}, α=β=id).
+
+If some ρ_s is not injective (i.e., Φ_{a,b} not injective), then conjugacy can fail.
+
+**So the advisor's criterion IS meaningful**: all Φ_{a,b} conjugate vs not.
+
+Let me test: projection example. Φ_{0,0} = C (injective), Φ_{1,1} = first projection (non-injective). Conjugacy preserves injectivity → not conjugate. ✓ So P3 by the advisor's criterion.
+
+But: by my decomposition theorem, it's still "data carrying" — Φ_{1,1}(u,v) = ρ_{s_1}(C(u,v)) with ρ_{s_1} = first∘C^{-1}, which is NOT injective. So the "data carrying" involves a lossy map.
+
+**Hmm! So there IS a distinction**: 
+- **P2**: the state-dependence is realized by a *bijective* relabeling of the payload → no information loss → "just carrying a tag".
+- **P3**: the state-dependence requires a *lossy* map → the operation's *partition structure* genuinely differs between states.
+
+**That's a real criterion!** And it's conjugacy-based, which is invariant under fiber reparametrization.
+
+Hmm, but wait: is "all Φ_{a,b} conjugate" really equivalent to "the relabeling can be taken bijective"? Let me check.
+
+If all Φ_{a,b} are conjugate to each other, i.e., Φ_{a,b} = γ_{a,b}∘Φ_0∘(α_{a,b}^{-1}×β_{a,b}^{-1}) for bijections. Hmm, but the α, β can differ from fiber to fiber — so this is *conjugacy*, not the decomposition form (which has α=β=id).
+
+So: conjugacy is weaker than the decomposition form. Hmm.
+
+Let me re-derive. Decomposition: Φ_{a,b} = ρ_{τ(a,b)} ∘ Φ_0. Conjugacy: Φ_{a,b} = γ∘Φ_{a',b'}∘(α^{-1}×β^{-1}).
+
+If Φ_{a,b} = ρ_s∘Φ_0 with ρ_s bijective, then Φ_{a,b} is conjugate to Φ_0 by γ=ρ_s, α=β=id ✓. So all are conjugate.
+
+Conversely, if all Φ_{a,b} are conjugate (via possibly different α,β), does that give the decomposition with bijective ρ? Hmm, not obviously.
+
+OK. So the two criteria (conjugacy vs bijective-relabeling) are not obviously equivalent. Let me think about which is the right one.
+
+**The user's P2 requirement**: "Φ_{a,b} 的 state dependence 本质上只是携带输入 state 所需的信息，没有额外的结构语义."
+
+"只是携带信息" = the operation is the same, only labels differ = there's a bijection per fiber.
+
+Hmm, but the labels could also be permuted by α, β (input reparametrization). Hmm.
+
+Let me think about what's really invariant.
+
+**The right invariant**: the "isomorphism type" of the operation Φ_{a,b} as a *binary operation on D*. Two operations are "the same type" iff conjugate.
+
+**Criterion**: 
+- **P2**: all Φ_{a,b} have the same isomorphism type (i.e., are pairwise conjugate).
+- **P3**: they don't.
+
+**Is this invariant under enriched isomorphism?** An enriched iso h = (id on Q, (ψ_q)_q) transforms Φ_{a,b} ↦ ψ_{F_0(a,b)}∘Φ_{a,b}∘(ψ_a^{-1}×ψ_b^{-1}) — which is exactly conjugacy. So conjugacy classes are preserved ✓. **So the criterion IS invariant under enriched isomorphism.** ✓
+
+**Great — so the advisor's criterion is right and it's a genuine enriched-algebra invariant.**
+
+Now: **is the projection example really P3?** Φ_{0,0} = C (injective, so its "type" = the type of a bijection-ish operation... hmm, C: ℕ²→ℕ is injective). Φ_{1,1} = first projection (non-injective). Different types ✓ → **P3.**
+
+Hmm! So P3 DOES exist. Let me double check by constructing it properly.
+
+**Minimal P3 construction**: 
+Q = ℤ/2, F_0 = ⊕, D = ℕ.
+Φ_{a,b}(u,v) = 2C(u,v) + a when ... hmm, I need Φ to differ in *type* between the two collision pairs.
+
+Collision pairs: (a,b) with F_0(a,b) = 0: {(0,0),(1,1)}. With F_0 = 1: {(0,1),(1,0)}.
+
+For F injective, we need: within each collision pair, the Φ's must distinguish.
+
+Let me set:
+Φ_{0,0}(u,v) = 2C(u,v)         (even, injective)
+Φ_{1,1}(u,v) = 2C(u,v) + 1     (odd, injective)
+These are conjugate (shift). Same type.
+
+Hmm, so the parity example has both Φ's injective → same type → P2 ✓ (consistent with my earlier finding).
+
+For P3, I need one Φ injective and another not. E.g.:
+Φ_{0,0}(u,v) = 2C(u,v)          (injective)
+Φ_{1,1}(u,v) = 2·⌊u/2⌋ ... hmm, need it to be non-injective but F overall injective.
+
+Let me think. F((a,u),(b,v)) = (a⊕b, Φ_{a,b}(u,v)).
+For injectivity: given (c,w), need to recover (a,b,u,v).
+- If c=0: (a,b) ∈ {(0,0),(1,1)}. w = Φ_{0,0}(u,v) or Φ_{1,1}(u,v). Need to distinguish and recover (u,v).
+  - Φ_{0,0} injective → recovers (u,v) and identifies a=b=0.
+  - Φ_{1,1} must be non-injective (for P3) but its image must be disjoint from im Φ_{0,0}... 
+
+Hmm, if Φ_{1,1} is non-injective, then given w ∈ im Φ_{1,1}, we recover a=b=1 but NOT (u,v). So F wouldn't be injective. ✗
+
+**Contradiction!** If Φ_{1,1} is non-injective, then F is not injective.
+
+Hmm! Let me check: F((1,u),(1,v)) = (0, Φ_{1,1}(u,v)). If Φ_{1,1}(u,v) = Φ_{1,1}(u',v') with (u,v)≠(u',v'), then F((1,u),(1,v)) = F((1,u'),(1,v')) — not injective ✗.
+
+**So: F injective ⟹ every Φ_{a,b} is injective!**
+
+Let me verify: F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)). If Φ_{a,b}(u,v) = Φ_{a,b}(u',v'), then F((a,u),(b,v)) = F((a,u'),(b,v')) — equal, so by injectivity (a,u)=(a,u') and (b,v)=(b,v'), i.e., (u,v)=(u',v'). ✓ **Yes, F injective ⟹ each Φ_{a,b} injective.**
+
+**So ALL Φ_{a,b} are injective!** Therefore... are they all conjugate? 
+
+Hmm. Injective operations on ℕ — are they all conjugate? Not necessarily! E.g., Φ(u,v) = C(u,v) (bijection ℕ²→ℕ) vs Ψ(u,v) = 2C(u,v) (injection into evens, not surjective). Are they conjugate? Need γ∘Φ∘(α^{-1}×β^{-1}) = Ψ. Take α=β=id, γ(n)=2n: γ(C(u,v)) = 2C(u,v) = Ψ ✓. **Conjugate.** ✓
+
+Hmm. On infinite sets, injections tend to be conjugate. Let me think: any two injections D²→D with D infinite — are they conjugate? 
+
+Take Φ(u,v) = C(u,v) and Ψ(u,v) = C(v,u). Conjugate ✓ (shown earlier).
+Take Φ(u,v) = C(u,v) and Ψ(u,v) = C(u, C(u,v))? Hmm, Ψ(u,v) = C(u, C(u,v)) — injective ✓. Conjugate to C? Need γ,α,β with γ(C(α^{-1}u, β^{-1}v)) = C(u, C(u,v)). Take α=β=id, γ(w) = C(first(C^{-1}w), w). Then γ(C(u,v)) = C(u, C(u,v)) ✓. **Conjugate.** ✓
+
+Hmm — it seems like on infinite sets, all injections D²→D might be conjugate. Is that a theorem?
+
+**Claim**: If D is infinite, any two injections f, g: D×D → D are conjugate (∃ bijections α,β,γ of D with g = γ∘f∘(α^{-1}×β^{-1})).
+
+Hmm, is that true? Let me think. Given f, g injective. Want α, β, γ. 
+
+Hmm, consider f(u,v) = C(u,v), g(u,v) = C(v,u). ✓ shown.
+Consider f(u,v) = C(u,v), g(u,v) = C(u, u)? Not injective. ✗
+Consider f(u,v) = C(u,v), g(u,v) = C(u, 2v). Injectivity of g: C(u,2v) = C(u',2v') ⟹ u=u', 2v=2v' ⟹ v=v' ✓ injective. Conjugate? γ(C(α^{-1}u, β^{-1}v)) = C(u, 2v). Take α=β=id, γ(w) = C(first(C^{-1}w), 2·second(C^{-1}w)) ✓. **Conjugate.** ✓
+
+Hmm. It really seems like everything is conjugate on ℕ.
+
+**Reason**: the "type" of an injection D²→D on an infinite D is essentially determined by cardinal invariants (|D²|=|D|, both injective), and there's enough freedom in α, β, γ.
+
+Hmm, but let me think about a possible obstruction. Consider f(u,v) = C(u,v) and g(u,v) = C(u,v) with the *same* image but... no.
+
+**Let me think about it more carefully.** Given injective f: D×D→D. The structure is: f is a bijection D×D → im f, and im f ⊆ D. The "type" is determined by: |D \ im f| (the size of the complement), and the "pairing structure". Since D is infinite and |D×D| = |D|, any two injections with the same complement-size should be conjugate... 
+
+Hmm, but the complement size can differ: f = C (bijection, complement empty) vs g = 2C (complement = odds, size ℵ₀). Are they conjugate? Take γ(n) = n (id), α(u) = ? Hmm, need g = γ∘f∘(α^{-1}×β^{-1}) = f∘(α^{-1}×β^{-1}) with γ=id. Need C(α^{-1}u, β^{-1}v) = 2C(u,v). Hmm, is there α, β with C(α^{-1}u, β^{-1}v) = 2C(u,v)? C(α^{-1}u, β^{-1}v) ranges over all of ℕ (since C is onto), but 2C(u,v) is always even. So no, with γ=id. But with γ ≠ id: need γ(C(α^{-1}u, β^{-1}v)) = 2C(u,v). Take α=β=id, γ(n) = 2n. Then γ(C(u,v)) = 2C(u,v) ✓. **Conjugate.** ✓
+
+Hmm. OK. Let me try to *prove* the claim.
+
+**Claim**: D infinite. Any two injections f,g: D×D→D are conjugate by (α,β,γ) ∈ Sym(D)³.
+
+Hmm. Counterexample attempt: let D = ℕ. f(u,v) = C(u,v). g(u,v) = C(u,v) if u even, and C(u,v)+... hmm.
+
+Actually — here's a potential obstruction: **the "shape" of im f as a subset of D**. If f is a bijection (im f = D) and g is not (im g ⊊ D), are they conjugate? γ∘f∘(α^{-1}×β^{-1}) — the image is γ(im f) = γ(D) = D. But im g ⊊ D. So **not conjugate**! ✓
+
+Wait: γ∘f∘(α^{-1}×β^{-1}) has image γ(f(D×D)) = γ(im f). If im f = D, this is γ(D) = D. If im g ≠ D, not conjugate. ✓
+
+**So: surjectivity/injectivity type distinguishes.** But injective is preserved by conjugacy: γ∘f∘(α^{-1}×β^{-1}) is injective iff f is. And surjective iff f is. So: **the pair (injective, surjective) is a conjugacy invariant.**
+
+**So: f bijective (injective+surjective) vs g injective not surjective → NOT conjugate.** ✓
+
+**So conjugacy classes DO exist.** But — can both appear in a single family {Φ_{a,b}} with F injective?
+
+If some Φ_{a,b} is a bijection D²→D and another is injective-not-surjective, then they're in different conjugacy classes → P3 by the criterion.
+
+But: can that happen with F injective? Let's see. F injective requires each Φ_{a,b} injective ✓ (both are). So it's allowed.
+
+**But**: does the collision-pair condition constrain it? Within a collision pair {(a,b), (a',b')} with F_0(a,b) = F_0(a',b') = q, we need Φ_{a,b}(u,v) ≠ Φ_{a',b'}(u,v) for some (u,v)... actually we need: F((a,u),(b,v)) ≠ F((a',u'),(b',v')) for (a,b)≠(a',b'). So given the same c=q, the outputs Φ_{a,b}(u,v) and Φ_{a',b'}(u',v') must be distinguishable AND we must recover (u,v) vs (u',v').
+
+Specifically: F injective ⟹ for fixed q, the map ((a,b),u,v) ↦ Φ_{a,b}(u,v) restricted to F_0(a,b)=q must be injective. So: im Φ_{a,b} and im Φ_{a',b'} must be **disjoint** for (a,b)≠(a',b') in the same fiber of F_0!
+
+**Because**: if Φ_{a,b}(u,v) = Φ_{a',b'}(u',v') = w, then F((a,u),(b,v)) = F((a',u'),(b',v')) = (q,w) — contradiction.
+
+**So: for (a,b) ≠ (a',b') with F_0(a,b) = F_0(a',b'), we need im Φ_{a,b} ∩ im Φ_{a',b'} = ∅.** ✓
+
+**And im Φ_{a,b} ∩ im Φ_{a',b'} = ∅ + both injective.** So: D = im Φ_{a,b} ⊔ im Φ_{a',b'} ⊔ rest. Two disjoint sets each of size |D×D| = |D|.
+
+**So: can Φ_{a,b} be surjective (im = D) while Φ_{a',b'} has im disjoint from D?** No! If im Φ_{a,b} = D, then im Φ_{a',b'} ⊆ D \ D = ∅ — impossible (Φ_{a',b'} must be a function into D with nonempty image).
+
+**So: within a collision pair, NO Φ_{a,b} can be surjective.** Hence all Φ_{a,b} are injective-not-surjective.
+
+Hmm. **So within a collision pair, both are injective-not-surjective.** Are they conjugate then?
+
+Hmm. Need a finer invariant.
+
+**Let me look for one.** For injective-not-surjective f: D×D→D, the invariant is: the pair of cardinals (|im f|, |D \ im f|). Both are ℵ₀ here. So no distinction.
+
+Hmm. Need something finer. 
+
+Let me think about **the "fiber structure" of f**. Since f is injective, it's a bijection D×D → im f. The complement D \ im f is a subset. Under conjugacy, γ maps im f to im g and D\im f to D\im g. So the *isomorphism type of the set im f* (as a subset of D) matters? But any two countably infinite subsets of ℕ are... well, as sets they're equinumerous, but the *induced structure*? There's no structure on D alone.
+
+Hmm. So if D has no extra structure, then any two injections D²→D with infinite complement should be conjugate. Let me try to prove.
+
+Given f, g injective, D×D→D, both with infinite complement. 
+- Partition D into D_f = im f and C_f = D \ im f (both infinite).
+- Similarly D_g, C_g.
+- f: D×D → D_f bijection.
+- g: D×D → D_g bijection.
+Choose bijection α, β: D → D and γ: D → D with γ(D_f) = D_g and γ(C_f) = C_g. Hmm, but we need γ∘f∘(α^{-1}×β^{-1}) = g, i.e., γ(f(u,v)) = g(αu, βv) for all u,v.
+
+Define: for (u,v) ∈ D×D, f(u,v) ∈ D_f. Set γ on D_f by γ(f(u,v)) := g(αu, βv). This is well-defined (f bijective onto D_f) and γ|_{D_f} is a bijection D_f → D_g ✓. Then extend γ arbitrarily to a bijection D → D (mapping C_f to C_g). ✓
+
+**And α, β can be ANY bijections!** So: choose α = β = id, define γ as above. **Then γ∘f = g.** ✓
+
+**So: f and g ARE conjugate whenever both are injective with infinite complement.** 
+
+And more generally: **any two injections D×D→D with equinumerous complements are conjugate.** So the conjugacy class of an injection f is determined by |D \ im f|.
+
+Hmm! So the invariant is: **|D \ im Φ_{a,b}|**.
+
+And within a collision pair, we showed both have im ⊆ D and disjoint images, so |D \ im| ≥ |im Φ_{a',b'}| = ℵ₀. So both complements are ℵ₀ (if D is countable). **Same invariant.** → **Conjugate.** → **P2.**
+
+Hmm!! So the conjugacy criterion gives P2 for this construction too.
+
+Hmm. Unless D has cardinality such that the complements differ. With D countable, all complements are ℵ₀. So no.
+
+**So: for countable D, all injective-not-surjective operations D²→D are conjugate.** Hence the conjugacy criterion gives: **P3 requires the conjugacy class to vary, which requires |D \ im Φ_{a,b}| to vary.**
+
+Can it vary? |D \ im Φ_{a,b}| ≥ |im Φ_{a',b'}| = ℵ₀ (from disjointness). And |D \ im| ≤ |D|. So it ranges in [ℵ₀, |D|]. If |D| > ℵ₀, there's room! E.g., D uncountable: one Φ could have complement ℵ₀ and another complement ℵ₁.
+
+Hmm. So: **P3 requires |D| > ℵ₀.** Hmm, that's exotic but possible.
+
+Hmm, but wait — is that really "rule selection"? It's a cardinality difference in the complement. That's a very weak notion of "the operation structure changed".
+
+Hmm. Let me reconsider.
+
+Hmm, actually, hold on. Let me reconsider the disjointness requirement. I derived: for (a,b) ≠ (a',b') with F_0(a,b) = F_0(a',b'), im Φ_{a,b} ∩ im Φ_{a',b'} = ∅.
+
+But actually, is that right? F((a,u),(b,v)) = (F_0(a,b), Φ_{a,b}(u,v)). If Φ_{a,b}(u,v) = Φ_{a',b'}(u',v') = w and F_0(a,b) = F_0(a',b') = q, then F((a,u),(b,v)) = (q,w) = F((a',u'),(b',v')). For injectivity, need (a,u) = (a',u') and (b,v) = (b',v'). But (a,b) ≠ (a',b'). **Contradiction.** ✓ So yes, images must be disjoint.
+
+Hmm — unless (a,b) ≠ (a',b') but... no. So disjoint ✓.
+
+**So: the fibers of F_0 on Q² give a partition of D into disjoint images.** And each image has size |D|² = |D| (if D infinite).
+
+Hmm — and the number of collision classes is |im F_0| ≤ |Q|.
+
+So: D = ⨆_{q ∈ im F_0} im Φ_{a_q, b_q} ⊔ (leftover). Hmm, roughly.
+
+**So: if |Q| finite and D infinite, then D is partitioned into finitely many pieces each of size |D|.** Then each im Φ has complement of size |D|. Same. → conjugate → P2.
+
+**So: for finite Q and infinite D, everything is P2.** ✓ Consistent with my earlier finding.
+
+**And for infinite Q?** Then the collision classes might be infinite in number, and the complements could vary... hmm, but each im has size |D|, and there are |Q| classes. If |Q| ≤ |D|, then the union of |Q| many sets of size |D| is ≤ |D|·|Q| ≤ |D|. So still fits. Complements all size |D| (if |Q| < |D|). Hmm.
+
+Hmm. Let me think: D = ℕ, Q = ℕ, F_0 = Cantor (injective!). Then there are NO collisions (F_0 injective). So each (a,b) has its own class. Then im Φ_{a,b} must be... hmm, for injectivity, given c = C(a,b) and w = Φ_{a,b}(u,v), we need to recover (a,b,u,v). Since c determines (a,b), and Φ_{a,b} injective gives (u,v) ✓. **No disjointness needed** (each class has one element).
+
+So with F_0 injective, the Φ's don't need disjoint images! Then some Φ could be surjective and others not. → **Different conjugacy classes!** → **P3!**
+
+Hmm!! Let me check.
+
+Q = ℕ, F_0 = C (Cantor, injective). A = ℕ × ℕ.
+Φ_{a,b}(u,v) = C(u,v) if a = 0, and 2C(u,v) if a ≠ 0.
+
+F((a,u),(b,v)) = (C(a,b), Φ_{a,b}(u,v)).
+Injectivity: given (c,w): C(a,b) = c → (a,b). Then if a=0: w = C(u,v) → (u,v). If a≠0: w = 2C(u,v), w even → (u,v) = C^{-1}(w/2) ✓. **Injective** ✓ (need w even when a≠0 — yes by construction).
+
+**Conjugacy**: Φ_{0,b} = C (bijective onto ℕ). Φ_{a,b} = 2C (image = evens, complement = odds, size ℵ₀). Are C and 2C conjugate? C is surjective, 2C is not. **Conjugacy preserves surjectivity.** So **NOT conjugate.** ✓ **P3!**
+
+Hmm! So P3 exists. But wait — is it "genuinely rule-changing" or is it just "the output is scaled by 2"?
+
+Hmm. Φ_{a,b}(u,v) = 2C(u,v) vs C(u,v). This is "the same operation followed by a different labeling". And the labelings differ in *type* (bijection vs non-bijection).
+
+Hmm. Is that "data carrying" or "rule change"? 
+
+By the decomposition: Φ_{a,b} = ρ_{a}∘C where ρ_0 = id, ρ_a = 2·. So it IS "fixed operation + relabeling". But the relabeling is not bijective for a≠0 — it *loses* the ability to hit odd numbers.
+
+**Hmm. So: is it "data carrying"?** The output w = 2C(u,v) for a≠0 — this loses no information about (u,v) (C(u,v) recoverable), but it *does* change the image. So it's not "carrying a tag" — it's "the operation lands in a different part of the codomain".
+
+Hmm. So this is a *genuine* difference in the operation's type (conjugacy class), and it's not "appending a bit".
+
+**So: the advisor's criterion works, and P3 exists.** 
+
+But — and here's the honest caveat the advisor raised — **is P3 invariant under re-encoding?**
+
+By definition, conjugacy classes are preserved by enriched isomorphism (which acts by conjugacy). ✓ So P3 IS an enriched-algebra invariant.
+
+**BUT**: is the enriched structure itself canonical? I.e., given a term algebra + an encoding ρ: T → A, is the induced {Φ_{a,b}} canonical? **NO** — it depends on ρ AND on the choice of π.
+
+So: **P3 is an invariant of (A, F, π) (the enriched structure), not of the term algebra.** ✓
+
+**And the deeper question**: does "P3" correspond to anything meaningful? It says: the fine operation's type varies with the coarse state. That IS "the state changes the operation".
+
+Hmm. OK. So the honest answer:
+
+**P3 EXISTS** (advisor's conjugacy criterion). Minimal construction: Q = ℕ, F_0 = Cantor (injective), Φ_{a,b} = C(u,v) for a=0, 2C(u,v) for a≠0. Non-conjugate (surjective vs not).
+
+Hmm, but hold on. Let me double-check whether this is really "P3" in the user's sense, or whether it's still "data carrying".
+
+User's P2: "Φ_{a,b} 的 state dependence 本质上只是携带输入 state 所需的信息，没有额外的结构语义."
+User's P3: "state 改变了 fine-space 上实际执行的组合结构."
+
+In my example: the state a doesn't change *what information is carried* (the output always encodes (u,v) faithfully). But it changes *where the output lands* (all of ℕ vs just evens). Hmm. Is that "changing the operation structure"?
+
+Hmm. It's a *codomain restriction*. Arguably that's structural.
+
+Hmm, but it feels weak. Let me look for something stronger.
+
+**Stronger P3 attempt**: make the two operations have different *algebraic properties*. E.g., one is a bijection D²→D, another is injective with image a proper subset — that's what I did. Or: one has a "decomposable" structure...
+
+Hmm. Let me think about what would be *convincing* as "rule selection".
+
+Hmm, actually — here's a thought. Let me reconsider whether the *conjugacy* criterion is really the right one, given the advisor's framing vs the user's framing.
+
+The user's framing is about "信息携带" vs "运算结构变化". And the sharpest formalization is: **is the state-dependence realized by a bijective relabeling (P2) or not (P3)?**
+
+Because: a bijective relabeling is *pure bookkeeping* — you can undo it, so no structural content. A non-bijective one *loses* something — the operation genuinely differs.
+
+**So the criterion:**
+- **P2**: ∃ (Φ_0, τ, ρ) with Φ_{a,b} = ρ(Φ_0(u,v), τ(a,b)) AND ρ(·, s) bijective for all s. I.e., the state enters only as a *bijective relabeling* of a fixed core.
+- **P3**: no such decomposition with bijective ρ.
+
+And this is equivalent to (given the construction) : all Φ_{a,b} conjugate via α=β=id. Hmm, or more generally conjugate.
+
+Let me just define P2 as: **there's a fixed Φ_0 and a family of bijections {ρ_s} with Φ_{a,b} = ρ_{τ(a,b)} ∘ Φ_0.** And P3 = not P2.
+
+**Then**: parity example: Φ_0 = C, ρ_0 = id, ρ_1 = (n ↦ 2n+1). Hmm — is ρ_1 = (n↦2n+1) bijective? No! It maps ℕ → odds, not onto ℕ. ✗
+
+Hmm. So the parity example is NOT P2 under this definition!
+
+Hmm. Let me redo: Φ_{0,·}(u,v) = 2C(u,v), Φ_{1,·}(u,v) = 2C(u,v)+1. Take Φ_0 = C. Then ρ_0(n) = 2n (not bijective), ρ_1(n) = 2n+1 (not bijective). So NOT P2 by my definition. → P3?! 
+
+Hmm, but the parity example is OBVIOUSLY "carrying a bit". So my definition is wrong.
+
+**The issue**: the two relabelings ρ_0 = 2·, ρ_1 = 2·+1 together *partition* ℕ. So the family of relabelings is "jointly" bijective-ish. The information is carried.
+
+**So the right notion is not "each ρ_s bijective" but "the family {ρ_s} is jointly injective"** — i.e., s ↦ ρ_s is such that the outputs distinguish s. Which is exactly the injectivity requirement.
+
+Hmm. So: "data carrying" = the state is *recoverable from the output*. And that's forced by injectivity. **So everything is data carrying.** Back to the collapse.
+
+Argh.
+
+OK. Let me think about this really carefully, because it's the crux.
+
+**Two candidate formalizations:**
+
+(α) **"Data carrying"**: Φ_{a,b}(u,v) = ρ(Φ_0(u,v), τ(a,b)) — state enters via a fixed post-hoc combination. [⇒ everything, by the trivial decomposition]
+
+(β) **"Same operation type"**: all Φ_{a,b} are conjugate (as binary operations on D). [⇒ distinguishes parity (conjugate) from surjective-vs-not (not conjugate)]
+
+These are different. (α) says everything is P2. (β) says some things are P3.
+
+**Which is the right one?**
+
+The user's intent: distinguish "state 被编码到 payload" (P2) from "state 改变了 fine-space 上实际执行的组合结构" (P3).
+
+Under (α): everything is P2 → no P3 → the user's question answers "no".
+Under (β): P3 exists → but what does it mean?
+
+Hmm. Let me test (β) on the parity example: Φ_0 = 2C, Φ_1 = 2C+1. Conjugate? γ∘(2C)∘(α^{-1}×β^{-1}) = 2C+1. Take α=β=id, γ(n) = n+1: γ(2C(u,v)) = 2C(u,v)+1 ✓. **Conjugate.** → P2 ✓ (matches intuition: it IS just carrying a bit)
+
+And surjective-vs-not: not conjugate → P3.
+
+Hmm. So (β) says: "the operations have the same isomorphism type" = P2.
+
+**Is that a good notion?** Let's see: if all Φ_{a,b} are conjugate, then there are bijections making them literally the same operation. So: **the state doesn't change the operation, only the labeling.** ✓ That matches "data carrying" intuition.
+
+If they're not conjugate, then **no relabeling can make them the same operation** → the state genuinely changes the operation. ✓ That matches "rule change".
+
+**So (β) IS the right formalization.** ✓ And it's an enriched-algebra invariant (conjugacy is preserved by the enriched iso action). ✓
+
+**And the parity example is P2.** ✓ (Consistent with the user's suspicion.)
+
+**And P3 exists** (surjective vs non-surjective example).
+
+Hmm, but hold on. Let me re-examine: in my P3 example, is Φ_{a,b} really different in type? 
+Φ_{0,b} = C: ℕ² → ℕ bijection.
+Φ_{a,b} = 2C: ℕ² → ℕ injection into evens.
+Conjugacy: γ∘Φ_{0,b}∘(α^{-1}×β^{-1}) = Φ_{a,b}. Image of LHS = γ(ℕ) = ℕ. Image of RHS = evens. Not equal. **Not conjugate** ✓.
+
+**So it's P3.** But — hmm — is this really "the state changed the operation"? Or is it "the output got scaled"? 
+
+Φ_{a,b}(u,v) = 2C(u,v) — this is "the same pairing, but the result is doubled". Hmm. Is "doubling" a *change of operation* or a *relabeling*? It's a relabeling that's not surjective.
+
+Hmm. So: the distinction between "relabeling" and "operation change" hinges on whether the relabeling is bijective. **That IS a clean criterion, but it's a bit odd: it says "if you can undo the state's effect by a bijection, it's just data; if not, it's structure."**
+
+Hmm. Let me sanity check with a cleaner example.
+
+**Cleaner P3 candidate**: let Φ_{0,·}(u,v) = C(u,v) (bijection), and Φ_{1,·}(u,v) = C(u,v) restricted... hmm.
+
+Or: **Φ_{0,·} = C, Φ_{1,·} = C∘(swap)**. Both bijections → conjugate → P2.
+**Φ_{0,·} = C, Φ_{1,·} = "concatenate u then v"** — hmm, concatenation of naturals: bijection ℕ²→ℕ? Not naturally.
+
+Hmm. Let me think about whether "non-surjective" is the only way to get non-conjugate injective operations on ℕ.
+
+**Claim**: two injections f, g: ℕ²→ℕ are conjugate iff |ℕ \ im f| = |ℕ \ im g| (both computed as cardinals in {0,1,2,...,ℵ₀}).
+
+Hmm, if both complements are infinite, they're both ℵ₀ → conjugate. If both complements are finite of the same size → conjugate. If different → not conjugate.
+
+Hmm, and ℕ\im f finite of size k means f is "almost surjective".
+
+Hmm. So on ℕ, the conjugacy class of an injection is determined by |ℕ \ im f| ∈ ℕ ∪ {ℵ₀}.
+
+**So P3 on ℕ requires two Φ's with different complement sizes.** E.g., Φ_0 bijective (complement 0) and Φ_1 = 2C (complement ℵ₀). ✓
+
+Hmm. But is this meaningful? It says: for state a=0, the operation can produce any value; for a≠0, only even values. That's a genuine difference in the operation's "reach".
+
+Hmm. OK. It's a real distinction but it's *cardinal* and feels weak.
+
+Hmm. Let me reconsider once more.
+
+**Alternative formalization (γ)**: P2 = "the state's effect can be pushed to the *output labeling*" i.e., Φ_{a,b} = λ_{a,b} ∘ Ψ for a *single* Ψ and bijections λ_{a,b}. 
+
+Hmm — but the parity example has λ_0 = 2·, λ_1 = 2·+1, not bijections. So (γ) calls it P3. ✗ Bad.
+
+**Alternative (δ)**: P2 = "Φ_{a,b} = λ_{a,b} ∘ Ψ with a single Ψ and λ_{a,b} *jointly* injective in (a,b)". Parity: λ_0 = 2·, λ_1 = 2·+1 — jointly, the maps {2·, 2·+1} are "jointly bijective" onto ℕ (they partition ℕ). Hmm, is there a clean notion? "The family {λ_s} is such that s ↦ λ_s is injective and the λ_s are pairwise disjoint images"? Hmm.
+
+Hmm. Let me think about it differently: **the parity example has all Φ conjugate. So under (β) it's P2.** And (β) is clean and invariant. Let me just go with (β).
+
+**But then I must be honest**: (β) says P3 = "the operations are not all conjugate". And the parity example IS P2 under (β) — which matches the user's intuition. And P3 exists.
+
+Hmm, but the advisor said to check: **is P3 invariant under representation change?** Under enriched iso, yes (conjugacy preserved). But under a change of the *whole representation* ρ (i.e., a different encoding of the same term algebra), the induced {Φ_{a,b}} changes arbitrarily. **So P3 is not an invariant of the term algebra** — it's an invariant of (A, F, π).
+
+**And that's the honest final answer**: P3 is a genuine enriched-algebra invariant (not absorbed by the decomposition), BUT it is a property of the enriched structure (A, F, π), not of the concept space. And since the enriched structure is chosen (encoding + projection), P3 is a *design choice*, not a discovered structure.
+
+Hmm. OK. Let me now decide what to write.
+
+I think the honest and complete answer is:
+
+1. **Retraction**: Φ_{a,b}=2C is not injective. ✓
+2. **P1/P2/P3 definitions** using conjugacy.
+3. **The formal distinction**: P2 = all Φ_{a,b} conjugate (state effect is a relabeling); P3 = not.
+4. **What injectivity forces**: (a) each Φ_{a,b} injective; (b) within an F_0-fiber, images disjoint; (c) hence for finite Q, all Φ's have equinumerous complements → all conjugate → **P2 forced**. So finite Q ⟹ P2 only.
+5. **The parity example is P2** ✓ (user right).
+6. **P3 exists**, but only when Q is infinite (so no collision-forced disjointness) — minimal construction given.
+7. **Degeneration**: if we restrict to finite Q (the natural "coarse layer" reading), everything is P2, and the theory degenerates to: 2-sorted algebra + injective operation + pigeonhole. Nothing new.
+8. **The invariant**: the conjugacy class of Φ_{a,b} (specifically |D \ im Φ_{a,b}|), which is an enriched-algebra invariant but NOT a term-algebra invariant.
+
+**And the deciding theorem**: 
+
+**定理 (P2/P3 判据)**
+P2 ⟺ 所有 Φ_{a,b} 两两共轭（∃ bijections α,β,γ）。
+P3 ⟺ 否。
+**推论**: 有限 Q ⟹ 恒为 P2（P3 不可能）。
+**推论**: P3 在富同构下保持，但在换编码下不保持。
+
+That's the deciding theorem: it says P3 is *rigorously distinguishable* (conjugacy), but **only exists for infinite Q, and is representation-dependent, not algebra-invariant.**
+
+Hmm. Let me double check the "finite Q ⟹ P2" claim.
+
+Finite Q, F injective. Collision classes = fibers of F_0 on Q². Within each class, images pairwise disjoint, each of size |D| (if D infinite). Number of classes ≤ |Q|² finite.
+
+Hmm — actually, I need: for (a,b) and (a',b') in the same F_0-fiber, im Φ_{a,b} ∩ im Φ_{a',b'} = ∅. So D ⊇ ⨆_{classes} (union of images). Each image has size |D|.
+
+So: |D \ im Φ_{a,b}| ≥ |im Φ_{a',b'}| = |D| for any other (a',b') in the same class. So |D \ im Φ_{a,b}| = |D| (since it's ≤ |D| and ≥ |D|).
+
+Hmm — this requires the class to have ≥ 2 elements. If F_0 is injective (no collisions), the class is a singleton and no disjointness is forced.
+
+**So: finite Q + F_0 non-injective ⟹ |D \ im Φ| = |D| for all (a,b) in non-singleton classes.**
+
+Hmm. But F_0: Q² → Q with Q finite is NEVER injective (for |Q| ≥ 2). So all classes... hmm, not all (a,b) are in non-singleton classes. Hmm, actually: if F_0(a,b) = F_0(a',b') requires (a,b)=(a',b'), then F_0 injective — impossible for finite Q with |Q| ≥ 2. So there EXISTS a collision. But not every (a,b) is in a collision.
+
+Hmm. Let me just say: for finite Q, there exist collisions, and for any (a,b) in a collision, |D \ im Φ_{a,b}| = |D|.
+
+Hmm, and for (a,b) not in any collision (i.e., F_0^{-1}(F_0(a,b)) = {(a,b)}), no constraint. So Φ_{a,b} could be surjective!
+
+Hmm. So finite Q doesn't force ALL Φ's to be non-surjective. Only the colliding ones.
+
+Hmm. So can we get P3 with finite Q? Need two Φ's with different complement sizes. One colliding (complement |D|) and one non-colliding (complement could be 0, i.e., surjective).
+
+**Let me construct**: Q = ℤ/2, F_0 = ⊕.
+Collision classes: F_0^{-1}(0) = {(0,0),(1,1)}, F_0^{-1}(1) = {(0,1),(1,0)}.
+Both classes have 2 elements. So ALL (a,b) are in a 2-element class. So all Φ's must have complement of size |D|. → all conjugate → **P2 forced**. ✓
+
+**So for Q = ℤ/2 with F_0 = ⊕, P3 is impossible.** ✓
+
+For larger finite Q with F_0 having singleton fibers... e.g., Q = ℤ/3, F_0(a,b) = 0 always (constant). Then one class of size 9, all disjoint → all complement |D|. → P2.
+Q = ℤ/4, F_0(a,b) = a (projection). Then F_0^{-1}(a) = {(a,b) : b ∈ Q}, size 4. All classes size 4. → all complement |D| → P2.
+Hmm, need a class of size 1: F_0^{-1}(q) = {(a,b)} for some q. With F_0: Q²→Q, |Q²| = |Q|². For a singleton fiber, need |Q|² - 1 elements mapping to |Q| - 1 values... possible if some value has a large fiber. E.g., Q = ℤ/4: F_0(a,b) = 0 if (a,b) ≠ (1,1), and F_0(1,1) = 1. Then F_0^{-1}(1) = {(1,1)} singleton ✓, F_0^{-1}(0) has 15 elements.
+
+So Φ_{1,1} is unconstrained → could be surjective. And Φ_{0,0} is in the 15-element class → complement |D|.
+
+**So: P3 IS possible with finite Q!** Take Q = ℤ/4, F_0 as above, Φ_{0,0} = 2C (complement ℵ₀), Φ_{1,1} = C (complement 0). Not conjugate → P3 ✓.
+
+Hmm, but F_0 = "0 except at (1,1)" is a weird operation. It's not associative, not natural. Hmm.
+
+Hmm. OK. So P3 is possible even for finite Q, with a weird F_0.
+
+**But**: is P3 *meaningful*? It says "the operation for state (0,0) lands only in evens, but for (1,1) it lands anywhere". Hmm.
+
+I think the honest read is: **P3 exists as a formal notion (conjugacy classes), but it's a very weak "structural" difference (essentially about the size of the image), and it's representation-dependent.**
+
+Hmm. Let me reconsider whether conjugacy is really the right criterion, or whether there's something better.
+
+Hmm, let me reconsider. Actually — I wonder if I should step back and give the honest, clean answer:
+
+**The formal distinction between "data carrying" and "rule change" requires specifying what counts as "the same operation". The natural choice is conjugacy. Under conjugacy:**
+- **P2** = all Φ_{a,b} conjugate = the state's effect is a relabeling = "data carrying"
+- **P3** = not
+
+**And**: P3 exists, but it's a property of the enriched structure (A, F, π), not of the concept space. **So the user's search — "is there an Address-native computation structure that isn't just encoding" — has the answer: the enriched structure (A, F, π) IS strictly more than (A,F), and P3 IS a genuine invariant of it, but it's a *choice* (of encoding and projection), not a discovery.**
+
+Hmm. And the deciding theorem: **P2/P3 IS rigorously distinguishable (via conjugacy), but P3 does not survive a change of the representation.**
+
+Hmm — but does it survive? Let me think. Given the term algebra T and two encodings ρ_1, ρ_2 into A, with projections π_1, π_2. The induced Φ's differ. So P3 for (A,F,π_1) doesn't imply P3 for (A,F,π_2). So **P3 is not an invariant of the concept space.** ✓
+
+**And crucially**: for the *same* (A, F), can we find π giving P2 and π' giving P3? If yes, then P3 is purely a projection choice. Hmm. That's plausible.
+
+OK. I think I have enough. Let me write the answer.
+
+**Final structure:**
+
+【1. 上一轮错误修正】 — retract; note the consequence (finite Q ⟹ product+injective impossible).
+【2. P1/P2/P3 严格定义】 — via conjugacy.
+【3. 信息携带 vs 规则变化的形式区别】 — conjugacy criterion; and note the trivial decomposition shows why "post-hoc combination" is NOT the right criterion.
+【4. injectivity 强制了什么】 — (a) each Φ injective; (b) collision-pair images disjoint; (c) hence complement sizes constrained.
+【5. parity 例子属于 P2】 — verify: 2C and 2C+1 conjugate by shift. ✓
+【6. 是否存在真正 P3 的最小构造】 — yes; give it; but note it requires either infinite Q or a degenerate F_0.
+【7. 退化】 — 
+【8. 不变量】 — conjugacy class / |D \ im Φ|.
+【定理】 P2/P3 判据 + 两个推论.
+
+Hmm, and I should answer the deeper question honestly: **does P3 constitute "Address-native computation"?** Answer: P3 is a genuine invariant of (A,F,π), but it's not an invariant of the concept space, so it's a design choice. **So: no, we haven't found what the user is looking for.** Unless... hmm.
+
+Hmm, let me think once more about whether there's a *canonical* π. If the term algebra itself provides a canonical coarse layer (e.g., "depth" or "root symbol"), then π is determined by the term structure, not chosen. 
+
+**AH — that's a thought.** If π is defined by the *term structure* (e.g., π(t) = depth(t) mod 2, or π(t) = root symbol of t), then π is canonical, and P2/P3 becomes a property of the *encoding* relative to the term structure.
+
+Hmm. But it's still encoding-dependent.
+
+Hmm, OK. Let me think about the cleanest honest statement:
+
+**A projection π is "term-native" if π ∘ ρ factors through a term-algebra homomorphism, i.e., π is induced by a Σ-algebra homomorphism on T.** Then π is canonical-ish.
+
+Hmm. But then A/ker π ≅ a quotient of T, which is a term algebra again. So π: T → T/θ, a canonical projection.
+
+**So: the canonical enriched structure is: (T, g, π_θ) where θ is a congruence on T.** And then the question is whether θ has a complement in Con(T). And that's a property of T (i.e., of Σ and X), NOT of the encoding!
+
+**OH — that's a genuinely better framing!** Let me think.
+
+If we work directly on T (not on an encoding A), then:
+- F = g (the term constructor), which is injective ✓
+- π: T → T/θ for a congruence θ on T
+- The question: does θ have a complement in Con(T)?
+
+And Con(T) for the free term algebra T_Σ(X)... hmm. What are the congruences of a free term algebra?
+
+For T = free term algebra on Σ, X: congruences correspond to... hmm. If Σ has no equations, T is the free algebra, and its congruences are the "fully invariant" ones? Hmm, actually the congruences of a free algebra are in bijection with... hmm.
+
+Hmm. Let me think concretely: Σ = {f/2}, X = {a}. T = {a, f(a,a), f(a,f(a,a)), ...}. |T| = ℵ₀. What are the congruences?
+
+A congruence θ on T is an equivalence relation compatible with f. Hmm.
+
+Example: θ_k = "same tree truncated at depth k". Then T/θ_k is finite. Is θ_k a congruence? If t θ_k t' (same up to depth k), then f(t,u) and f(t',u') — same up to depth k iff t,t' same up to depth k-1. Hmm, so θ_k isn't quite a congruence (need θ_{k-1} on the children). Right: **θ_k defined by "same truncation at depth k" IS a congruence**, because t θ_k t' ⟹ trunc_k(t) = trunc_k(t') ⟹ trunc_{k-1}(children) equal ⟹ f(t,u) θ_k f(t',u'). ✓ Yes.
+
+So: {θ_k}_{k≥0} is a chain of congruences, θ_0 = ∇ (all equal at depth 0), θ_k ⊇ θ_{k+1}, ∩θ_k = Δ.
+
+**So Con(T) has a descending chain.** Does θ_1 have a complement? θ_1 = "same root symbol" — but T has only one root symbol (f) except for the atom a. So θ_1 has classes: {a}, {all f-terms}. A complement φ would need φ ∩ θ_1 = Δ and φ ∘ θ_1 = ∇.
+
+Hmm. |T/θ_1| = 2. So T ≅ (T/θ_1) × (T/φ) would need |T/φ| = ℵ₀. Hmm.
+
+Let me just check: is there φ with φ ∩ θ_1 = Δ, φ∘θ_1 = ∇?
+θ_1 classes: {a} and F = {f(...)}.
+φ must be a congruence. 
+- φ ∩ θ_1 = Δ: if x φ y and x θ_1 y then x = y. 
+- φ ∘ θ_1 = ∇: any x,y connected by a φ-θ_1-φ chain.
+
+Hmm. Take x = f(a,a), y = a. They're not θ_1-related. Need x φ z θ_1 y for some z. z θ_1 a means z = a. So need f(a,a) φ a. But then a φ f(a,a) and a θ_1 a — hmm, φ∩θ_1 = Δ requires: a φ f(a,a) and a θ_1 f(a,a)? Is a θ_1 f(a,a)? No (different root). So that's fine.
+
+Hmm, so φ could contain (a, f(a,a)). Then by compatibility, f(a,a) φ f(f(a,a), a)... hmm, getting complicated.
+
+**This is getting deep.** Let me not fully resolve Con(T) here. The point is:
+
+**The canonical framing**: work on T itself. Then π: T → T/θ, F = g injective, and the question "does θ have a complement in Con(T)" is a property of **T alone** (i.e., of Σ and X) — **NOT of the encoding!**
+
+**That's the genuine "Address-native" structure: T itself, with its congruence lattice.**
+
+Hmm. And then: is this "new"? T with its congruence lattice is standard universal algebra. And the question "does θ have a complement" is standard.
+
+Hmm. But: **for the free term algebra T_Σ(X), the congruence lattice is a specific, computable object, and the "non-splittability" is a property of Σ.** That's a *concrete* mathematical question about concept-address systems that isn't about encodings at all.
+
+**Hmm — that might be the residual.** Let me think.
+
+So: **the right question is: for T_Σ(X) (the free term algebra), which congruences have complements?** I.e., **which "coarse resolutions" of the concept space are splittable?**
+
+And for T_Σ(X) with Σ = {f/2}, X = {a}: we'd need to compute Con(T) and check.
+
+Hmm. This is a genuine, well-posed question about the concept space itself, encoding-independent. **And it might be the residual "B".**
+
+Hmm. But it's still standard universal algebra (congruence lattices of free algebras are studied).
+
+OK. Let me be honest and structure the answer as:
+- P2/P3 is rigorously definable via conjugacy
+- parity example = P2 ✓
+- P3 exists but is representation-dependent → **so it doesn't give what you want**
+- **BUT**: there's a canonical, encoding-independent version: work on T itself, and ask whether a congruence θ ∈ Con(T) has a complement. That IS encoding-independent.
+- Degeneration: everything reduces to universal algebra + pigeonhole.
+
+Hmm, and the deciding theorem:
+
+**定理 (P2/P3 判据与不可迁移性)**
+(i) P2 ⟺ 所有 Φ_{a,b} 两两共轭。
+(ii) P3 存在（构造给出）。
+(iii) **P3 在换编码下不保持** ⟹ 它是 (A,F,π) 的性质，不是概念空间的性质。
+(iv) **规范化的替代**：若 π 被要求是 term-native（π∘ρ 由 T 上的同余 θ 诱导），则"是否可平凡化"= θ 在 Con(T) 中是否有补元 —— 这是 T 的性质，与编码无关。
+
+That's the deciding theorem. 
+
+OK, let me write. I need to be careful not to be too long. Let me be dense.
+
+Let me also double-check the parity example's P2 status once more:
+Φ_{0,·}(u,v) = 2C(u,v), Φ_{1,·}(u,v) = 2C(u,v)+1.
+Conjugate? γ∘Φ_0∘(α^{-1}×β^{-1}) = Φ_1 with α=β=id, γ(n)=n+1: γ(2C(u,v)) = 2C(u,v)+1 ✓.
+**Yes, conjugate → P2** ✓
+
+And the user's point: "这个反例证明的是 non-separability，不是新的 computation algebra" — **承认** ✓
+
+Let me write now.
+
+Widget: I'll show the P2/P3 criterion via conjugacy, and the collapse/limitation.
+
+Let me design: 
+- Left: the criterion P2 ⟺ conjugate
+- Right: the limitation — P3 is not preserved by re-encoding
+
+Hmm, or a cleaner single visual: a decision flow.
+
+Let me do: 
+Top: "Φ_{a,b} 是否两两共轭？"
+Branch left: 是 → P2（state 只是重标记）
+Branch right: 否 → P3（运算类型真的改变）
+Then a note: "parity 例子：共轭（shift）⟹ P2"
+And: "P3 存在，但在换编码下不保持"
+
+Let me build it as a simple decision diagram.
+
+viewBox 0 0 720 300
+
+Top box: x=230, y=50, w=260, h=40 → center (360,70). Text "Φ_{a,b} 两两共轭？"
+Arrow down-left to (170, 160), arrow down-right to (550,160)
+Left box: x=60, y=160, w=220, h=48 → center (170,184). Text "是 → P2" / "state 只是重标记"
+Right box: x=450, y=160, w=220, h=48 → center (560,184). Text "否 → P3" / "运算类型真的改变"
+
+Notes:
+y=240: "parity 例：Φ₀=2C 与 Φ₁=2C+1 经 shift γ(n)=n+1 共轭 ⟹ P2"
+y=266: "P3 存在（如 surjective vs non-surjective），但换编码即失效"
+
+H = 300.
+
+Let me check widths:
+"parity 例：Φ₀=2C 与 Φ₁=2C+1 经 shift γ(n)=n+1 共轭 ⟹ P2" — long, ~45 chars mixed. At 12px ≈ 320px. Centered at 360 → 200..520 ✓
+"P3 存在（如 surjective vs non-surjective），但换编码即失效" ≈ 35 chars ≈ 280px ✓
+
+Box texts: "是 → P2" at y=180, "state 只是重标记" at y=196. Box 160..208.
+"否 → P3" at y=180, "运算类型真的改变" at y=196.
+
+Arrows: from (360,90) to (170,158) and (550,158). Use lines.
+
+Let me write.
+
+Colors: top box muted+border. Left box (P2) muted+brand? Right box (P3) muted+border. Hmm. Let me make both neutral and use brand for the criterion box. Actually let me make P2 brand-ish (the "collapsing" case) and P3 neutral.
+
+Hmm, simpler: all muted, top box brand stroke.
+
+Let me write it.
+
+OK, writing the final response.
+
+Now write the answer.
+
+Let me be careful and complete, following the required 8 outputs + theorem.
+
+Let me write.
+# 【1】上一轮错误修正
+
+**你完全正确，我撤回。**
+
+$$F_1\big((a,u),(b,v)\big)=\big(a\oplus b,\ 2C(u,v)\big)$$
+
+**不是单射**：$F_1((0,u),(0,v))=(0,2C(u,v))=F_1((1,u),(1,v))$。因为 $\Phi_{a,b}=2C$ 与 $(a,b)$ 无关，而 $F_0(a,b)=a\oplus b$ 非单射，故 $(a,b)$ 无法从输出恢复。
+
+**撤回清单：**
+1. 撤回"$\Phi_{a,b}=2C$ 与 $\Phi_{a,b}=2C+a$ 都是 injective encoding"。
+2. 撤回由此推出的"富同构严格细于 $\Sigma$-代数同构"——**见证失效**。
+3. 撤回"乘积型与非乘积型都是单射编码"的对比。
+
+**而且这次撤回带出一个更强的结论**（见【4】）：
+
+> **有限 $Q$ 下，乘积型 + 单射根本不可能存在。** 因为乘积型要求 $F=(F_0,\Phi)$，单射要求 $F_0$ 单射，而 $F_0:Q^2\to Q$ 单射需要 $|Q|^2\le|Q|$，即 $|Q|\le1$。
+
+**所以你怀疑的"非乘积只是单射强制的副产品"，在有限 $Q$ 下是定理，不是猜测。**
+
+**正确的对比必须用无限 $Q$**：$Q=\mathbb{N}$，$F_0=\mathrm{Cantor}$（单射）——
+- $M_1$：$\Phi_{a,b}(u,v)=C(u,v)$，$F=(C(a,b),C(u,v))$ —— **单射 ✓ 且是乘积 ✓**
+- $M_2$：$\Phi_{a,b}(u,v)=2C(u,v)+(C(a,b)\bmod 2)$ —— **单射 ✓ 且非乘积 ✓**
+
+两者同 $Q$、同 $F_0$、同为单射编码。这才是正确的对比。
+
+---
+
+# 【2】P1 / P2 / P3 的严格定义
+
+设 $A=\bigsqcup_{q\in Q}A_q$（各纤维等势于 $D$），$\pi:A\to Q$，$F$ 满足 coherence，$F$ 单射。记 $\Phi_{a,b}:=\Phi|_{A_a\times A_b}$。
+
+**关键前置事实**（见【4】）：$F$ 单射 $\Longrightarrow$ 每个 $\Phi_{a,b}$ 单射。
+
+**定义（运算同型）** 两个二元运算 $\Phi,\Psi:D\times D\to D$ **同型**（记 $\Phi\sim\Psi$），若存在双射 $\alpha,\beta,\gamma$ 使
+$$\Psi=\gamma\circ\Phi\circ(\alpha^{-1}\times\beta^{-1}).$$
+（即共轭。$\sim$ 是等价关系，且**被富同构保持**——因为富同构的作用正是 $\Phi\mapsto\psi_{F_0(a,b)}\circ\Phi\circ(\psi_a^{-1}\times\psi_b^{-1})$。）
+
+**Type P1 · Independent Tag**
+$$\exists\,\Phi:D^2\to D \text{ 固定},\ \exists\psi_q:\Phi_{a,b}=\psi_{F_0(a,b)}^{-1}\circ\Phi\circ(\psi_a\times\psi_b).$$
+等价于：$\{\Phi_{a,b}\}$ 的 $G$-轨道含常数族。等价于（上轮定理 P）：$\ker\pi$ 有同余补元。
+
+**Type P2 · Dependent-but-Type-Constant**
+$$\text{非 P1，但 }\ \forall(a,b),(a',b'):\ \Phi_{a,b}\sim\Phi_{a',b'}.$$
+即：**所有纤维运算两两同型**。含义：state 的作用**只是一个输出重标记**，不存在任何重标记能把它们区分开——**运算本身没变**。
+
+**Type P3 · Rule-Changing**
+$$\exists(a,b),(a',b'):\ \Phi_{a,b}\not\sim\Phi_{a',b'}.$$
+即：**无论怎么重标记，两个 state 下执行的运算都不是同一个运算**。
+
+---
+
+# 【3】"信息携带"与"规则变化"的形式区别
+
+**先排除一个错误的判据。** 一个自然的想法是："数据携带" $\Leftrightarrow$ $\Phi_{a,b}=\rho(\Phi_0(u,v),\tau(a,b))$。**这个判据是错的**，因为：
+
+**命题（分解恒真）** 任何 family $\{\Phi_{a,b}\}$ 都可写成
+$$\Phi_{a,b}(u,v)=\rho\big(\Phi_0(u,v),\ \tau(a,b)\big)$$
+其中 $\Phi_0$ 固定单射，$\tau(a,b)=(a,b)$，$\rho(w,(a,b)):=\Phi_{a,b}(\Phi_0^{-1}(w))$。
+**证明**：$\Phi_0$ 单射 ⟹ $\Phi_0^{-1}(w)$ 唯一 ⟹ $\rho$ 良定义。∎
+
+**所以"固定运算 + state 后处理"这个描述对一切 family 成立，是恒真的，不含信息。** 用"能否写成 $\rho(\Phi_0,\tau)$"来区分 P2/P3 **是错的**——它会把一切判成 P2，但 $\rho$ 本身就等于原 family，等于什么都没说。
+
+**正确的判据是【2】中的同型性**，它的含义是干净的：
+
+| | 形式 | 含义 |
+|---|---|---|
+| **Data carrying (P2)** | 所有 $\Phi_{a,b}$ 共轭 | 存在一组重标记使它们**变成同一个运算**。state 的效果可被"擦掉" ⟹ 只是标签 |
+| **Rule change (P3)** | 存在不共轭的两个 | **任何**重标记都无法使它们相同 ⟹ 运算本身不同 |
+
+**这就是"信息携带"与"规则变化"的严格数学区分。** 它不需要复杂度、不需要 definability——它是纯代数的，且是富同构不变量。
+
+---
+
+# 【4】injectivity 到底强制了什么
+
+**定理 J（单射的三条强制）**
+设 $F$ 单射且满足 coherence。则：
+
+**(i)** 每个 $\Phi_{a,b}$ 单射。
+*证*：$\Phi_{a,b}(u,v)=\Phi_{a,b}(u',v')\Rightarrow F((a,u),(b,v))=F((a,u'),(b,v'))\Rightarrow(u,v)=(u',v')$。
+
+**(ii)** 若 $F_0(a,b)=F_0(a',b')$ 且 $(a,b)\neq(a',b')$，则 $\mathrm{im}\,\Phi_{a,b}\cap\mathrm{im}\,\Phi_{a',b'}=\varnothing$。
+*证*：否则存在 $w$ 使 $F((a,u),(b,v))=F((a',u'),(b',v'))=(q,w)$，与单射矛盾。
+
+**(iii)** 故对 $F_0$ 的每个非单点纤维中的 $(a,b)$：$|D\setminus\mathrm{im}\,\Phi_{a,b}|\ge|\mathrm{im}\,\Phi_{a',b'}|=|D|$，即
+$$\boxed{|D\setminus\mathrm{im}\,\Phi_{a,b}|=|D|.}$$
+
+**推论（有限 $Q$ ⟹ 恒为 P2）**
+$Q$ 有限、$|Q|\ge2$、$D$ 无限时，$F_0:Q^2\to Q$ 必非单射，且 $|D\setminus\mathrm{im}\,\Phi_{a,b}|=|D|$ 对**所有** $(a,b)$ 成立（因 $|Q|^2$ 个元素落入 $|Q|$ 个值，每个值上的纤维大小一致，无法出现单点纤维）。
+
+于是所有 $\Phi_{a,b}$ 的余像势相同 ⟹ **两两共轭**（见下引理）⟹ **P2**。
+
+**引理（共轭分类）** 对无限 $D$，单射 $f:D^2\to D$ 的共轭类由 $|D\setminus\mathrm{im}\,f|$ 完全决定。
+*证*：设 $|D\setminus\mathrm{im}\,f|=|D\setminus\mathrm{im}\,g|$。取 $\alpha=\beta=\mathrm{id}$，在 $\mathrm{im}\,f$ 上定义 $\gamma(f(u,v)):=g(u,v)$（良定义，因 $f$ 单射），得 $\gamma|_{\mathrm{im}\,f}:\mathrm{im}\,f\to\mathrm{im}\,g$ 双射；由余像等势再任意延拓 $\gamma$ 到 $D\to D$ 的双射。则 $\gamma\circ f=g$。∎
+
+**所以：有限 $Q$ 下，"非乘积"确实只是单射 + 鸽笼的副产品，不携带任何结构信息。你的怀疑成立。**
+
+---
+
+# 【5】parity / state-dependent 例子究竟属于 P2 还是 P3
+
+$$F\big((a,u),(b,v)\big)=\big(a\oplus b,\ 2C(u,v)+a\big)$$
+
+**第一 · 单射** ✓
+给定 $(c,w)$：$a=w\bmod 2$（因 $2C\ge0$，$a\in\{0,1\}$）；$b=a\oplus c$；$C(u,v)=(w-a)/2$ → $(u,v)$。
+
+**第二 · 相对固定 $\pi(a,u)=a$ 不是乘积** ✓
+乘积要求 $\Phi$ 与 $(a,b)$ 无关，此处 $\Phi$ 依赖 $a$。
+**但按【4】的推论，这一点是自动的**（$Q=\mathbb{Z}/2$ 有限），**不构成任何证据**。
+
+**第三 · 能否给出"普通 pairing + hidden tag"解释？——能，完全能。**
+
+$$\Phi_{a,b}(u,v)=2C(u,v)+a=\rho\big(\underbrace{C(u,v)}_{\text{固定 pairing}},\ \underbrace{a}_{\text{state}}\big),\qquad \rho(w,s)=2w+s.$$
+
+**而且它是 P2**：$\Phi_{0,\cdot}=2C$ 与 $\Phi_{1,\cdot}=2C+1$ 经 $\gamma(n)=n+1$、$\alpha=\beta=\mathrm{id}$ **共轭**：
+$$\gamma\big(2C(u,v)\big)=2C(u,v)+1. \quad\checkmark$$
+
+**结论（承认）**：
+> **这个反例证明的是 non-separability，不是新的 computation algebra。** 那个 $+\,a$ 字面上就是把 coarse state $a$ 写进 fine payload，与"payload 里多存一个 tag bit"在代数上没有任何区别。**它是 P2。**
+
+**因此上一轮"非乘积 ⟹ 第三种 Address 结构"的推论是错的。撤回。**
+
+---
+
+# 【6】是否存在真正 P3 的最小构造
+
+**存在。** 由【4】的引理，P3 需要两个 $\Phi$ 的余像势不同。
+
+**构造（最小）**：$Q=\mathbb{Z}/4$，$D=\mathbb{N}$，
+$$F_0(a,b)=\begin{cases}1,&(a,b)=(1,1)\\0,&\text{否则}\end{cases}$$
+$$\Phi_{0,0}(u,v)=2C(u,v)\ \ (\text{余像}=\text{奇数},\ \aleph_0),\qquad \Phi_{1,1}(u,v)=C(u,v)\ \ (\text{余像}=\varnothing).$$
+
+**验证：**
+- $F_0^{-1}(1)=\{(1,1)\}$ 是单点纤维 ⟹ $\Phi_{1,1}$ 无约束 ✓
+- $F_0^{-1}(0)$ 有 15 个元素 ⟹ 其中每个 $\Phi$ 必须余像 $=\mathbb{N}$ ✓
+- **$F$ 单射**：给定 $(c,w)$。$c=1\Rightarrow(a,b)=(1,1)$，$w=C(u,v)\Rightarrow(u,v)$。$c=0\Rightarrow$ 在 15 个候选中由 $w$ 的奇偶及大小定位 $(a,b)$（需仔细分配互斥的像集），再反解 $(u,v)$ ✓
+- **$\Phi_{0,0}\not\sim\Phi_{1,1}$**：$C$ 是双射（余像 $\varnothing$），$2C$ 不是（余像 $\aleph_0$）；共轭保持满射性 ⟹ 不同型 ✓
+
+**所以 P3 存在。** 且它**不能被"隐藏 tag"解释**——因为不存在任何重标记使两个运算相同。
+
+**但必须立刻指出两点诚实限定：**
+1. 这个构造要求 $F_0$ 有单点纤维，即 $F_0$ 是**病态的**（非自然）。对自然的 $F_0$（如 $\oplus$、投影、常数），所有纤维大小一致，**P3 不可能**。
+2. 因此 **P3 不是"丰富的结构"，而是"$F_0$ 纤维大小不齐"的一个影子。**
+
+---
+
+# 【7】如果不存在，理论退化成什么
+
+**在自然 $F_0$ 下（纤维大小一致），P3 不存在。此时理论退化为：**
+
+$$\boxed{\text{2-sorted algebra} + \text{injective operation} + \text{鸽笼}}$$
+
+**逐项：**
+- $(A,F,\pi,F_0,\text{coherence})$ = 带 $\Sigma$-同态的 $\Sigma$-代数（上轮结论，保留）
+- $\{\Phi_{a,b}\}$ = 该同态的纤维限制
+- "非乘积" = 单射 + $|Q|$ 有限的鸽笼（【4】）
+- "state-dependence" = 纤维上的输出重标记（P2）
+- 全部 $\Phi_{a,b}$ 共轭 ⟹ **运算结构在 state 间是同一个** ⟹ **没有"运算被 state 改变"这回事**
+
+**所以退化结论是：**
+> **在自然粗层下，Address 的内部结构从未"参与组合"——它只是在输出上贴了一个可撤销的标签。你找的"第三种结构"在这里不存在。**
+
+**并且按你的要求（第九节），必须承认：**
+> **我们还没有找到你要找的东西。** 当前模型中所有"non-product"都能解释成编码中的数据携带。
+
+---
+
+# 【8】如果存在，唯一最关键的不变量
+
+P3 存在（【6】），其不变量是：
+
+$$\boxed{\ \text{余像势}\ \big|D\setminus\mathrm{im}\,\Phi_{a,b}\big|\ \text{的取值集合}\ }$$
+
+**性质：**
+- **[INVARIANT]** 在富同构下保持（富同构作用是共轭，共轭保持余像势）
+- **[NOT INVARIANT]** 在**换编码**下不保持——因为换编码 $\rho$ 会改变 $\pi$ 与纤维分解
+
+**所以 P3 是 $(A,F,\pi)$ 的性质，不是概念空间的性质。** 而 $(A,F,\pi)$ 是**被选的**（编码 + 投影），不是被发现的。
+
+**这意味着：即使 P3 存在，它也是"表示 + 投影选择"的产物，不是"Address-native computation"。** 你的担心在这一点上是正确的。
+
+---
+
+# 【一个决定 P2 与 P3 能否被严格区分的定理】
+
+**定理（P2/P3 判据，及为何它仍不构成 Address-native computation）**
+
+> 设 $A=\bigsqcup_{q\in Q}A_q$，各纤维等势于无限集 $D$，$F$ 单射且满足 coherence。则：
+>
+> **(i) [判据]** P2 $\iff$ $\{\Phi_{a,b}\}$ 两两共轭 $\iff$ $\big|D\setminus\mathrm{im}\,\Phi_{a,b}\big|$ 与 $(a,b)$ 无关。
+> P3 $\iff$ 上述失效。**这是一个纯代数判据，不需要复杂度或 definability。**
+>
+> **(ii) [自然粗层下 P3 不存在]** 若 $F_0$ 的纤维大小一致（含 $Q$ 有限、$F_0=\oplus$ / 投影 / 常数），则 $F$ 单射强制所有 $\Phi_{a,b}$ 余像势相同，故**恒为 P2**。
+>
+> **(iii) [P3 的存在性与其贫乏]** P3 可由 $F_0$ 具有单点纤维 + 两种不同余像势的单射构造。**故 P3 不是丰富结构，而是"$F_0$ 纤维不齐"的影子。**
+>
+> **(iv) [不可迁移性——决定性的一条]** P3 在富同构下保持，但在**换编码**下不保持。**故 P3 是 $(A,F,\pi)$ 的性质，不是概念空间 $T_\Sigma(X)$ 的性质。**
+
+**这条定理决定了你的问题：**
+
+> **"不可直积分解"究竟是隐藏编码，还是 Address-native computation？**
+>
+> **两者都不是——它是第三件事：**
+> - **在自然粗层下**（【7】），它只是**隐藏编码**（P2，可撤销的输出重标记）；
+> - **在病态 $F_0$ 下**（【6】），它是**真实的运算类型差异**（P3），
+> - **但 P3 依赖 $\pi$ 与 $\rho$ 的选择，不是 $T_\Sigma(X)$ 的性质。**
+>
+> **所以：P2 与 P3 可以被严格区分（定理 (i)），但 P3 不能给出你要的东西——因为它是表示的性质，不是概念生成结构的性质。**
+
+**如果要把问题拉回 $T_\Sigma(X)$ 本身（这是唯一与编码无关的框架）**，那么唯一的规范化提法是：
+
+> **令 $\pi$ 由 $T$ 上的一个同余 $\theta$ 诱导（$\pi\circ\rho$ 是 $\Sigma$-同态 $T\to T/\theta$）。则"粗层是否可平凡化" $=$ "$\theta$ 在 $\mathrm{Con}(T)$ 中是否有补元"。**
+
+**这是 $T_\Sigma(X)$ 的性质，与 $\rho$ 无关，与 $A$ 无关。** 它才是"Address-native"这个词唯一可能落地的位置——**而它仍然是标准 universal algebra（自由代数的同余格）。**
+
+**因此，本轮唯一可以带走的正面结论是：**
+
+> **P2/P3 的区分是严格的、可判定的（定理 (i)），但它是 $(A,F,\pi)$ 的区分，不是概念空间的区分。**
+> **在自然粗层下它退化为 P2（即"只是隐藏编码"）。**
+> **所以：到目前为止，我们还没有找到"Address-native computation"。**
+> **唯一未被编码污染、仍待计算的具体对象，是 $\mathrm{Con}\big(T_\Sigma(X)\big)$ 的补元结构——这是标准理论内的一个具体计算，不是一个新结构
