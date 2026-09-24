@@ -1,0 +1,668 @@
+The user is asking me to audit my previous "NO" conclusion. They've made several critical points:
+
+1. My inference "π_i ∈ Hom(T,A_i) so choosing π_i is just metadata" is invalid. I need to distinguish: derived structure, freely chosen parameter, constrained additional structure, canonical additional structure.
+
+2. They want me to define a proper **Resolution System** with multiple projections and transition maps:
+   - π_i : T → A_i
+   - p_{ji} : A_j → A_i
+   - p_{ki} = p_{ji} ∘ p_{kj}
+   - p_{ji} ∘ π_j = π_i
+   - π_i ∘ g = F_i ∘ (π_i × π_i)
+   - p_{ji} ∘ F_j = F_i ∘ (p_{ji} × p_{ji})
+
+3. Study the forgetful functor U : AddrStruct → Alg and the fiber U^{-1}(T).
+
+4. Construct minimal counterexample: same T, different resolution structures, non-isomorphic, with no h ∈ Aut(T) intertwining them.
+
+5. Stop using "not canonical = not structure" logic.
+
+6. Distinguish 5 levels of "intrinsic": signature-level distinguished, definable, canonical, invariant, externally imposed.
+
+7. Compare A. term algebra, B. encoding, C. T + metadata, D. T + axiomatized resolution, E. T + canonical resolution.
+
+8. Scope-limit my NO: it was only proven for "single-injective-operation route fails", not for "Address-native structure doesn't exist".
+
+9. Map the Resolution System to existing theories: indexed algebra, many-sorted algebra, inverse system, filtered algebra, graded algebra, congruence system, subdirect representation, categorical limit, profinite completion, coalgebra/algebra-with-observers.
+
+10. Final criterion: does there exist, for the same base concept algebra T, two or more non-isomorphic resolution structures satisfying strict resolution axioms? If YES, give minimal construction and judge [KNOWN STRUCTURE] vs [NEW STRUCTURE CANDIDATE].
+
+Let me now do the actual mathematics carefully.
+
+## 1. The correct taxonomy of "additional structure"
+
+The user is right. Let me be rigorous. Given a base object T, an enrichment can be:
+
+1. **Derived structure**: definable from T by a formula. E.g., substitution operations in T. Adding it doesn't change the isomorphism classification (it's preserved automatically).
+
+2. **Freely chosen parameter**: an element of some set S(T) with NO axioms constraining it. E.g., an arbitrary function f: T → {0,1}. Any two choices are "isomorphic" in a trivial sense... actually no — two choices of f give non-isomorphic enriched structures if there's no automorphism of T carrying one to the other. Wait, but that's exactly the point: even freely chosen parameters give non-isomorphic structures. The distinguishing feature is that the axioms impose no constraints, so the "classification" of the fiber is just the set S(T) modulo Aut(T). Hmm, but that IS a non-trivial classification too!
+
+Actually wait. Let me think again. The user's point in section 五 is exactly right and important: "not canonical" does NOT imply "not a structure". The real question is whether the enrichment is **axiomatized** (defined by axioms) and has a **non-trivial isomorphism classification**.
+
+So the correct taxonomy:
+
+1. **Derived (definable)**: o is definable in T by a first-order formula (without parameters). Then adding o doesn't change Aut(T) — every automorphism of T automatically preserves o. The enriched structure is bi-interpretable with T. Classification: single point up to isomorphism (given T).
+
+2. **Freely chosen parameter (unconstrained)**: o ranges over some set S with no axioms. Adding o: isomorphisms must preserve o. Classification of fiber: S/Aut(T) — non-trivial as a set, but the axioms say nothing. Is this "structure"? Formally yes (it's a structure in a larger signature), but the axioms don't constrain o.
+
+3. **Constrained additional structure**: o ranges over structures satisfying axioms Ax. The fiber {o : o ⊨ Ax} may be genuinely rich, and the isomorphism classification within the fiber is non-trivial. This is REAL mathematical structure — e.g., "a group structure on a set", "a topology on a set", "an ordering on a field".
+
+4. **Canonical additional structure**: the fiber is contractible / essentially one object — there's a unique choice up to automorphism (or there's a universal object). E.g., the initial topology on a set? Better example: for a group G, the structure of "G as a Z-module"? Hmm. Canonical examples: the abelianization? No, that's a construction not an enrichment of G. Canonical enrichment: for a finite set, the "set structure" itself. For a term algebra T: the set of ALL congruences is canonical (it's determined), but a CHOICE of one congruence is not.
+
+So my previous error: I said "π_i is a free choice in Hom(T,A_i), hence metadata". The correct statement: choosing π_i is choosing an element of Hom(T,A_i) — this is a **constrained** choice (constrained by being a homomorphism!) — and different choices give non-isomorphic enriched structures when they're not related by Aut(T). That's real structure in the formal sense. The question is whether the resulting classification is mathematically meaningful — i.e., whether it matches an existing theory with a rich theory (like congruence lattice theory) or whether it's just an unconstrained parameter.
+
+Key counterexample to my earlier claim: Consider T = term algebra on one generator with one binary operation... take the enrichment "a congruence θ on T". Choosing θ = ker π is choosing an element of Con(T). Two enriched structures (T, θ₁), (T, θ₂) are isomorphic iff there's h ∈ Aut(T) with h(θ₁) = θ₂. For T = T_{f/2}({a}) (the free monogenic magma), Aut(T) is trivial (only identity, since the unique generator must map to a generator and a is the only element not in im g... wait let me verify: T consists of binary trees with leaves labeled a. g(t1,t2) is never equal to a leaf. An automorphism h must satisfy h(a) = a? h must be determined by h(a), and h(a) must be an element not in the image of g — the only such element is a. So Aut(T) = {id}.) So Con(T) has many elements and different choices of θ give pairwise non-isomorphic enriched structures (T, θ). So "T + a congruence" has a rich non-trivial classification. And this is a KNOWN structure: it's just "algebra with a distinguished congruence", and the classification is the congruence lattice, a central object of universal algebra.
+
+So the user is right: my "metadata" claim was wrong as a general statement. The correct framing:
+
+- The enrichment IS mathematical structure (axiomatized, with non-trivial classification).
+- The question is whether this structure is **specific to the Address program** or is it just **standard theory** (congruences, subdirect products, inverse systems)?
+- And crucially: is there any *canonically interesting* choice of resolution for a term algebra? 
+
+## 2. The Resolution System definition
+
+Definition (Resolution System): R = (T, Σ, {A_i}_{i∈I}, {π_i}, {p_{ji}}, {F_i}) where:
+- T is a Σ-algebra (the base, here T_Σ(X));
+- A_i are Σ-algebras ("resolution targets");
+- π_i : T → A_i are Σ-homomorphisms;
+- p_{ji} : A_j → A_i are Σ-homomorphisms;
+- transitions compose: p_{ki} = p_{ji} ∘ p_{kj} (whenever defined);
+- p_{ji} ∘ π_j = π_i;
+- if composition g on T is present: π_i ∘ g = F_i ∘ (π_i × π_i) [π_i is a homomorphism w.r.t. the binary operation];
+- p_{ji} ∘ F_j = F_i ∘ (p_{ji} × p_{ji}) [p_{ji} is a homomorphism].
+
+So this is: a diagram in Σ-Alg of shape (a cospan-like / inverse-system-like shape) with T at top. It's precisely: **an object of the comma category (T ↓ Σ-Alg)** — i.e., a Σ-algebra under T — if we only have π_i's. With the p_{ji}'s connecting the A_i's, it's a diagram D: J → Σ-Alg together with a cocone from T to D. Actually: the A_i with the p_{ji} form a diagram (if the index set with relations forms a category/preorder J), and π : T ⇒ D is a natural transformation from the constant diagram T to D, i.e., a cocone. So:
+
+**Resolution System = (a diagram of Σ-algebras indexed by J) + (a cocone from T under it).**
+
+Equivalently: an object of the functor category [J, Σ-Alg] equipped with a cocone from the constant functor at T.
+
+If J is directed (downward, i.e., A_j → A_i for j ≥ i, finer to coarser) this is an **inverse system** and the π's form a cone over it with vertex T. The classification: this is exactly the theory of **pro-C completions / inverse systems / cones** — standard category theory.
+
+If J is a chain (totally ordered), it's a filtration with compatible maps: filtered algebra (in the algebra sense: A with filtration {F_n} — here it's the "projection" version, i.e., inverse system over N).
+
+If the A_i's are quotients of T (π_i surjective), then each ker π_i = θ_i is a congruence, and the conditions p_{ji} ∘ π_j = π_i become θ_i ⊇ θ_j (the congruences form a chain/filter), and p_{ji} is the induced quotient map. So: **surjective resolution system = a filter (downward-directed set) in the congruence lattice Con(T)**. This is a classical object!
+
+So for the surjective case: Resolution Systems on T ↔ filters in Con(T). With composition coherence automatic (since π_i homomorphisms). Non-surjective π: the image im π_i = a subalgebra of A_i; ker π_i still a congruence; A_i is an extension of im π_i.
+
+The isomorphism classification: (T, R₁) ≅ (T, R₂) iff ∃h ∈ Aut(T) and isomorphisms h_i : A_i^{(1)} → A^{(2)}_{σ(i)} intertwining everything. If we require the SAME index set and same A_i... The user's condition: "不存在 h ∈ Aut(T) 使 h∘R₁=R₂∘h" — they want the two resolution structures to be non-isomorphic even allowing the A_i's to be fixed and only h on T. Actually they say: no h ∈ Aut(T) with h∘R₁ = R₂∘h — meaning no automorphism of T intertwines the two resolution systems (pointwise, with fixed A_i and p's? or with some isomorphism of the targets?).
+
+Minimal example: T = T_{f/2}({a}) = free monogenic magma (binary trees). Aut(T) = {id} as computed. Take two congruences θ₁ ≠ θ₂. Then R₁ = (quotient T/θ₁ with π₁), R₂ = (quotient T/θ₂ with π₂). Since Aut(T) = {id}, h∘π₁ = π₂ would require π₁ = π₂, false. So (T, R₁) ≇ (T, R₂) as structures over T. 
+
+Concretely: θ₁ = identity (discrete: π₁ = id, A₁ = T). θ₂ = the congruence identifying all trees of depth ≥ 2? Hmm, need θ₂ to be a congruence. Easier: θ₂ = "total" congruence (all identified), A₂ = 1 (one-point algebra), π₂ the unique map. Then R₁ = identity resolution (A=T, π=id), R₂ = trivial resolution (A=1, π=!). No h ∈ Aut(T) can intertwine since h∘id = h = !∘h? That would require h = ! (constant), but h is a bijection. So non-isomorphic. But this example is trivial/degenerate. Better to use two nontrivial congruences.
+
+Actually the cleanest minimal example with same T and genuinely different but both nontrivial resolutions: T = free monogenic magma. θ₁ = identity. θ₂ = congruence generated by g(a,a) ~ a (idempotence: makes T/θ₂ ≅ the free idempotent... hmm, or simpler: θ₂ generated by identifying g(a, g(a,a)) ~ a? Whatever — any specific nontrivial congruence works). Since Aut(T) = {id} and θ₁ ≠ θ₂, no intertwining automorphism exists. Done. This proves: resolution structure is NOT an invariant of T alone — it's additional, axiom-constrained structure with non-trivial classification.
+
+So the answer to 十: YES, such non-isomorphic resolution structures exist (trivially, because Aut(T) is small and Con(T) is large). And the theory name: this is exactly **algebra with distinguished congruence(s)** / **subdirect representation theory** / **inverse systems of algebras (pro-algebras)** / **comma category (T ↓ Σ-Alg)**.
+
+## 3. Now the crucial question: is this [KNOWN STRUCTURE] or [NEW STRUCTURE CANDIDATE]?
+
+The Resolution System as defined (diagram + cocone in Σ-Alg) is 100% standard category theory / universal algebra:
+- surjective case: filters in Con(T) / subdirect representations / chains of congruences = filtered algebras.
+- general case: objects of (T ↓ Σ-Alg) with diagrams; inverse systems; pro-algebras.
+- many-sorted reformulation: yes, can be encoded as many-sorted algebra with sorts {T} ∪ {A_i} ∪ {pairs}? Actually the whole diagram can be packaged as a many-sorted algebra with sorts indexed by I ∪ {*} and operations g (on *), F_i (on i), and unary operations π_i, p_{ji}, subject to equations. So it's a variety of many-sorted algebras. Known.
+
+So the verdict on the Resolution System: [KNOWN STRUCTURE]. It's the theory of **cones over diagrams in Σ-Alg**, equivalently **many-sorted algebras with distinguished homomorphisms**, equivalently (surjective case) **filters in the congruence lattice**.
+
+BUT — and this is where I should be careful and fair to the user's program — the user's research goal has now legitimately shifted: "发现一种适合 Address / concept representation 的已有结构的特殊实例与构造方法" — i.e., finding *interesting/special* instances: which resolution systems on a term algebra are meaningful for concept representation? That's a legitimate question but it's about *choosing* among known structures, not about new structure.
+
+The genuinely open/canonical question: is there a **canonical** resolution system on T_Σ(X)? Candidates:
+- The **depth filtration**: A_n = terms truncated at depth n (with truncation maps p_{n+1,n}: truncate at depth n). π_n : T → A_n = truncate. This IS canonical (definable from T alone, invariant under Aut(T)). Coherence: p∘F compatibilities hold (truncation is a homomorphism onto the truncated algebra — need to check: truncating g(s,t) at depth n vs applying g to truncated... g(s,t) truncated at depth n = g(trunc_{n-1} s, trunc_{n-1} t), so F_n on A_n is "g with truncation" — it's a well-defined partial-ish operation; on truncated terms it's total with truncation. Yes, coherent). This is the standard **truncation/profinite completion** of the term algebra — T embeds densely into the inverse limit, the inverse limit is the set of "infinite terms" — exactly profinite-style completion. KNOWN.
+- The **subdirect irreducible decomposition**: Birkhoff. KNOWN.
+- **Var isomorphism**: T/θ for θ ranging over fully invariant congruences — the lattice of varieties. KNOWN.
+
+So all canonical candidates are known too.
+
+## 4. What remains that is genuinely un-eliminated?
+
+The honest position now:
+
+1. My previous "NO" was over-scoped. It was proven only for: (a) single injective Φ route (isotopy = range only); (b) the claim "Π is metadata" — which was WRONG as a general claim (user correctly attacked it).
+
+2. The correct restatement: 
+   - The **enrichment** (resolution structure) is genuine, axiomatized mathematical structure with non-trivial classification. [KNOWN STRUCTURE: cones/cocones in Σ-Alg, congruence filters, inverse systems, many-sorted algebras with distinguished maps]
+   - For a FIXED T, the fiber U^{-1}(T) is NOT trivial (not contractible, not essentially one object) — unless Aut(T) is huge. For free term algebras, Aut(T) is small (often trivial), so the fiber is large.
+   - The classification of the fiber = orbits of Aut(T) on the class of resolution systems = essentially the study of Con(T) modulo Aut(T) (surjective case) — rich, classical.
+   - BUT: nothing in the Address program so far *selects* a particular resolution system or shows that a particular one has Address-specific meaning. The selection problem is now the real research question, and it's a question about *which known structure*, not about *new structure*.
+
+3. Verdict on "Address-native structure = NO": must be retracted to the precise form:
+   - "Address-native structure does not exist as NEW mathematics" — actually now I should say: the enrichment is real structure, but it is entirely covered by existing theory (category-theoretic cones, congruence lattice theory, pro-algebra completions). So the right statement is: **the enriched structure exists, is genuine, and is [KNOWN STRUCTURE]**. The previous NO (as "no genuine enriched structure exists") is RETRACTED. The new statement: "no NEW structure has been found; the enrichment is fully covered by existing theory; the open question is the SELECTION/CONSTRUCTION problem (which resolution system serves concept representation), not the EXISTENCE problem."
+
+Wait — but I need to be careful with section 八: the user says if I can only prove the narrow result, scope down; if I can't prove universal eliminability, retract the whole NO. I have now: (a) narrow result stands (single injective Φ route fails); (b) universal eliminability is FALSE (resolution structures are not eliminable — they're genuine structure); (c) but everything is covered by existing theory. So the NO gets replaced by: "No new mathematical structure; genuine but known enriched structure; the fiber U^{-1}(T) is non-trivial."
+
+Hmm, but there's a subtlety: the user asks in 十 whether the existence of non-isomorphic resolution structures on the same T makes this [NEW STRUCTURE CANDIDATE] or [KNOWN STRUCTURE]. The existence of non-isomorphic resolutions is trivial (any two distinct congruences). The STRUCTURE (definition of Resolution System) is standard. So: [KNOWN STRUCTURE], with the theory names:
+- Comma category (T ↓ Σ-Alg) / under-category: resolution systems with only π's = objects under T.
+- With p's: diagrams + cocones; for directed J: inverse systems + cones = **pro-Σ-algebras** (profinite-style completion when J = depth filtration).
+- Surjective case: **filters in Con(T)**; chains = **subdirect decompositions / filtrations**.
+- Packaging: **many-sorted algebras** (variety).
+- The coherence equations: homomorphism conditions.
+
+## 5. The five-level "intrinsic" taxonomy (section 六)
+
+1. **signature-level distinguished structure**: declared in signature; isomorphisms must preserve. (Syntactic.)
+2. **definable structure**: definable in the base by formula (no parameters) — automatically invariant; adding it doesn't change classification (bi-interpretable with base).
+3. **canonical structure**: unique up to unique isomorphism / invariant under all automorphisms; e.g., defined by a universal property relative to the base. For T: depth filtration is canonical (Aut(T)-invariant). The set Con(T) itself is canonical; a choice within it is not.
+4. **invariant structure**: preserved by all automorphisms of the base (h∘R = R∘h for all h ∈ Aut(T)). Weaker than canonical. E.g., any union of Aut-orbits.
+5. **externally imposed structure**: not invariant — depends on choices outside the base. E.g., a specific congruence θ with Aut(T) trivial → not invariant, yet still genuine structure.
+
+When can we say "π is part of the Address itself"? Answer: when the resolution system is **invariant under Aut(T)** (level 4) — because then it's determined by the base up to symmetry, i.e., it belongs to the base "up to renaming". For genuine "part of the object" status: definable (level 2) or canonical (level 3). The depth filtration achieves level 2/3: it's definable from T (truncation maps are definable: "the term t truncated at depth n"). So there IS a canonical resolution system on T — the depth/truncation filtration — and it's exactly the inverse-limit/profinite completion picture. This is the honest answer to "when is π intrinsic": when it's definable/canonical, and for term algebras, the canonical one exists and is the depth filtration.
+
+Interesting: so the answer to "E. T + canonical resolution system" is: yes, it exists — the depth filtration / truncation system, whose completion is the space of infinite terms (profinite completion of the term algebra). This is precisely the structure that gives Hierarchical Resolution / Prefix Locality from round 3! So the Address program's hierarchical resolution = the canonical depth filtration = known theory (profinite completion of free algebras / implicit operations / infinite terms). That's a satisfying landing point.
+
+## 6. U^{-1}(T) analysis (section 三)
+
+U : AddrStruct → Alg forgets resolution. Fiber over T:
+- Not contractible (not essentially one object): two distinct congruences θ₁ ≠ θ₂ with Aut(T) small give non-isomorphic objects. For T free monogenic magma, Aut(T) = {id}, so ALL distinct resolutions are pairwise non-isomorphic. Fiber is huge.
+- Not just arbitrary parameters: the π's are constrained (homomorphisms; p's homomorphisms; triangle identities). The fiber = category of cocones/diagrams — has real categorical structure.
+- Multiple non-equivalent structures: yes (C).
+- Canonical/universal object: yes, exists — the depth filtration (and also the "universal" one: the cocone to the terminal... hmm, actually the canonical object is the depth filtration with its inverse limit completion; also the discrete resolution θ = Δ). So: D holds as well (there exist canonical objects), but the fiber as a whole is rich (C holds).
+
+So the answer: the fiber is of type C (multiple non-equivalent structures) AND contains canonical objects (D) — these are not exclusive: the fiber is a large category with distinguished objects.
+
+## 7. Mapping to existing theories (section 九)
+
+| Candidate | Verdict |
+|---|---|
+| indexed algebra | Partial: indexed algebras are families A_i with reindexing; our system adds the base T and cocone. Not equivalent — ours is a diagram+cocone, not just a family. Actually an indexed category/algebra usually means a functor/algebra over I; our {A_i}, {p_{ji}} alone = an inverse system = a diagram, which IS like an I-indexed algebra with transition ops. With T and π's added, it's a cocone — more. So: partial coverage (the {A_i,p} part), not the (T, π) part. |
+| many-sorted algebra | Full equivalence (packaging): the whole system can be written as a many-sorted Σ'-algebra with sorts {∗} ∪ I and operations g, F_i, π_i, p_{ji}, plus equations. Verdict: full coverage as a *packaging*, but it hides the "which resolution" question inside signature choice. |
+| inverse system | Full for the {A_i, p_{ji}} part when J is directed. Our system = inverse system + cone from T. So: covers the resolution side; the cone is extra (standard: cones over inverse systems). |
+| filtered algebra | Special case: J = chain (ℕ), surjective. Our p's go from finer A_j to coarser A_i — matches filtration projections. Verdict: special case (chain-indexed, and typically filtered algebras are about subobjects F_n ⊆ A rather than quotients — the quotient version is the "associated graded"/projection version; still standard). |
+| graded algebra | Not the same: grading is decomposition A = ⊕ A_n (or ×), not projections. Our system is dual-ish (projections vs components). Verdict: not equivalent; related via completion. |
+| congruence system | In the surjective case: exactly a filter in Con(T) (downward directed family of congruences). Full coverage of the surjective case. |
+| subdirect representation | Special case: {π_i} jointly injective separates T. Our system doesn't require joint injectivity, so subdirect is a special case; also subdirect reps usually have π_i onto subdirectly irreducible factors. Partial. |
+| categorical limit | The completion lim A_i is the categorical limit of the inverse system; T → lim A_i is the canonical map. Full coverage of the completion aspect. |
+| profinite-style completion | Exactly the depth-filtration instance: T embeds densely in lim← A_n (infinite terms). Full coverage for the canonical instance. |
+| coalgebra / algebra-with-observers | Not the same: coalgebra is A → F(A) (structure map to functor), observers give measurements; our π's are homomorphisms to algebras with compatibility — closer to duality/predual theory. Verdict: not equivalent; analogy only. |
+
+## 8. The key next theorem
+
+The single most important next theorem should be about the CANONICAL resolution system, because that's the only way the enrichment becomes "part of the Address itself" rather than a choice:
+
+**Theorem candidate (Canonicity of the depth resolution / Truncation system):**
+For T = T_Σ(X) and the depth filtration {A_n} (terms of depth ≤ n, with truncation maps), (1) the resolution system is definable in T (hence invariant under Aut(T), canonical); (2) π_n ∘ g = F_n ∘ (π_n × π_n) with F_n = truncating composition; (3) the completion lim← A_n is the space of infinite terms, T dense in it (profinite topology), and the separation/refinement properties (Hierarchical Resolution, Prefix Locality from CAS-8) hold exactly; (4) uniqueness: the depth filtration is the unique Aut(T)-invariant chain of congruences with finite quotients... hmm, is that true? Not obviously. Careful: I should propose the theorem but honestly mark which parts are known: (1)-(3) are standard (term algebra completion); (4) uniqueness would be the genuinely new-ish statement, and probably FALSE without extra conditions (there are other Aut-invariant congruence chains? e.g., "size filtration" by number of nodes instead of depth — also definable and invariant! So uniqueness fails; instead we get a family of canonical filtrations: by depth, by size, by leaf count... and the classification of definable filtrations becomes the real question).
+
+Actually that's a nice point: Aut(T)-invariant congruences on T_Σ(X) with Aut trivial (monogenic case) = ALL congruences. So invariance is vacuous there. For richer signatures with nontrivial Aut, invariance is a real constraint. Hmm, so canonicity-by-invariance is signature-dependent. The robust canonical notion is *definability* (level 2): depth, size are definable. So the classification of "definable resolution systems on T_Σ(X)" is the real mathematical question — and it connects to the theory of **implicit operations / clone theory**: definable operations/relations on free algebras = clone elements. So: definable resolutions ↔ elements of the free clone on Σ — KNOWN theory again (universal algebra: the clone of term operations).
+
+So the final theorem to propose: 
+
+**Theorem (Definable Resolution Classification):** The definable (parameter-free) resolution systems on T_Σ(X) are exactly those induced by term-definable equivalence relations (i.e., congruences in the clone of T), and the canonical chain = depth filtration; moreover any two definable resolutions are comparable in strength iff their defining clone elements are ordered... This is getting speculative. Let me just state the theorem properly:
+
+**下一定理候选（唯一最关键）：**
+「自由项代数 T_Σ(X) 上的**可定义 resolution systems**（在 T 中无量词可定义的 π, p, F_i 族）的分类 = 自由 clone Fun(T_Σ(X)) 中的相应元素；特别地：
+(i) 深度截断系统是可定义的，其完备化是无限项空间（profinite 式）；
+(ii) 任何满足全部 coherence 的 resolution system，若其 π_i 可定义，则该 system 由 clone 元素唯一决定；
+(iii) 反之，不可定义的 resolution（如任意选定的同余）不携带 T 之外的信息但携带选择信息，其分类 = Con(T)/Aut(T)。」
+
+And the punchline: so the Address-relevant enrichment lives at exactly two levels: (a) definable resolutions — classified by the clone (known); (b) chosen resolutions — classified by Con(T)/Aut(T) (known). Both known. The research question becomes: which definable resolution (depth? size? value-based?) serves concept representation — a selection/construction problem within known theory, possibly yielding "特殊实例与构造方法" as the user said.
+
+Now let me also handle section 一's demand for a strict counterexample to "not uniquely defined ⟹ metadata":
+
+**Counterexample**: T = free monogenic magma (binary trees over one atom), Aut(T) = {id}. Enrichment E(θ) = (T, θ) for θ ∈ Con(T). Different θ's give pairwise non-isomorphic enriched structures (no automorphism to intertwine). Yet each θ is "not uniquely defined by T". If "not uniquely defined ⟹ metadata" were valid, all these would be "the same metadata" — but they're pairwise non-isomorphic, which is contradictory. More concretely: the enriched structures have different quotient algebras T/θ, so they differ in every algebraic invariant. Hence "not canonical" ≠ "metadata". The correct taxonomy:
+
+1. derived/definable: classified uniquely (one point).
+2. freely chosen parameter: axioms empty; classification = S/Aut(T).
+3. constrained additional structure: axioms non-empty; classification = {models of Ax}/≅ — genuinely rich (e.g., group structures on a set).
+4. canonical: the classification is a single orbit AND there's a distinguished representative (unique up to unique iso).
+
+So "freely chosen" vs "constrained" differ in whether the axioms constrain; but BOTH have non-trivial classification; the difference shows up in the *theory* of the class (variety vs. no theory). My previous error: I conflated "free choice" with "no mathematical content". The user's example point: a topology on a set is a "free choice" but topology is a rich theory. Exactly.
+
+Let me also double check the user's proposed Resolution System axioms:
+- p_{ki} = p_{ji} ∘ p_{kj}: for k ≥ j ≥ i (finer to coarser). 
+- p_{ji} ∘ π_j = π_i: triangle.
+- π_i ∘ g = F_i ∘ (π_i × π_i): π_i homomorphism.
+- p_{ji} ∘ F_j = F_i ∘ (p_{ji} × p_{ji}): p homomorphism.
+Yes — as I said: a diagram J → Σ-Alg with a cocone from T. If J = ℕ with j ≥ i meaning A_j finer, the maps go A_j → A_i: this is an inverse system (indexed by (ℕ, ≥)), T maps to the vertex of a cone... wait, direction: π_i : T → A_i with p_{ji} ∘ π_j = π_i — so T → A_j → A_i equals T → A_i: T is a cone vertex over the inverse system {A_i} (cone from T to the system). And the F-coherence says all maps are Σ-homomorphisms. So the Resolution System = **a cone from T over an inverse system of Σ-algebras, all maps homomorphisms**. In the general (non-directed) case: cocone over a diagram. Standard.
+
+Good. Also note: for the surjective case, ker π_i form a downward-directed family in Con(T) (a "filter" in the lattice — careful with terminology: a meet-closed directed family; in lattice theory a "filter" is upward closed; here θ_j ≤ θ_i (finer = smaller) and directed downward... the family {θ_i} with: for any i,j there's k with θ_k ≤ θ_i ∧ θ_j. That's a "downward directed" family, dual to a filter. Fine — call it a directed family of congruences; chains = filtrations.)
+
+Now, minimal non-isomorphic example for section 四 with all details:
+
+T = T_{f/2}({a}): elements = a, f(a,a), f(a,f(a,a)), f(f(a,a),a), ... Binary trees. Aut(T) = {id} (h(a) must be outside im(f), only a; then h is determined recursively by h(f(s,t)) = f(h(s),h(t))).
+
+R₁: A₁ = T, π₁ = id (discrete resolution; also F₁ = f, p's trivial since single index).
+R₂: A₂ = T/θ where θ = congruence generated by f(a,a) ~ a. Then A₂ ≅ the "free idempotent magma on 0 generators"? Let's see: quotient of binary trees by "f(x,x) = x". In this quotient every element is... a is the generator; f(a,a) ~ a; f(a, f(a,a)) = f(a,a) ~ a; everything collapses to a? f(s,t) ~ f(t,s)? Not necessarily. Trees: any tree with n leaves... under f(x,x)~x, a tree f(s,t) with s,t arbitrary: if s = t as congruence classes, collapses. Hmm, all single-leaf = a; two-leaf tree f(a,a) = a; three-leaf: f(a, f(a,a)) = f(a,a) = a; f(f(a,a), a) = a. Four-leaf: f(f(a,a),f(a,a)) = f(a,a) = a; f(a, f(a,f(a,a))) = f(a,a) = a... seems everything collapses to a — because any tree's two subtrees are eventually congruent? Not quite obviously for skewed trees, but by induction: every tree of depth ≥ 1 has form f(s,t); by induction s ~ a? No — s could be bigger. Let me think: claim every tree ~ a. Induction on size. Base: a ~ a. Step: t = f(s₁,s₂), by IH s₁ ~ a, s₂ ~ a, so t ~ f(a,a) ~ a. Yes! Everything collapses. So θ₂ = total congruence, A₂ = 1. That's degenerate (same as my trivial example). 
+
+Better: pick a nontrivial proper congruence. E.g., θ₂ = congruence generated by f(a, f(a,a)) ~ a ("left-comb collapse"). Quotient: trees modulo the relation f(a, f(x,x)) hmm this is getting complicated. Alternative cleaner approach: use a different pair of resolutions that are easy to distinguish:
+
+R₁ = identity resolution (A = T, π = id).
+R₂ = "parity-of-depth" style? Simpler: use signature with a unary op to get nontrivial Aut and an easy pair. But user wants same T with different R's — the identity vs. any proper nontrivial θ suffices, since no h ∈ Aut(T) = {id} can intertwine id-resolution with θ-resolution (h∘π₁ = π₂ would give h = π₂∘(something)... let me verify the intertwining condition: an isomorphism of enriched structures (T, R₁) → (T, R₂) over the same base algebra (with the A_i fixed as given) requires h ∈ Aut(T) with h∘π₁ = π₂ (pointwise equality of maps). For R₁: π₁ = id, so h = π₂ = quotient map — not a bijection. Contradiction. So non-isomorphic. ✓. And both satisfy full coherence (π₁ = id trivially homomorphism; π₂ = quotient homomorphism ✓).
+
+But to avoid the degenerate "identity vs trivial" flavor, give two nontrivial ones:
+R₁: A₁ = T/Δ = T, π₁ = id (this IS the discrete one).
+R₂: A₂ = T/θ₂ with θ₂ the congruence generated by f(a,a) ~ a — collapses everything (total).
+R₃: A₃ = T/θ₃ with θ₃ = congruence generated by f(f(a,a),a) ~ a? By symmetry also total.
+Hmm. For a proper nontrivial congruence on the free monogenic magma: e.g., identify trees by "number of leaves mod 2"? Is leaf-count-mod-2 a congruence? |f(s,t)| = |s|+|t|; parity: parity(s⊗t) = parity(s) XOR parity(t). The map to (Z/2, ⊕) is a homomorphism! So θ₃ = ker(parity) is a proper nontrivial congruence (a ≠ f(a,a) since parities 1 vs 0). A₃ = (Z/2, ⊕), π₃ = parity. Nice — proper, nontrivial, and the quotient is a genuine 2-element magma. And Aut(T) = {id} means no intertwining with identity resolution or with the total one. So:
+
+R₁: identity (A = T, π = id) — discrete resolution.
+R₃: parity (A = Z/2 with ⊕, π = parity) — a genuine finite quotient.
+R₂: total (A = 1).
+
+All three satisfy coherence; pairwise non-isomorphic over T (no h ∈ Aut(T) = {id} can intertwine; also the targets A_i are non-isomorphic so even allowing target isomorphisms they're non-isomorphic). 
+
+Even better for "both nontrivial": parity vs. another proper quotient, e.g., "leaf-count mod 3" → (Z/3, ⊕). (Z/2,⊕) ≇ (Z/3,⊕). Two nontrivial finite resolutions, non-isomorphic, same T, both fully coherent. 
+
+So section 四's construction: T = T_{f/2}({a}); R_m = parity-of-leaf-count mod m, A_m = (Z/m, ⊕), π_m = leafcount mod m. Check: leafcount(f(s,t)) = leafcount(s) + leafcount(t) mod m — homomorphism ✓. Coherence ✓. For m ≠ m', (Z/m,⊕) ≇ (Z/m',⊕) as magmas (different cardinality). Hence R₂ ≇ R₃ as resolution systems, and no h ∈ Aut(T) intertwines (h = id only; π₂ ≠ π₃ pointwise). Minimal, clean, fully verified. 
+
+And is this [KNOWN STRUCTURE]? Yes: these are just quotients of T; the resolution system theory = cone theory / congruence families. The parity example is the standard "free magma → free commutative idempotent..." well, (Z/m, ⊕) is the free something — anyway, standard.
+
+## Structure of my answer
+
+Now let me structure the answer per the requested output format:
+
+【1. 上一轮（7）的正确部分】 — what stands: the narrow result (single injective Φ route fails; isotopy on injective ops = range only); the reduction theorem is still valid *as a statement about what M contains beyond T* — wait, is it? The reduction theorem said M ≅ (T, g, Π′) with Π′ ⊆ ∏Hom(T,A_i) — that's still TRUE as a structure-preserving isomorphism. What was WRONG was the *conclusion* drawn: "therefore Π is metadata". The reduction itself stands. So: correct part = (a) narrow isotopy result; (b) the reduction isomorphism M ≅ (T, g, {π′_i}); (c) Hom(T,A_i) ≅ A_i^X.
+
+【2. 7 的错误推论】 — "not uniquely determined ⟹ metadata" is invalid. Counterexample: (T, θ) for θ ∈ Con(T), T free monogenic magma with trivial Aut: pairwise non-isomorphic, yet none is canonical. Also the general taxonomy point: topology on a set; group structure on a set — free choices with rich theories. The four-level taxonomy: derived / parameter / constrained / canonical, and the correct criterion: is it axiomatized with non-trivial classification?
+
+【3. Resolution System 正式定义】 — as above: T, {A_i}, {π_i}, {p_{ji}}, {F_i}, axioms; remark: = cocone over diagram in Σ-Alg; directed case = cone over inverse system; surjective case = directed family of congruences.
+
+【4. Forgetful Functor U】 — U : AddrStruct → Σ-Alg; U^{-1}(T) = category of resolution systems on T = (T ↓ Σ-Alg)-like; isomorphism in fiber = Aut(T)-intertwining + target isos.
+
+【5. U^{-1}(T) 是否平凡】 — Not trivial. Type C (multiple non-equivalent) holds; also contains canonical objects (depth filtration) — type D partially. Proof: parity example with Aut(T) = {id}.
+
+【6. 同一 T 的非等价 resolution structures】 — the minimal construction: T = free monogenic magma; R₂ = (Z/2, ⊕, parity); R₃ = (Z/3, ⊕, leafcount mod 3). Verified: coherence, non-isomorphic, no intertwining h. Hence resolution structure is additional, axiom-constrained, with independent classification. [KNOWN STRUCTURE].
+
+【7. 对应哪些已有数学理论】 — the table: comma/under category; inverse systems & pro-algebras; congruence families (directed families in Con(T)); subdirect (special case); many-sorted packaging (full, as packaging); filtered (chain special case); graded (not equivalent); categorical limit & profinite completion (the canonical depth instance); coalgebra (not equivalent); clone/term-operation theory (classifies definable resolutions).
+
+【8. 是否还能说 NO】 — Retract the un-scoped NO. Precise surviving statements: (a) single-injective-Φ route fails [stands]; (b) reduction theorem as isomorphism [stands]; (c) "Π is metadata" [retracted]; (d) NEW conclusion: enrichment is genuine structure, fully covered by existing theory — so the right claim is not "no structure" but "no NEW structure found; the structure is known; the open problem is selection/construction of the Address-appropriate instance". Verdict: [KNOWN STRUCTURE], per user's reframed goal (special instances & construction methods within known theory).
+
+【9. 唯一最关键的下一步定理】 — The theorem about definable/canonical resolutions: classification of definable resolution systems via the clone; existence & canonicity of the depth filtration; its completion = infinite-term space. Proposed theorem:
+
+「定理（可定义 Resolution 的分类与典范系统的完备化）：
+对 T = T_Σ(X)：
+(i) R 在 T 上可定义（无量词参数）⟺ 其 π_i, p_{ji}, F_i 是 T 的 term operations（自由 clone 的元素）；此时 R 的同构分类是单点。
+(ii) 深度截断系统 D = ({A_n}, tranc, ...) 是可定义的、典范的，且 T → lim← A_n 是稠密嵌入，lim← A_n = 无限项空间；全部 coherence 与分离公理（M4/M6, prefix locality）在其中成立。
+(iii) 不可定义的 resolution 的同构分类 = 相应数据模 Aut(T)。（平凡但必要的对照）」
+
+And the decisive question for next round: does there exist a definable resolution system on T_Σ(X) that is NOT the depth/size filtration but carries semantic content — or equivalently: is the depth filtration the only "concept-meaningful" canonical resolution? That's a well-posed selection problem.
+
+Hmm, wait. I should double-check the claim in (i): "definable ⟹ classification is a single point". If π is definable in T without parameters, then every automorphism of T preserves π, so any two... well, there's only ONE such π (definable = unique formula, unique interpretation). So the class of definable resolutions of a given shape: each definable system is a single object, invariant; two definable systems can still be non-isomorphic as enriched structures (e.g., depth vs. size filtration — different systems!). So classification of definable systems is NOT a single point globally — rather, each definable system is a canonical object (invariant under Aut(T)), but there can be several distinct definable systems. Correct statement: definable ⟹ invariant under Aut(T) (no h-intertwining needed — automatic). And the collection of definable resolutions = definable families in the clone. Let me fix that.
+
+Also verify: depth truncation maps are Σ-homomorphisms? A_n = terms of depth ≤ n. F_n : A_n × A_n → A_n defined by f_n(s,t) = truncate_n(f(s,t)) = f(trunc_{n-1}(s), trunc_{n-1}(t)). And π_n : T → A_n = trunc_n. Then π_n(g(s,t)) = trunc_n(f(s,t)) = f_n(trunc_n(s)?, ...) — careful: trunc_n(f(s,t)) = f(trunc_{n-1}(s), trunc_{n-1}(t)) = f_n(trunc_n(s), trunc_n(t))? trunc_n(s) truncates s at depth n, but we need trunc_{n-1}(s) here. Since f adds one level: f(s,t) has depth max(depth s, depth t)+1 when s,t nonempty. trunc_n(f(s,t)) = f(trunc_{n-1}(s), trunc_{n-1}(t)). And F_n(π_n s, π_n t) should be defined as F_n(s', t') = f(trunc_{n-1}(s'), trunc_{n-1}(t')) for s', t' ∈ A_n. So π_n ∘ g = F_n ∘ (π_n × π_n) holds with that definition of F_n. ✓. And p_{n+1,n} = trunc_n restricted: p_{n+1,n} ∘ F_{n+1} = F_n ∘ (p × p)? F_{n+1}(s,t) = f(trunc_n s, trunc_n t); then p_{n+1,n} of that = f(trunc_{n-1}(trunc_n s), ...) = f(trunc_{n-1} s, trunc_{n-1} t) = F_n(p s, p t) ✓. Good — the depth system satisfies all axioms. And the inverse limit = infinite/complete terms; T dense. Standard.
+
+One more check on the user's condition in section 四: "不存在 h ∈ Aut(T) 使 h∘R₁ = R₂∘h". In my parity example: Aut(T) = {id}; h∘π₂ = π₃ would need parity₂ = parity₃ pointwise — false (f(a,a) ↦ 0 mod 2 vs 2 mod 3). ✓.
+
+Also should I double check Aut(T_{f/2}({a})) = {id}? h(a): h must be a homomorphism; elements not in im(f) = {a} only (every f(s,t) is in im f; a is not, since a is a leaf). So h(a) = a, and h is determined by h(a) (free algebra: homomorphisms from T to any Σ-algebra are determined by images of generators; T is free on {a}). Two homomorphisms agreeing on generators are equal; h determined by h(a) = a gives h = id. And id is an automorphism. Also could h(a) = something in im(f)? h(a) = f(h(s), h(t)) would make a ∈ im h∘f... h must be injective bijection; if h(a) = f(u,v) for some u,v ∈ T, then since h surjective, u = h(s), v = h(t), so h(a) = h(f(s,t)), injectivity ⟹ a = f(s,t), contradiction. So h(a) = a, h = id. ✓ Aut(T) = {id}.
+
+For the 3-element... no, keep it simple.
+
+Now — about section 十's final question and the verdict [KNOWN STRUCTURE] vs [NEW STRUCTURE CANDIDATE]: The Resolution System definition = standard (cones + diagrams). The non-triviality of the fiber = standard consequences (congruence lattice). So [KNOWN STRUCTURE]. Names: (1) comma/under-category (T ↓ Σ-Alg); (2) pro-Σ-Alg (inverse systems + completion) for the directed case; (3) congruence-lattice theory for the surjective case; (4) many-sorted varieties as packaging; (5) clone theory for the definable case.
+
+And the reframed research goal (user's own words): "发现一种适合 Address / concept representation 的已有结构的特殊实例与构造方法" — so the next-step question is: which definable resolution system on T_Σ(X) is the right one for concept addressing? Candidates: depth (structure-based), size, leaf-count, value-based (semantic). The key theorem I propose should decide something about this selection. The sharpest decidable statement:
+
+**Proposed theorem (the one to prove next):** 
+「T_Σ(X) 上满足全部 Resolution 公理且**可定义**的有限商链 resolution systems 中，按"对 Aut(T) 不变 + 与 g 相干 + 分离 X"筛选，深度截断系统是**极小/初始**的（any such chain factors through depth truncation at some level）...」 — hmm is that true? A chain of definable congruences θ₁ ⊇ θ₂ ⊇ ... each with finite quotient, separating X. Does each θ_n ⊇ (depth > n equivalence)? No! E.g., leaf-count mod 2 chain: θ = parity — doesn't refine depth. The chain θ_n = "leafcount mod 2^n" is a valid coherent chain (Z/2^n, ⊕), separating... does it separate X? All atoms have leafcount 1 ≡ 1 mod 2^n — NO, it does not separate the atoms! All leaves map to 1. Interesting: so parity resolutions don't separate atoms — they're "semantic-blind" to atoms. The depth system DOES separate atoms at level 1 (trunc_1 maps distinct atoms to distinct atoms... wait X = {a} single atom; for |X| ≥ 2, trunc_1 is identity on X ✓).
+
+So a clean decidable next theorem: among definable resolution chains that separate X (M7-性) and are coherent, the depth filtration is the coarsest initial segment / or: every such chain's congruences satisfy θ ⊇ ... hmm. Let me not overclaim; propose it as the theorem to attempt:
+
+**Candidate next theorem:** 「分离性 ⟹ 深度可控：设 {θ_n} 是 T_Σ(X) 上满足相干公理的减链，且 ∧θ_n = Δ（分离）。则对每个项 t，存在 n(t) 使得 t 在 θ_n(t) 下已被确定（即 π_n(t) 决定 t）；且 n(t) ≤ depth(t) + c？」— this is false in general (leafcount mod 2^n doesn't determine trees of same leaf count). Hmm: with ∧θ_n = Δ, the chain must eventually distinguish everything, but the RATE is unconstrained. So the theorem would be: separation forces the chain to carry ≥ depth information on average? For finite quotients: |T/θ_n| ≤ |A_n| finite; T/θ_n finite and separating means... θ_n can be arbitrary finite-index congruences refining each other with trivial meet. E.g., enumerate trees t₁, t₂, ... and let θ_n identify nothing among first n trees (discrete on the first n) — is that a congruence chain? Congruences generated by "no relations among first n" = Δ. Trivial. To have finite quotients separating everything: θ_n with T/θ_n finite, ∧θ_n = Δ. E.g., θ_n = "trees of leafcount ≡ r mod 2^n identified per residue"? That's the parity chain again — meet is NOT Δ (all single atoms stay together... leaves all have count 1, so a ~ f(a, f(a,...))? no wait — leaves: all x ∈ X have leafcount 1; but any two leaves a, b ∈ X are identified mod any 2^n. So meet ≠ Δ if |X| ≥ 2. For |X| = 1: is ∧θ_n = Δ? a is the only atom; two trees are equal iff same shape; leafcount mod 2^n doesn't determine shape, so a and f(a,a) (counts 1 vs 2) are separated mod 2, but f(a,a) vs f(f(a,a),a) (counts 2 vs 3) separated mod 2 as well... any two distinct trees have distinct leaf counts! (|s| ≠ |t| ⟹ counts differ; and distinct trees always have distinct leafcounts? NO — f(a,b) and f(b,a) have the same leafcount but are different trees.) So meet ≠ Δ again.
+
+So finite quotient chains with trivial meet exist (e.g., θ_n = "identify trees that agree on the first n nodes in some fixed enumeration"? — congruence? not obviously). Actually the standard one: θ_n = kernel of trunc_n — finite quotient (|A_n| = #trees of depth ≤ n, finite), chain, meet = Δ ✓. Are there OTHER coherent chains with finite quotients and trivial meet? Sure: θ_n = kernel of (trunc_n, leafcount mod 2) — also works. So the depth filtration is not unique; it's the *initial/finest-grained structural* one. The genuinely provable statement: **any coherent chain {θ_n} with ∧θ_n = Δ must have for each pair of distinct trees s,t some n with (s,t) ∉ θ_n — trivial; the interesting statement is a RATE bound: if quotients are bounded in size... ** this is going down a rabbit hole.
+
+Let me step back and choose the next theorem more wisely. The user's program needs: "Address-native composition" question is settled as "known structure, selection problem remains". The single most decision-relevant theorem for the research direction:
+
+**The theorem to propose: 可定义 resolution 的刻画定理（Clone 刻画）**
+> R on T is definable (parameter-free) ⟺ all components (π_i, p_{ji}, F_i) are term operations of T (elements of the free clone). Consequences: (i) definable ⟺ Aut(T)-invariant [for all signatures] — actually definable ⟹ invariant; invariant ⟺ definable fails in general (for |X|=1, Aut trivial, everything invariant, not everything definable). So state: definable ⟹ invariant; converse fails. (ii) The depth truncation system is definable; (iii) classification of definable resolutions = sub-classification of the clone — reduces to known theory.
+
+Then the next-step research question (selection): find the definable resolution system matching the concept-representation requirements (CAS-8: M4 resolution, M6 lifting, M7 separation, prefix locality). Depth filtration satisfies M4/M6/M7/prefix. So the honest landing: **the Address program's hierarchical-resolution requirements are satisfied by the canonical depth resolution = profinite completion of the term algebra — a known structure — and the open problem is whether a *semantically better* definable resolution exists (selection problem), not whether new structure exists.**
+
+That's the clean, honest, complete answer. Also answer section 七's A–E list:
+- A: T = term algebra — the base object; composition g; carries NO resolution.
+- B: ρ:T→Address arbitrary encoding — same as A up to Σ-iso (the reduction theorem); adds nothing algebraically.
+- C: T + arbitrary metadata — enrichment without axioms; classification = data/Aut(T); no theory.
+- D: T + axiomatized resolution system — genuine structure, non-trivial classification; = known theory (cones/congruences/pro-algebras).
+- E: T + canonical resolution system — exists: depth truncation filtration (definable, Aut-invariant); completion = infinite terms (profinite-style); this is the mathematically distinguished object of the whole program so far.
+
+And the final verdict for section 十: YES (non-isomorphic resolution structures on same T exist — minimal construction given) — [KNOWN STRUCTURE], names listed. And "Address-native structure = NO" must be replaced: NO as "new structure" claim is still not established; but "structure doesn't exist" is RETRACTED — the correct statement: enrichment exists, is genuine, is known; the fiber is non-trivial; canonical objects exist; what remains open is the selection/construction problem (which is the user's reframed goal).
+
+Length/format: This is a deep math round; the user expects rigor and structure. Use headers matching their 1–9 output list. Chinese. Include a small widget? The instructions favor visuals when they aid understanding; past rounds used one widget per round. A widget showing the fiber U^{-1}(T) / the four-level taxonomy / the parity example might help. But the system says be concise and widgets only when clarifying. I could include one compact diagram: the Resolution System as a cone/diagram, or the four-type taxonomy. Given the mathematical density, one diagram for the Resolution System shape (T cocone over inverse system) or the taxonomy would be genuinely helpful. But note: the PureShowWidget tool contract says only invoke when the dynamic-ui skill instructs... The skill is loaded (it's in available skills; previous rounds used it). I'll include one widget max, maybe the four-level taxonomy (derived/parameter/constrained/canonical) with the counterexample annotation, or the resolution-system diagram. I think the Resolution System shape diagram is the most content-bearing. Actually the more decision-relevant visual: the taxonomy correcting "not canonical ⟹ metadata" — showing the 2×2: {definable: unique; constrained: rich classification} vs my previous wrong collapse. Hmm. Let me do one widget: Resolution System as diagram+cocone (the mathematical object defined this round). That anchors the central definition.
+
+Wait — I need to check the tool situation: "The user has switched to a different model. Only use tools currently available to you; ignore any tools from conversation history that are not in your current tool set." Current tool set: Agent, Skill, Glob, Grep, StopCommand, Shell, DeleteFile, Edit, Write, TodoWrite, AskUserQuestion, NotifyUser, EnterPlanMode, new_context, browser_waiting_for_user_interaction, TaskStop, TaskOutput, SendMessage, ToolSearch, DeferExecuteTool. PureShowWidget was used via DeferExecuteTool earlier and ToolSearch found it. It's a deferred tool — I can ToolSearch + DeferExecuteTool. The advisor tool: the policy says AdvisorTool available; but is it in my current toolset? It's referenced by the advisor_tool_policy block, but there's no explicit AdvisorTool function in my tools — in previous rounds I called "AdvisorTool" directly and it worked (returned JSON). I should decide whether to call it. The mandatory triggers: user frustration? The user's message is corrective but not emotionally negative — it's a rigorous audit request, similar to previous rounds where I called advisor once for before_approach_change. This round: I'm retracting a major conclusion (the NO) — that's an approach change. Policy says before_approach_change is mandatory. Previous rounds I called it and it helped. I'll call AdvisorTool once before writing the final answer... but the policy says "Call AdvisorTool ALONE — never combine with other tool calls in the same turn." In previous rounds I called it alone in a separate message block. I can do: call AdvisorTool alone first, then in the next block produce the answer (and optionally the widget). Hmm, but each of my messages can contain multiple tool-call rounds; the "same turn" means same tool-call batch. I'll call AdvisorTool alone, get advice, then write the final response with one widget.
+
+Actually, let me reconsider: is AdvisorTool even available in this new tool set? The system-reminder says "The user has switched to a different model. Only use tools currently available to you; ignore any tools from conversation history that are not in your current tool set." The advisor_tool_policy is still present in this message, which suggests AdvisorTool remains available (the policy is re-supplied each round). In the previous two rounds after that reminder... actually the reminder appears only in THIS message (the switch). The policy block is still here, so AdvisorTool should still be callable. I'll call it once — it's mandated for before_approach_change (I'm retracting the NO and rebuilding). 
+
+Let me now also double check a few math details for correctness:
+
+1. Reduction theorem still valid? M = (A, F, Π, {F_i}) with ρ:T↪A. Define h: M → (T, g, Π′) by h = ρ⁻¹ on im ρ. For the isomorphism to be structure-preserving we need bijection A → T, which exists iff |A| = |T| and... no wait — the isomorphism is between im ρ with induced structure and T. A itself may have junk outside im ρ. The precise statement: (im ρ, F|, π_i|) ≅ (T, g, π_i∘ρ). Fine — stands as before.
+
+2. Hom(T_Σ(X), A) ≅ A^X: standard, yes (free algebra universal property).
+
+3. Isotopy-of-injective-ops classification by |D\im|: verified last round; stands (narrow).
+
+4. Aut(T_{f/2}({a})) = {id}: verified above. For |X| ≥ 2 with signature {f/2} only: Aut(T) = Sym(X) (permuting atoms extends uniquely). With a unary op u: Aut includes... doesn't matter; use |X| = 1 to kill Aut. ✓
+
+5. leafcount: T_{f/2}({a}): leafcount(t) = 1 for atom; 1+1... for f(s,t) = leafcount(s)+leafcount(t). Parity map t ↦ leafcount(t) mod 2: homomorphism to (Z/2, ⊕) since |f(s,t)| = |s|+|t| ✓. Kernel θ₃ proper nontrivial: a (count 1) vs f(a,a) (count 2): 1 ≢ 0 mod 2, so (a, f(a,a)) ∉ θ₃ ✓ nontrivial; not total since a ≁ f(a,a) ✓.
+
+6. Two resolutions R₂ (mod 2) vs R₃ (mod 3): targets (Z/2,⊕) vs (Z/3,⊕) — non-isomorphic (cardinality) ⟹ resolution systems non-isomorphic ✓. Intertwining: h ∈ Aut(T) = {id}: need π₂ = π₃: f(a,a) ↦ 0 vs 2 — not equal ✓ no intertwining.
+
+7. Both satisfy p-composition axioms: single-index systems, no p's needed (or p_{ii} = id). To also exercise p_{ji}, could use the chain {Z/2^n} but not needed for the minimal example.
+
+8. Depth filtration satisfaction of axioms: verified above (F_n with truncation; p's compatible). ✓
+
+9. "Definable ⟹ Aut-invariant": standard model theory (parameter-free definable relations are invariant under automorphisms). ✓ Converse fails (|X|=1: all relations invariant, few definable). ✓
+
+10. Definable resolutions ↔ clone: a definable map T→A where A is also built from T... careful: definability of π_i : T → A_i requires A_i to be a definable quotient (A_i = T/θ_i with θ_i definable) or a definable subalgebra of a power of T... For the theorem statement, restrict to the surjective case: π_i: T ↠ A_i = T/θ_i; π definable ⟺ θ definable as a relation on T. And definable congruences = "compact/definable" elements; the depth kernels are definable ("s ≡ₙ t iff s,t have the same truncation at depth n" — definable by a first-order formula in the algebra language? Truncation equivalence at depth n: "for all contexts of depth ≤ n, s fits iff t fits" — expressible? In universal algebra, "definable" usually means first-order definable in the structure (T, f). Truncation equivalence ≡ₙ: is it FO-definable? Hmm — for the free magma, FO over the term algebra... The algebra language only has f; FO formulas over (T, f) — can they express "s and t have equal shape up to depth n"? The structure is a term algebra (an infinite forest-like structure: each element has exactly two "children" via f^{-1}... wait f is not injective here? f IS injective on T (free magma: f(s,t) = f(s',t') ⟹ s=s', t=t'). So T with f is a structure where f is a bijection from T² \ ... no: f: T×T → T\{a} bijection! (free magma: every non-atom uniquely decomposes). So (T, f) with f a bijection T×T → T∖{a} — FO can quantify over pairs; "decomposition of s" is FO-definable (the unique pair with f(x,y)=s). Then ≡ₙ definable by induction: ≡₀ = equality; s ≡ₙ t ⟺ [s,t both atoms... hmm s ≡ₙ t ⟺ (s,t both decomposable and their children ≡_{n-1}) or (s,t both atoms and equal... plus mixed cases]. FO-expressible with a fixed number of quantifiers depending on n — yes, for each fixed n, ≡ₙ is FO-definable (finite induction). ✓ So depth kernels are FO-definable. Good, (ii) stands.
+
+11. Profinite-style completion: T ↪ lim← A_n dense (the inverse limit topology; basic opens = cylinders fixable by truncation) — standard; lim← A_n = set of infinite binary trees (with atoms at leaves? for {f/2} and atoms: infinite trees where every infinite branch... plus boundary atoms) — "completed/infinite terms". Known as the metric completion of the free algebra w.r.t. the depth ultrametric — exactly round 3-4's ultrametric picture. ✓ Nice closure: the "Model 4 = ultrametric completion" from round 2-4 reappears as the canonical resolution's completion. Worth noting: the program has circled back to its earlier candidate, now with a *justification* (canonicity/definability) rather than a guess.
+
+That's a satisfying arc to point out: the canonical resolution system on T_Σ(X) IS the depth ultrametric / profinite completion — the very structure the program guessed in rounds 2–4 — now derived, not guessed.
+
+OK. Now the widget. One compact diagram: "Resolution System = cocone over diagram in Σ-Alg" showing T on top, A₁, A₂, A₃ below, π's down, p's between, and the annotation that the fiber U⁻¹(T) contains many such cones (parity mod 2, mod 3, depth...). Or the 2×2 taxonomy. I'll do the Resolution System diagram with the two examples annotated — content-bearing.
+
+Structure of final answer (headers per user's list):
+
+【1. 上一轮（第7节）中仍然成立的部分】
+【2. 第7节的错误推论（撤回）】 — with counterexample + 4-level taxonomy
+【3. Resolution System 正式定义】
+【4. 忘却函子 U 与纤维】
+【5. U⁻¹(T) 不平凡：证明】
+【6. 同一 T 的非等价 resolution structures：最小构造】（parity mod 2 vs mod 3, full verification）
+【7. 已有理论对应表】（等价/特例/部分/不覆盖 per item）
+【8. "Address-native structure = NO" 的最终状态】 — retract unscoped NO; new statement; A–E comparison; verdict [KNOWN STRUCTURE]; the arc back to round-2–4 ultrametric.
+【9. 唯一最关键的下一步定理】 — definable resolution characterization + canonicity of depth system + the selection question.
+
+Keep it tight. Let me write it. Also the user said at the end: 判断 [KNOWN STRUCTURE] 还是 [NEW STRUCTURE CANDIDATE] — answer: KNOWN, with precise names.
+
+One more careful thing — section 一 asks: "给出严格反例或证明" for the metadata claim. My counterexample: (T, θ) family. Also the abstract point: "topology on a set" — free choice, rich theory. I'll give the congruence counterexample concretely since it's the exact case at hand.
+
+Also need to answer 四个等价层级 from previous round? No — that was last round's request. This round's section 六 asks the 5-level taxonomy: signature-distinguished / definable / canonical / invariant / externally imposed, and "when can we say π is part of the Address". Answer: π is part of the object (not externally imposed) when the resolution system is invariant under Aut(T); it is genuinely "part of the Address itself" (not a choice) when definable (then unique). Depth system: definable ⟹ both. Chosen congruences: genuine structure but externally imposed (choice), classified mod Aut(T).
+
+Now write. Keep formulas in LaTeX-ish markdown as before. Length: substantial but controlled. Chinese. One widget. Advisor call first (alone).
+
+For the advisor call, summarize: I'm retracting "not canonical ⟹ metadata", defining Resolution System = cone over diagram in Σ-Alg, fiber non-trivial (parity example with trivial Aut), everything maps to known theory (congruence families, pro-algebras, clone theory), canonical depth system = profinite completion of term algebra (circles back to rounds 2–4). Ask: is the fiber analysis right, is the parity example minimal and airtight, and does the clone/definability theorem constitute the right "next theorem", or is there a sharper one?
+
+**审计结论：四项确认、两处修正。**
+
+**(1) Aut(T)={id}：结论正确，证明需补一步。** "h(a) 必须落在 im(f) 之外"不是先验的——h(a) 可以是可分解树（固定树代入叶是单射同态）。补法：h 满射 ⟹ ∃t, h(t)=a；若 t 可分解则 h(t)∈im(f)，而 a∉im(f)，矛盾；故 t 不可分解，即 t=a（a 是唯一不可分解元），h(a)=a，由自由性 h=id。更干净的表述：x∉im(f) 被同构保持且 a 是唯一见证。推广：Aut(T_X)=Sym(X)，|X|=1 时平凡。
+
+**(2) Parity 与 R₂≇R₃：无漏洞。** mod-2/3 归约与 leafcount 复合均为同态；基数障碍充分。补充一个你没点破的简化：由自由性，**一切** π:T→A 都是叶替换 t[a↦c]，故单生成元情形 resolution 数据完全归约为 (A_i, c_i, p_{ji}, p(c_j)=c_i)。parity 即 c=1 的替换，与你的构造一致。
+
+**(3) 截断系统：coherence 完整**，前提是显式取 trunc₀≡a、递归 trunc_{n+1}(f(s,t))=f(trunc_n s, trunc_n t)，及 trunc_i∘trunc_j=trunc_i（均 routine）。**一处修正**：lim←A_n ≅ νX.(1+X×X) = 有限∪无限二叉树全体（有限树对应最终稳定的序列），不只是"无限项空间"；T 稠密嵌入仍成立。
+
+**(4) 范畴身份：本质准确，名称有误。** T→A_i 的相容族（顶点为**源**）是 **cone**，不是 cocone——cocone 的箭头指向顶点。若把 diagram 放进 Σ-Alg^op 才能叫 cocone。其余全对：p_{ji}∘π_j=π_i 方向正确；surjective 情形由 π_i=p∘π_j 推得 θ_j⊆θ_i，商系统 T/θ_j↠T/θ_i 对应 Con(T) 中正向族。注意两条 coherence 恰好就是"所有映射是 Σ-同态"，无额外数学内容——这是"diagram+cone"身份成立的真正原因。
+
+**(5) (e) 是主要错误所在：'definable ⟺ term operations' 为假。** 反例正是你自己的截断：trunc_n 的图由归纳公式 φ₀(x,y): y=a；φ_{n+1}(x,y): (x=a∧y=a) ∨ ∃x₁x₂y₁y₂(x=f(x₁,x₂)∧y=f(y₁,y₂)∧φ_n(x₁,y₁)∧φ_n(x₂,y₂)) FO-可定义（量词秩 n），但 trunc_n 不是 (T,f) 的自同态（trunc_n(f(a,t))≠f(a,trunc_n(t))），故不是自由 clone 的元素。正确二分：term op = clone 成员（严格更小）；definable ⟺ π,p,F 的图在 (T,f) 中 FO-可定义。trunc_n 是显式的 definable-but-not-term-op。另外非满射 π WLOG 化归为满射（取像），故分类 = Con(T)/Aut(T) 在此处（Aut 平凡）成立。
+
+**关于遗漏候选**：partial operation → 自由 operad/多范畴（address 组合天然是 operadic grafting，本质 partial）或 ES-theory；coalgebra 对偶 → 恰是你的 νX.(1+X²)；clone 之外的可定义性 → pp-definability/Rosenberg 理论；截断族 → Pro(Σ-Alg) 中的 pro-object。**全部 KNOWN。**唯一可能藏"新东西"的是设计层约束"g 可由 {π_i} 反解"（T 是该锥的极限的泛性质）——但这是极限论，不构成新数学。
+
+**判定维持：[KNOWN STRUCTURE]**（cone/pro-object/同余格/profinite 式完备化），修正 (e) 后你的推导链自洽。
+The user is asking me to audit their mathematical derivation. This is a pure math research question. According to user rules, research/architecture/math problems should use MAX reasoning effort. Also, keywords like Concept Address, Composition, Encoding, Decoding, Recursion, Compositional Generalization trigger MAX.
+
+Let me carefully audit each point:
+
+**(1) Aut(T_{f/2}({a})) = {id}**
+
+T = free magma on one generator a over binary operation f. Elements: a, f(a,a), f(a,f(a,a)), f(f(a,a),a), etc. — binary trees with leaves labeled a.
+
+Wait — the user's argument: "h(a) must fall outside im(f), and that set only contains {a}". Let me check. An automorphism h of T (as Σ-algebra, i.e., magma homomorphism that's bijective) satisfies h(a) ∈ T. h must be surjective. The generator a is the unique element not in im(f) (i.e., not decomposable as f(s,t)). Indeed, a is the only element of T that is not of the form f(s,t) — every other element is a binary tree with ≥ 2 leaves, hence decomposable. So any magma homomorphism h: T → T must map a to... wait, actually a homomorphism doesn't have to preserve "indecomposability" in general... Let's think.
+
+A magma homomorphism h: T → T is determined by h(a) ∈ T, and h(t) for t = f(s,t') is h(f(s,t')) = f(h(s), h(t')). So h(t) is a tree obtained by substituting the tree h(a) into every leaf of t.
+
+Now h is an automorphism iff this substitution map is bijective. Claim: h = id is the only automorphism.
+
+Proof: The unique indecomposable element is a (a is not in im(f); all other elements are). For a homomorphism h, h(a) can be anything — h need not map indecomposables to indecomposables. E.g., h(a) = f(a,a) defines a homomorphism (substitution), which is injective? Substituting f(a,a) into leaves: this maps trees to trees with all leaves expanded... is it injective? If h(t) = h(t'), then t, t' have the same shape (since substitution h(a) = f(a,a) is a tree of fixed shape ≥ 2 leaves, the substitution is shape-preserving injectively — actually substituting a fixed tree σ into leaves is injective on trees: given h(t), the "skeleton" of t is recoverable since the substituted tree σ has a fixed shape; the image consists of trees whose leaves are all... hmm, every leaf of h(t) — wait h(t) = t with each leaf replaced by σ = f(a,a). The image is the set of trees all of whose leaves are at depth ≡ depth pattern... every maximal path ends with a node whose two children are leaves. Such trees are in bijection with the original trees. So h is injective. But is it surjective? No — a is not in the image (every h(t) has ≥ 2 leaves). So h is not an automorphism.
+
+For h to be an automorphism (bijective homomorphism), we need h surjective, so a ∈ im(h), so h(t) = a for some t. If t = f(s,t'), then h(t) = f(h(s),h(t')) ∈ im(f), contradiction. So t = a... wait, that requires t to be indecomposable, i.e., t = a (the unique indecomposable). So h(a) = a. Then h = id since homomorphisms are determined by generator images. 
+
+Hmm wait, but actually I need to be careful: the claim "a is the unique indecomposable element" — in the free magma on {a}, elements are finite binary trees with leaves labeled a. indecomposable = not of form f(s,t) = trees with exactly 1 leaf = just a. Yes. And automorphism h must be surjective, so preimage of a exists, and h^{-1} is also a homomorphism (inverse of bijective homomorphism is a homomorphism for algebraic structures — yes, standard). h^{-1}(a) must be indecomposable? Hmm, actually simpler: h surjective ⟹ ∃t: h(t) = a. If t = f(s,t'), h(t) = f(h(s),h(t')) ≠ a since a ∉ im(f). So t is indecomposable, t = a, h(a) = a, hence h = id. 
+
+This is rigorous. One subtlety: does the user's phrasing "h(a) must fall outside im(f)" hold directly? h(a) need not be outside im(f) a priori for a homomorphism — that's only forced if we know h is surjective and use the argument above. Actually the user's argument as stated is slightly incomplete: they say h(a) must lie outside im(f) because that set has only {a}. The correct argument: surjectivity forces a = h(t) for some t; indecomposability of a forces t indecomposable (since h preserves decomposability: t decomposable ⟹ h(t) decomposable), so t = a. Alternatively: h^{-1} is also an automorphism, and automorphisms preserve the definable set of indecomposables ¬∃xy (x = f(y,z)) — indecomposability is preserved by isomorphism, so h(a) = a directly. That's cleaner: the property "x ∉ im(f)" is preserved under isomorphism, and a is the unique such element, so h(a) = a. Yes, that's rigorous. So (1) ✓ — the proof is sound, with the minor note that one should phrase it via "isomorphisms preserve ¬im(f)" or via surjectivity + preservation of decomposability; either way Aut(T) = {id}. Actually also need: hom determined by generator image — free magma, yes universal property.
+
+Also note: Aut(T) = {id} holds for free magma on any set? No — free magma on X with |X| ≥ 2 has Aut = permutation group of X (leaf-label permutations). With |X| = 1, trivial. Correct.
+
+**(2) Parity homomorphism and R₂ ≇ R₃**
+
+leafcount: T_{f/2}({a}) → (Z/2, ⊕)? Wait — the map π₂(t) = leafcount(t) mod 2. leafcount(f(s,t)) = leafcount(s) + leafcount(t). For π₂ to be a magma homomorphism T → (Z/2, ⊕) we need π₂(f(s,t)) = π₂(s) ⊕ π₂(t), i.e., (leafcount(s)+leafcount(t)) mod 2 = (leafcount(s) mod 2) ⊕ (leafcount(t) mod 2). ✓ — mod-2 reduction is a ring/magma hom (Z,+,... ) → (Z/2,⊕) with ⊕ = addition mod 2. Yes, π₂ = reduction ∘ leafcount, both homs, composition is a hom. ✓ Similarly mod 3 into (Z/3, ⊕) where ⊕ = + mod 3. ✓
+
+But wait — there's a subtlety: is (Z/2, ⊕) even a model in the same signature? Signature {f/2}. (Z/2, ⊕): binary operation. Fine as a magma. The homomorphism condition: π(f(s,t)) = f^A(π(s), π(t)) = π(s) ⊕ π(t). Yes.
+
+π₂ ∘ g = F₂ ∘ (π₂ × π₂): here g is the composition operation on T² (g(s,t) = f(s,t) presumably, the "address composition"). F₂ on A₂ × A₂ must be defined as... In the user's setup, F_i: A_i × A_i → A_i with π_i ∘ g = F_i ∘ (π_i × π_i). If F₂ is required to be the structure map of A₂ (i.e., F₂ = ⊕), then the condition is π₂(f(s,t)) = π₂(s) ⊕ π₂(t) — exactly the hom condition. ✓.
+
+Coherence p_{ji} ∘ F_j = F_i ∘ (p_{ji} × p_{ji}): in R₂, R₃ there's only one A_i each, no p's (or p = id). Fine.
+
+R₂ ≇ R₃: an isomorphism of resolution structures over T (in the comma category / over T) would require a magma isomorphism φ: A₂ → A₃ with φ ∘ π₂ = π₃ (intertwining over T). |Z/2| = 2 ≠ 3 = |Z/3| so no bijection at all. ✓ Even without the over-T condition they're non-isomorphic. And "no h ∈ Aut(T) intertwines": Aut(T) = {id}, so the condition would be π₂ = π₃ as maps T → ... but codomains differ; more precisely the 2-cell condition is φ∘π₂ = π₃∘h = π₃. π₃(f(a,a)) = 2 mod 3 = 2, π₂(f(a,a)) = 0, φ(0) ∈ Z/3 is 0 (only φ with φ∘π₂ = π₃... whatever, no bijection exists). Fine. ✓
+
+Potential loophole: the user defined A₂ = (Z/2, ⊕) with π₂ = leafcount mod 2. But is the "structure" of a resolution system just (A, F, π)? The isomorphism notion must be spelled: morphism of resolution systems over T = pair (h on T? or fixed T) — since T is fixed, morphism = (φ_i) with φ_i ∘ π_i = π'_i ∘ h... With T fixed (h = id), φ ∘ π₂ = π₃. Doesn't matter; cardinality obstruction suffices. ✓
+
+One more check: is π₂ well-defined as a hom into (Z/2,⊕)? π₂(a) = 1, π₂(f(a,a)) = 0. Yes. And it's the unique hom with a ↦ 1 by freeness. ✓
+
+**(3) Depth truncation system coherence**
+
+T = free magma on {a}, A_n = {trees of depth ≤ n}? Hmm — careful: "depth" — need to define. Let's define depth(a) = 0, depth(f(s,t)) = 1 + max(depth s, depth t). A_n = {t ∈ T : depth(t) ≤ n}. F_n(s,t) = f(trunc_{n-1} s, trunc_{n-1} t) where trunc_n = the map cutting the tree at depth n (replacing subtrees below depth n by... something in A_{n-1}?).
+
+Hmm, wait. Here's a problem: trunc_n: T → A_n. What is trunc_n(t)? Standard truncation: cut at depth n; but then the leaves at the cut are "stumps" — they need labels. In a one-generator free magma, the natural truncation replaces cut subtrees by a. But then is trunc_n a magma homomorphism? Let's check: trunc_n(f(s,t)) should equal f(trunc_{n-1} s, trunc_{n-1} t). If trunc_n replaces deep subtrees by a: trunc_n(f(s,t)): if depth(f(s,t)) = 1 + max ≤ n, i.e., both s,t have depth ≤ n-1, then trunc_n(f(s,t)) = f(s,t) and f(trunc_{n-1}s, trunc_{n-1}t) = f(s,t) ✓. If some subtree is deeper, trunc_n(f(s,t)) = f(trunc of s at depth n-1, trunc of t at depth n-1)? With "replace by a" truncation: trunc_n(f(s,t)) = f(trunc_n applied within...). Hmm, define trunc_n recursively: trunc_0(t) = a for all t? No wait — trunc_0(t) = a for t ≠ a? depth ≤ 0 means t = a. trunc_n(f(s,t)) = f(trunc_{n-1}(s), trunc_{n-1}(t)) if we define truncation that way — that's exactly the homomorphism-recursion. Actually the cleanest: trunc_n is the unique magma homomorphism T → T extending... no, trunc_n isn't determined by a generator image since it's not a hom? Let's see: if trunc_n were a hom T → T with trunc_n(a) = a, then trunc_n = id. So trunc_n is NOT a magma homomorphism (for n ≥ 0). Indeed trunc_n(f(a, deep)) = f(a, a) but hom would give f(a, trunc_n(deep)).
+
+So: is p_{n+1,n} = trunc_n: A_{n+1} → A_n a magma homomorphism (Σ-hom)? Check: p(trunc_n(f(s,t)))... take s, t ∈ A_{n+1}, i.e., depth ≤ n+1. p_{n+1,n}(f(s,t)) should = F_n(p(s), p(t)) = f(trunc_{n-1} s, trunc_{n-1} t). And p_{n+1,n}(f(s,t)) = trunc_n(f(s,t)) = f(trunc_{n-1} s, trunc_{n-1} t) by the recursive definition. ✓ (with trunc_{-1}? if n = 0: f(s,t) with s,t ∈ A_1; trunc_0(f(s,t)) = f(trunc_{-1} s, trunc_{-1} t) — need trunc_{-1}: A_0 → A_0... define trunc_m for m ≥ 0 with trunc_0(f(s,t)) = a. Hmm, so better: trunc_0 ≡ a constant? But trunc_0(a) = a fine, trunc_0(anything) = a. Then F_0: A_0 × A_0 → A_0 is a ⊕ a = a, i.e., F_0 is the constant map... but wait, is F_0 required to be a magma operation on A_0 making π_0 a hom? A_0 = {a}, F_0(a,a) = a, the unique possible. π_0: T → A_0 = {a} is the trivial hom (π_0(t) = a for all t) — is that a hom? π_0(f(s,t)) = a = F_0(a,a) ✓. OK consistent.
+
+The user's claimed coherence π_n ∘ g = F_n ∘ (π_n × π_n): π_n(f(s,t)) = trunc_n(f(s,t)) = f(trunc_{n-1} s, trunc_{n-1} t) = F_n(trunc_n s, trunc_n t) ✓ — matches F_n(s,t) = f(trunc_{n-1} s, trunc_{n-1} t). ✓ So with the recursive definition trunc_n(f(s,t)) = f(trunc_{n-1}(s), trunc_{n-1}(t)) (and trunc_0(t) = a for decomposable t, trunc_0(a) = a — hmm wait, that gives trunc_0(f(s,t)) = a but f(trunc_{-1}...) — just define trunc_0 ≡ const a, fine, or define A_n differently).
+
+Hmm, but actually there's a cleaner issue: the user says "π_n = trunc_n" — but trunc_n must be a Σ-homomorphism T → A_n for the resolution system axioms (π_i are homs). Is trunc_n: T → A_n a hom w.r.t. F_n on A_n? The hom condition is exactly π_n ∘ g = F_n ∘ (π_n × π_n), i.e., trunc_n(f(s,t)) = F_n(trunc_n s, trunc_n t) = f(trunc_{n-1} trunc_n s, trunc_{n-1} trunc_n t). Hmm — is trunc_{n-1} ∘ trunc_n = trunc_{n-1}? Yes (truncations compose: cutting deeper then shallower = cutting shallower — need trunc_{n-1}(trunc_n t): trunc_n t has depth ≤ n; applying trunc_{n-1} cuts at n-1... and direct trunc_{n-1} t. Yes equal for the recursive definition). So the hom condition holds. ✓ 
+
+Wait, but actually with the recursive definition trunc_n(f(s,t)) = f(trunc_{n-1} s, trunc_{n-1} t), and F_n(u,v) = f(trunc_{n-1} u, trunc_{n-1} v) for u,v ∈ A_n — note trunc_{n-1} u for u ∈ A_n: yes needed since f of two depth-≤n trees can have depth n+1 > n, so F_n must truncate. ✓ Consistent. p_{n+1,n} = trunc_n|_{A_{n+1}}: A_{n+1} → A_n, and p ∘ F_{n+1} = F_n ∘ (p × p): F_{n+1}(s,t) = f(trunc_n s, trunc_n t) ∈ A_{n+1} (depth ≤ 1 + max(n, n) = n+1 ✓); apply p = trunc_n: trunc_n(f(trunc_n s, trunc_n t)) = f(trunc_{n-1} trunc_n s, trunc_{n-1} trunc_n t) = f(trunc_{n-1} s, trunc_{n-1} t) = F_n(trunc_n s, trunc_n t) ✓.
+
+p_{ki} = p_{ji} ∘ p_{kj} for k ≥ j ≥ i: trunc_i ∘ trunc_j = trunc_i ✓ (standard, by induction / by the composition property shown).
+
+Hmm — one subtlety: are A_n closed and is everything well-defined with the "replace by a" semantics? trunc_n(t): replace every subtree rooted at depth n... Let me re-derive: recursive def: trunc_0(t) = a. trunc_{n+1}(a) = a. trunc_{n+1}(f(s,t)) = f(trunc_n s, trunc_n t). This yields a tree where all depth-≥ n+1... hmm, trunc_{n+1}(f(s,t)) has depth 1 + max(depth trunc_n s,...) ≤ 1 + n. And it "cuts" nodes at depth n+1 replacing with a. But note: the result is a genuine element of T (a tree with a-leaves), so A_n ⊆ T. ✓ And π_n: T → A_n ⊆ T is trunc_n viewed as landing in the submagma-with-F_n A_n. Fine.
+
+Also user claims FO-definability: ≡_n (equality of trunc_n) is definable by a formula of quantifier depth ~ n ("trees agree down to depth n"). Yes: x ≡_n y definable inductively: x ≡_0 y is ⊤ (all trees truncate to a at level 0 — wait, all t ≡_0-all equal since trunc_0 ≡ a). x ≡_{n+1} y ⟺ (x = a ∧ y = a) ∨ ∃x₁x₂y₁y₂ (x = f(x₁,x₂) ∧ y = f(y₁,y₂) ∧ x₁ ≡_n y₁ ∧ x₂ ≡_n y₂). Hmm, this uses ∃ and case distinction on decomposability — decomposability is definable (∃uv x = f(u,v)), indecomposable is definable. So yes, FO-definable, quantifier rank n+1-ish. Hence Aut-invariant: any automorphism preserves ≡_n hence preserves trunc_n, F_n, p's. With Aut = {id} trivially true, but the point is it's canonical in the stronger sense of being definable (invariant under all endomorphism... well, definable ⟹ invariant under all automorphisms AND all endomorphisms? Definable without parameters ⟹ invariant under all automorphisms; under endomorphisms only preserved if the defining formula is preserved... for positive primitive maybe. Not needed.)
+
+So (3) ✓ — coherence checks complete, provided truncation is defined recursively as above (the user's sketch matches). Minor note: need trunc_0 ≡ const a and the identity trunc_{n-1}∘trunc_n = trunc_{n-1}; both routine.
+
+Actually wait — I should double check the claim "π_n ∘ g = F_n ∘ (π_n × π_n)" — g is the composition on T, g = f itself? In the user's framework, g: T×T → T is the "composition" (address composition), presumably g(s,t) = f(s,t) or maybe g is substitution g(t, σ)? From the axiom π_i ∘ g = F_i ∘ (π_i × π_i) and earlier "π_i ∘ g = F_i ∘ (π_i × π_i)" with g the magma op — assume g = f. Then ✓ as computed.
+
+**(4) Category identity: "diagram + cocone"**
+
+D = {A_i, p_{ji}} in Σ-Alg: for a directed poset index, p_{ji}: A_j → A_i with p_{ki} = p_{ji}∘p_{kj} — that's an inverse system (covariant functor from I^op, or a diagram of shape I^op). {π_i: T → A_i} with p_{ji} ∘ π_j = π_i: this is a cone over the inverse system with vertex T — careful with direction: a cone over diagram D: I^op → Σ-Alg with vertex T is a family of maps T → A_i compatible with the diagram — yes, that's exactly a cone (limit-cone shape). So (T, {π_i}) = cone over the inverse system; the whole thing = object of the comma category (T ↓ Σ-Alg) equipped with... Actually more precisely: Resolution System = (diagram D in Σ-Alg) + (cone over D with vertex T) + (the requirement that each π_i is a hom — automatic in Σ-Alg since cone maps in Σ-Alg are Σ-homs by definition of cone in the functor category... cones in Σ-Alg have Σ-hom legs, and the coherence p∘π = π is the cone condition; the two "extra" coherences π∘g = F∘(π×π) and p∘F = F∘(p×p) — wait, are these automatic?
+
+Hmm: p_{ji} ∘ F_j = F_i ∘ (p_{ji} × p_{ji}) says each p_{ji} is a homomorphism (A_j, F_j) → (A_i, F_i) — where F_i is part of the structure of A_i. So the diagram lives in the category of (A, F) magmas-with-chosen-op... but F_i IS the Σ-interpretation in A_i, so A_i is a Σ-algebra and p is a Σ-hom — automatic if the diagram is in Σ-Alg. Similarly π_i ∘ g = F_i ∘ (π_i×π_i) says π_i: (T, g) → (A_i, F_i) is a Σ-hom — automatic since π_i is a morphism in Σ-Alg from T (with its g) to A_i. So the "two coherence axioms" are precisely the statements that all maps are Σ-homs. Therefore: Resolution System = (inverse system in Σ-Alg) + (cone from T), i.e., an object of the category of cones over inverse systems — equivalently an object of ((T ↓ Σ-Alg)) sliced appropriately, or: the category of elements... Simplest: it's the category of cones (T ↓ Δ over D)... The user says "逗号范畴 (T ↓ Σ-Alg) 相关的对象；定向情形 = 逆系统上的锥" — accurate. One direction check: p_{ji} ∘ π_j = π_i — with p_{ji}: A_j → A_i and π_j: T → A_j, composing gives T → A_i, must equal π_i: T → A_i ✓ — that's the cone condition with vertex T over the inverse system. Correct direction (cone, not cocone!). 
+
+⚠️ Terminology error: the user wrote "{π_i} 是从 T 出发的 cocone". A cocone has maps FROM the diagram objects TO the vertex (colimit shape). Here maps go T → A_i, vertex as source — that's a CONE (over the diagram D: I^op → Σ-Alg, or equivalently a cocone over D: I → Σ-Alg^op... pedantic). Since D is an inverse system (I^op-shaped), maps T → A_i compatible = cone. If one insists: it's a cone over the inverse system. Calling it "cocone" is wrong unless you view the diagram in Σ-Alg^op. This is a naming slip, not a math error — but worth flagging since user asked "(4) p_{ji}∘π_j=π_i 的方向". The direction is: cone over inverse system ✓, not cocone. Also "整条理论 = 同余格理论" for the surjective case: surjective π_i ⟺ θ_i = ker π_i ∈ Con(T), p_{ji}∘π_j = π_i surjective-compatible ⟺ θ_i ⊆ θ_j (finer/coarser: π_i factors through T/θ_j → T/θ_i requires θ_i ⊇? Let's see: π_i = p∘π_j, π_j surjective with kernel θ_j; π_i factors through T/θ_j iff θ_j ⊆ θ_i... π_i(s) = π_i(t) whenever s ≡_j t: since π_i = p∘π_j, s ≡_j t ⟹ π_j(s) = π_j(t) ⟹ π_i(s) = π_i(t), so θ_j ⊆ θ_i. And conversely for surjective p unique. So inverse system of quotients T/θ_j → T/θ_i with θ_j ⊆ θ_i — directed family of congruences, p surjective. So the surjective case = directed families in Con(T) — the lattice of congruences. ✓ That's right.
+
+**(5) Missed candidates for genuinely new structure?**
+
+Things to consider:
+- Partial operations: composition of addresses is naturally partial (an address may not compose with another). Partial algebras / categories: a resolution system where F_i is partial and π's are partial homs — the category-theoretic home is essentially algebraic theories / locally presentable categories of partial algebras, or categories (T as objects, compositions as morphisms → the "address algebra" as a category, resolution = functor). This is known structure (ES theory / fibrations), though it might be the more natural home. Worth mentioning: if composition is partial, the right setting is a category (or a operad/clone), and Resolution Systems become functors/profunctors — known.
+- Clone theory: the user's (e) — definability via term operations = clone membership; clone theory covers this; "Aut-invariant but not definable" is the classical Rosenberg/Szendré situation, and for the free magma clone... The clone of term operations of T_{f/2}({a}) — on T itself, term ops are exactly the substitution maps. Hmm, note: with |X| = 1 the full clone vs term clone distinction: user says "definable ⟹ Aut-invariant, converse 不成立（|X|=1 时一切关系都不变但少有可定义）" — wait: |X| = 1 refers to the underlying set of A_i having 1 element? "一切关系都不变" — if A = {a} singleton, every relation on it is Aut-invariant (Aut trivial) but not every relation is definable by term ops (only ∅ and {(a,...,a)}-type ones are). OK fine, that's the standard pp-definability gap. Known.
+- Coalgebra duality: T as terminal coalgebra? The free magma is an initial algebra; the "resolution" going downward (truncations, inverse limit = completion) is the profinite/ultrametric completion — that's the algebra→coalgebra flavor: the inverse limit lim A_n is like a terminal object of the pro-category, and streams/trees-as-coalgebras: infinite binary trees = terminal coalgebra of X ↦ X×X (with a-labeled...). Indeed lim← A_n ≅ set of infinite binary trees (each node has 2 children, leaves "at infinity"), and T embeds densely. That's exactly the final coalgebra νX. X × X + ... hmm, infinite binary trees over alphabet: the set of infinite binary trees is the terminal coalgebra of X ↦ (X × X) (with all leaves labeled a, it's just Cantor space 2^ω-ish — actually paths). The identification "resolution system limit = final coalgebra / ultrametric completion" is known (metric completion of term algebras, Courcelle's algebra of infinite trees, profinite terms). So candidate (d)'s "canonical object" is known mathematics — good news for (5): nothing new, but the framing is nice.
+- Other candidates user might have missed: 
+  - Operad/clone substitution structure: T is the free operad on one 2-ary operation with... addresses = nodes; composition of addresses is genuinely partial operadic composition. The "address" concept is literally the free operad / tree poset (Kashiwara–Zheng RSK? no). Known.
+  - Gröbner bases / rewriting: not relevant.
+  - Sheaf/topos: the depth filtration defines a birth-death... the truncation system is a "pro-object"; pro-category Pro(Σ-Alg_f.p.) — known.
+  - Non-well-founded trees / unique solutions of recursive address equations — coalgebra again.
+  - The genuinely possibly-new thing: the interaction where π_i are NOT surjective and NOT definable — arbitrary homs from free magma = "evaluations/substitutions", i.e., choosing an arbitrary tree value per generator — every hom T_X → A is determined by X → A; with |X| = 1, homs T → A ↔ elements of A (a ↦ any element), π(t) = t[a ↦ c] (substitute c for a). Wait — that's important! A homomorphism from the FREE magma T_{f/2}({a}) to any magma A is determined by the image of a, and π(t) = the tree t with each leaf replaced by c. So EVERY resolution system on this T has π_i(t) = "substitute c_i for leaves". The parity map: leafcount mod 2 = substitute... hmm, leafcount mod 2 isn't of the form "substitute a fixed element c ∈ Z/2 into leaves": substitute c: π(f(a,a)) = c ⊕ c = 0 if c = 0 or 1 (in Z/2, c⊕c = 0 always) — leafcount mod 2: π(a) = 1, π(f(a,a)) = 1+1 = 0 ✓, π(f(a,f(a,a))) = 1 + (1+1) = 1 mod 2. Substitute c = 1: π(f(a,f(a,a))) = 1 ⊕ (1⊕1) = 1 ✓. Oh right — "substitute c into all leaves" for a tree with k leaves gives c added k times = k·c mod 2 = k mod 2 when c = 1. So parity IS the substitution hom with c = 1. ✓ consistent with freeness. Similarly mod 3 with c = 1: k mod 3 ✓. Good — so all π_i are leaf-substitutions; the resolution system data on 1-generated free T reduces to: magmas A_i, elements c_i ∈ A_i, homs p_{ji} with p(c_j) = c_i, and that's ALL the data. Interesting simplification the user didn't mention but consistent. This doesn't break anything: R₂, R₃ remain valid (c₂ = 1 ∈ Z/2, c₃ = 1 ∈ Z/3).
+
+So (5): no genuinely new structure hiding; the natural generalizations (partial ops → operad/category/ES-theory; duality → coalgebra/pro-completion; definability → clone/pp-definability) are all KNOWN. One thing to flag: the user's claim in (e) "不可定义 resolution 的分类 = Con(T)/Aut(T)" — for surjective resolutions yes (θ ∈ Con(T) modulo Aut-action); but non-surjective π into arbitrary A_i is NOT captured by Con(T) — e.g., parity into Z/2 is non-surjective? π₂: is it surjective? π₂(a) = 1, π₂(f(a,a)) = 0 — yes surjective. But e.g. π into (Z,+) via leafcount: surjective too. π: T → (Z/2) with c = 0: constant 0 — non-injective, kernel = total relation. General homs from free magma on 1 generator: determined by c, image = submagma generated by c — always surjective onto its image, kernel is a fully invariant congruence? No — kernel of a hom to A is a congruence; is every congruence of T a kernel? Yes (T/θ). And homs T → A ↔ pairs (A, c). So non-surjective resolutions = resolutions onto submagmas — WLOG surjective. But the CLASSIFYING data isn't just Con(T): two different A with same kernel θ give isomorphic... over T, (A,π) ≅ (A',π') iff ∃iso φ: A→A', φπ = π'. Given θ = ker π, (A,π) ≅ (T/θ, canonical). So surjective resolutions over T up to iso ↔ Con(T) ✓, then mod Aut(T) action (here trivial). OK user's (e) classification claim is right for surjective; should note non-surjective WLOG-reduces.
+
+Also flag in (e): "R 可定义 ⟺ π_i, p, F 是 term operations of the free clone" — careful: F_i is an operation on A_i, not on T; "definable" should mean: the relations/graphs are pp-definable in T (as subsets of T^k via π^{-1} or as subalgebras of powers). π_i: T → A_i definable ⟺ A_i is a quotient by a definable... hmm, "π_i is a term operation" — π_i: T → A_i ⊆ ? If A_i ⊆ T (like truncation, A_n ⊆ T), then π_i is a unary term op on T — trunc_n is NOT a term operation (not a hom!). Wait — trunc_n is a hom T → (A_n, F_n) but not a hom T → (T, f). "Term operation of T" = hom T^k → T. trunc_n: T → T is not a magma hom (trunc_n(f(a,f(a,a))) = f(a,a) vs f(a, trunc(f(a,a))) = f(a,f(a,a))). So π_n is NOT a term operation of the free clone, yet the resolution IS definable (FO-definable, as user showed). Contradiction with the user's (e) biconditional "R 可定义 ⟺ 其 π_i,p_{ji},F_i 是 term operations"! This is an ERROR in (e): definability in FO sense ≠ term-operation membership. trunc_n is FO-definable (as a function: y = trunc_n(x) is definable by the formula above) but is not a term operation. So the correct statement: definable ⟺ graphs of π_i, p, F_i are first-order definable (equivalently, the resolution system is definable in the structure (T, f)); term ops are a strict subset (clone membership = pp-definability as... no, term ops = clones, FO-definable functions = a larger class). So (e) as stated is wrong; fix: definable ⟺ FO-definable graphs; term ops only capture hom-internal... Let me make sure: is y = trunc_n(x) FO-definable as a formula φ_n(x,y)? Inductively: φ_0(x,y): y = a... wait trunc_0(x) = a for ALL x including... trunc_0 ≡ a. φ_0(x,y) ≡ y = a. φ_{n+1}(x,y): (x = a ∧ y = a) ∨ ∃x₁x₂y₁y₂(x=f(x₁,x₂) ∧ y = f(y₁,y₂) ∧ φ_n(x₁,y₁) ∧ φ_n(x₂,y₂)). Hmm — but careful: trunc_{n+1}(f(s,t)) = f(trunc_n s, trunc_n t) ✓ and trunc_{n+1}(a) = a ✓. And uniqueness of y given x ✓. So yes φ_n defines trunc_n. Quantifier rank n. So definable-but-not-term-op — the user's claimed biconditional in (e) is FALSE, must be corrected: "definable ⟺ graphs FO-definable"; "term operation" characterizes a smaller class (and trunc_n shows the gap concretely). Good catch — this is the main error to report.
+
+Also double-check user's parenthetical "（|X|=1 时一切关系都不变但少有可定义）" — here |X| = 1 means one generator; T is countable, Aut trivial, so EVERY subset of T^k is Aut-invariant, but few are FO-definable (only countably many formulas... countably many subsets total, hmm countable set countably many subsets — every subset of a countable set is... no wait, there are 2^ℵ0 subsets and only ℵ0 formulas, so "少有可定义" ✓). Fine. But actually they wrote it under "definable ⟹ Aut-invariant, converse 不成立" ✓ correct.
+
+Another check on (a): "freely chosen parameter（无公理约束，分类 = 数据集/Aut(T)）" — classification of free parameters up to Aut(T)-action ✓ standard (e.g., adding a constant: structures (T, c), c ∈ T, iso classes = orbits of Aut(T) on T; Aut trivial ⟹ |T| many iso classes). ✓ And the parity example shows constrained additional structure with 2 iso classes ✓.
+
+**(2) once more — any loophole?** One might worry: is F₂ = ⊕ the only choice making π₂ a hom? Doesn't matter; system as defined is valid. Also the user should double check "leafcount(f(s,t)) = leafcount(s)+leafcount(t)" ✓ trivial. And hom into (Z/3, ⊕): π₃(f(s,t)) = (lc s + lc t) mod 3 = (lc s mod 3) ⊕ (lc t mod 3) ✓. R₂ ≇ R₃: as resolution systems over T — any isomorphism needs underlying iso A₂ ≅ A₃, impossible ✓. "无 h ∈ Aut(T) 交织" — h = id, would need φπ₂ = π₃ for some iso φ, impossible a fortiori ✓. No loophole.
+
+**(3) completeness**: also need p_{ki} = p_{ji}∘p_{kj} (shown via trunc_i∘trunc_j = trunc_i ✓) and closure A_n under F_n ✓. And the inverse limit claim: lim← A_n ≅ infinite binary trees (each internal node has exactly 2 children; "leaves" of finite truncation become a's — hmm, the inverse limit: elements are compatible sequences (t_n), t_n ∈ A_n, t_{n+1}↦t_n. What are these? Not exactly all infinite binary trees: t_0 = a always. t_1 ∈ {a, f(a,a)}. Compatibility: t_{n+1} = f(u,v) with trunc_n(u) = ..., i.e., t_{n+1} refines t_n by expanding leaves of t_n... a leaf 'a' in t_n can either stay 'a' in t_{n+1} or expand to f(a,a)? Wait t_{n+1} with trunc_n(t_{n+1}) = t_n: if t_{n+1} = a then t_n = a; if t_{n+1} = f(s,t) then trunc_n(f(s,t)) = f(trunc_{n-1}s, trunc_{n-1}t) = t_n. Hmm, so t_n determines t_{n+1} up to... The limit = "trees where every leaf is either finite (a, frozen) or expands forever"? Because a node that's a leaf 'a' at level n could at level n+1 still be 'a' — so limit elements = infinite binary trees OR finite trees that have stabilized (eventually constant sequences: t_n = t for n ≥ depth(t))! So lim← A_n ≅ T ⊔ (infinite binary trees) — the completion of the ultrametric d(·,·) = 2^{-depth of agreement}: T is not dense in... T IS dense in T ⊔ ∞-trees? Every compatible sequence is a limit of finite trees ✓ (t_n ↗ approximating). So the completion = finite ∪ infinite trees, T dense ✓. The user said "lim← A_n = 无限项空间，T 稠密嵌入" — should be: completion = finite + infinite binary trees (T embeds as the finite part, dense). Minor imprecision: "无限项空间" if it means "space of (finite and) infinite terms" fine; if only infinite trees, then T wouldn't be dense in it (finite trees are limits of... a finite tree t = constant sequence, its approximants t_n = t eventually — t is in the closure ✓ actually every point of the limit is a limit of finite trees, including finite ones). Also whether the limit is exactly final-coalgebra-like: infinite binary trees + finite ones = "possibly-finite infinite trees" = the final coalgebra of X ↦ 1 + X² restricted... final coalgebra of X ↦ X × X is pure infinite trees; the completion here = final coalgebra of X ↦ 1 + X×X? Final coalgebra of X ↦ 1 + X² = finite-or-infinite binary trees ✓ exactly. Nice — so lim← A_n ≅ νX.(1 + X×X). Worth mentioning as a correction/precision.
+
+Hmm wait, is that right? νX.(1+X×X) = binary trees with leaves, possibly infinite — yes, standard (like streams/rose trees with infinite allowed). And the ultrametric completion of the free magma under d = 2^{-h} where h = height of largest common "truncation" gives exactly that ✓.
+
+Also the user's claim "这正是...ultrametric 完备化——现在它作为典范 resolution system 被推导出来" ✓ fine.
+
+**(4) direction**: cone not cocone — flag. Also "Resolution System = diagram + cocone" — more precisely: object of the category Cones(I^op, Σ-Alg) with vertex in the image of T... or: the category of inverse systems in Σ-Alg together with a cone from (T,g). Since T is fixed, it's the fiber over T of the forgetful functor from (systems+cones) → Ob(Σ-Alg). The fibered/category-theoretic statement "U: AddrStruct → Alg, 纤维 U^{-1}(T)" — the fiber over T = category of resolution structures on T; shown non-trivial (R₂, R₃). The forgetful functor is a fibration? Probably an opfibration/fibration depending on direction — not asked, skip.
+
+**(5) additional candidates**: I'll mention: (i) partial composition → the free OPERAD / multicategory reading: addresses = nodes of trees, composition = operadic grafting — partial by nature; resolution systems then = diagrams of operads/profunctors — KNOWN (operad theory), and arguably the most faithful home if composition is meant to be node-grafting rather than root-grafting. (ii) coalgebra: final coalgebra νX.(1+X²) as the canonical completion — KNOWN. (iii) clone/pp-definability — KNOWN, and the term-op biconditional is wrong as noted. (iv) one more possible genuinely-new-flavored candidate: the family {π_i} with NON-uniform A_i and intertwinning p's is a "pro-object under T" = an object of Pro((T ↓ Σ-Alg)) — known. (v) Something the user may have missed that could be new: requiring the resolution to be "complete" (every address resolvable to unique normal form) + effective (decidable) + the composition to be intrinsically defined by the resolution (i.e., g recovered from {π_i}: g is the unique op making all π_i homs — "g is the limit-interpreter") — that's a real design principle ("structure from resolution") but mathematically it's the universal property of the limit — known. I'll note the strongest missing candidate: the requirement that the resolution DETERMINES g (g definable from the π's) turns the fiber into a category where objects are "T as limit of the system" — still known (limits,Cauchy completion).
+
+Word limit: 500 words (Chinese). Need to be concise. Let me structure the answer:
+
+(1) ✓ 严密 — but phrase via isomorphism-invariance of ¬im(f); note hom determined by h(a); also generalize: Aut(free magma on X) = Sym(X).
+(2) ✓ 无漏洞；补充：由自由性，一切 π_i = 叶替换 t[a↦c_i]，parity 即 c=1 的替换；R₂≇R₃ 因基数；交织需 φπ₂=π₃。
+(3) ✓ 完整，前提 trunc 递归定义 + trunc_0 ≡ a + trunc_i∘trunc_j = trunc_i；修正：lim← A_n ≅ νX.(1+X×X) = 有限∪无限二叉树（不只无限项），T 稠密 ✓。
+(4) 方向：是 cone 不是 cocone（顶点 T 在源头）；surjective 情形 θ_j ⊆ θ_i，= Con(T) 中定向族 ✓；范畴身份准确。
+(5) 主要错误在 (e)："可定义 ⟺ term operations" 为假 — trunc_n 是 FO-可定义函数但不是 T 的 term operation（不是 (T,f) 的自同态：trunc_n(f(a,·)) ≠ f(a, trunc_n(·))）。正确二分：term op = clone 成员；FO-可定义图 = 更大类。故 (e) 应改为"可定义 ⟺ π,p,F 的图在 (T,f) 中 FO-可定义"。其余候选（partial op→operad/ES-theory、coalgebra 对偶→νX.(1+X²)、clone/pp-可定义性）全是 KNOWN；结论 [KNOWN STRUCTURE CANDIDATE] 维持，无真正新结构。
+
+Also small note on (a): the four-fold classification ✓ correct, and the counterexample stands.
+
+Also maybe note: Con(T) for free magma on 1 generator — fully invariant congruences vs all congruences: since Aut trivial, Con(T)/Aut = Con(T), fine.
+
+Also, the user's statement in (b) "即逗号范畴 (T ↓ Σ-Alg) 相关的对象" — a single resolution system with one A_i is an object of (T ↓ Σ-Alg); the whole system = cone category. Fine.
+
+Let me also double check (1) more carefully for hidden subtlety: is it possible that h(a) = some decomposable tree but h still bijective? h(t) always has all leaves = leaves of h(a)-substitution... if h(a) = f(u,v), then every h(t) ∈ im(f)? h(t) = h applied... if t = a, h(a) = f(u,v) decomposable. Is h injective possible? yes (substitution by fixed tree is injective). Surjective: need a = h(t) for some t; t must be indecomposable (if t = f(s,t'), h(t) = f(h(s),h(t')) — is f(h(s),h(t')) ≠ a guaranteed? a is not in im(f) as a SET — f(h(s),h(t')) is by definition in im(f), and a ∉ im(f) since a is indecomposable ✓). So t = a, h(a) = a. Wait, t indecomposable means t = a? indecomposable elements of T = {a} ✓. So h(a) = a, h = id ✓. Rigorous. Alternatively h^{-1} hom, a is unique element with P(x) = "x ∉ im(f)", P is preserved by isomorphism, so h(a) = a. Both fine. The user's compressed phrasing ("h(a) 必须落在 im(f) 之外") skips a step (why must h(a) ∉ im(f)? because h surjective + a ∉ im(f) forces a = h(a)... hmm actually direct: h(a) ∉ im(f)? Not immediate — h(a) could be decomposable a priori; the fix is as I said: surjectivity gives preimage of a which must be indecomposable hence a. OR: h and h^{-1} both homs; h^{-1}(a)... same argument. The cleanest: isomorphisms preserve "x ∉ im(f)" (first-order, indeed quantifier-free-negative... ∀y,z x≠f(y,z) — preserved by iso ✓), a is the unique witness, so h(a) = a). So: conclusion ✓, but the user's one-line proof has a small gap; supply the missing step. I'll say "结论正确，但需补一步".
+
+Now, also verify user's claim in (c) that this establishes the fiber is non-trivial AND the two are non-isomorphic "无 h∈Aut(T) 交织它们" — with Aut = {id}: an isomorphism of resolutions over T is φ: A₂→A₃ with φ∘π₂ = π₃ — no bijection exists. ✓. But strictly, if isomorphism of resolution systems is allowed to move T (h ∈ Aut(T) nontrivially) — here trivial anyway. ✓
+
+One more potential loophole in (2): the user wrote π₂(t) = leafcount mod 2 as map into (Z/2, ⊕) — but must double-check π₂(f(s,t)) = π₂(s) ⊕ π₂(t) — ✓ since mod-2 of sum = sum of mods in Z/2. ✓
+
+And (3) "F_0" edge: A_0 = {a}, F_0(a,a) = a ✓; π_0 hom ✓. The family is indexed by n ∈ ℕ with p_{n+1,n}; directed ✓.
+
+Also — the user's assertion in (d) that this canonical system's inverse limit relates to rounds 2–4's ultrametric guess: fine, no audit needed.
+
+Now also (5): "多算子 clone" — clone of term operations of the FREE MAGMA T: term operations T^k → T are k-ary substitutions (each variable ↦ a fixed tree? no — hom T^k → T? term operations in universal algebra on T = operations induced by terms in k variables evaluated in T: t(x₁..x_k) = tree with leaves labeled by variables, evaluation substitutes trees for variables: term ops = "simultaneous substitution" maps T^k → T ✓ known as the clone of the free magma = operad of binary trees). Known.
+
+Possible missed NEW-structure candidate I should honestly flag: the interplay requiring π_i SURJECTIVE + F_i part of structure + T free gives "T = limit of its quotients pro-object"; the classification of all pro-objects under T = "pro-congruences" = descending... This is Pro-ness — known. And coalgebra: T also embeds into final coalgebra; "resolution = algebra/coalgebra duality on trees" — known (Courcelle, "Infinite trees in normal form" etc.). I'm fairly confident: nothing new; the honest answer is [KNOWN STRUCTURE], with the one real correction being (e).
+
+Also the user's question (5) asks "我是否漏掉了某个可能构成真正新结构的候选（例如 partial operation、多算子 clone、coalgebra 对偶、或 clone 理论之外的可定义性概念）" — answer: these are all known frameworks; the only place a genuinely Address-native notion could hide is if one imposes a converse constraint — e.g., requiring that the resolution system be RECOVERABLE from T alone up to canonical choice (i.e., a section of U that is Aut-equivariant); since Aut(T) = {id} this is vacuous here, but for T with |X| ≥ 2 Aut = Sym(X) and definable systems are exactly the Sym(X)-fixed... no — definable ⟹ invariant, invariant-but-undefinable persists even with |X|=1... For the conceptual goal "structure from resolution", the known-math home is: T as initial algebra, resolution systems as pro-objects/cones, canonical one = depth filtration with limit = final coalgebra νX.(1+X²). Verdict: KNOWN.
+
+Word budget ~500 Chinese words. Let me write it tightly. I should not use tools — this is a pure reasoning audit; no files needed. The instructions say to respond in Chinese, within 500 words, directly pointing out errors or confirming. No todo list needed (single-step reasoning task). Let me now also double-check the θ_j ⊆ θ_i direction once more: π_i = p_{ji}∘π_j. If s θ_j t (π_j(s)=π_j(t)) then π_i(s) = p(π_j(s)) = p(π_j(t)) = π_i(t), so s θ_i t: θ_j ⊆ θ_i ✓. Quotients: T/θ_j ↠ T/θ_i requires θ_j ⊆ θ_i ✓ (coarser quotient... T/θ_j has fewer... θ bigger = coarser = smaller quotient; T/θ_j → T/θ_i exists iff θ_j ⊆ θ_i, mapping [s]_j ↦ [s]_i ✓ well-defined). So the inverse system T/θ_j → T/θ_i for j ≥ i has θ_i ⊆ θ_j, an increasing chain of congruences = directed family in Con(T) ✓ user said "整条理论 = 同余格理论" ✓.
+
+Final answer structure — concise numbered audit:
+
+1. Aut 证明：结论 ✓ 但需补一步（h(a) ∉ im(f) 不是先验的；用满射性+可分解性保持，或用"∉im(f) 被 同构保持且 a 唯一"）。推广：Aut(T_X) = Sym(X)。
+2. parity/R₂≇R₃：✓ 无漏洞。补充：自由性 ⟹ 一切 π 都是叶替换 t[a↦c]，parity = c=1 情形；一切数据归约为 (A_i, c_i, p_{ji}, p(c_j)=c_i)。
+3. 截断系统：✓ 完整（需显式 trunc_0 ≡ a 与 trunc_i∘trunc_j = trunc_i；均为 routine）。一处修正：lim← A_n ≅ νX.(1+X×X) = 有限∪无限二叉树全体，不只是无限项；T 稠密 ✓。
+4. 范畴身份：本质准确，但名称错：T→A_i 的相容族是 cone（顶点为源），非 cocone。surjective 情形 θ_j ⊆ θ_i，= Con(T) 中正向族 ✓。两条 coherence 恰为"所有映射是 Σ-同态"，无额外内容 ✓。
+5. 主要错误在 (e)：可定义 ⟺ term operations 为假。trunc_n FO-可定义（给出归纳公式）但不是 (T,f) 的自同态，故非 term operation。正确：definable ⟺ π,p,F 的图在 (T,f) 中 FO-可定义；term ops（clone 成员）严格更小。trunc_n 是显式反例。此外非满射 π WLOG 可满射（取像），分类 = Con(T)/Aut ✓（此处 Aut 平凡）。
+6. (5) 的候选：partial op → 自由 operad/多范畴/ES-theory（address 组合天然是 operadic grafting，partial）；coalgebra 对偶 → νX.(1+X²)；clone/pp-可定义性 → Rosenberg 理论；pro-object → Pro(Σ-Alg)。全部 KNOWN。判定维持 [KNOWN STRUCTURE]；真正可能的"新"只剩一个设计层问题：要求 g 可由 {π_i} 反解（T 为该锥的极限的泛性质）——这仍是极限论，不构成新数学。
+
+Count words — should be fine around 500. Write in Chinese, direct.
+
+审计完成，两处修正已吸收（cone 方向、"definable ⟺ term operation"为假）。下面按你要求的九项输出。
+
+先给本轮核心对象的形状图。
+Good audit. Key corrections to incorporate:
+1. Aut(T)={id} proof needs the surjectivity step (which I had) — fine.
+2. lim←A_n = νX.(1+X×X) = finite ∪ infinite trees, not just infinite terms.
+3. Cone not cocone (T is the source/vertex of a cone over the diagram).
+4. definable ⟺ term-operations is FALSE; correct: definable ⟺ FO-definable graphs; trunc_n is definable-but-not-term-op. Important correction to my (e).
+5. Verdict stays KNOWN STRUCTURE.
+
+Now write the final answer with the requested 9-part structure. Include one widget. Keep it rigorous but not bloated.
+
+Now write the full 9-part answer. Be rigorous, incorporate the audit corrections.
+# 【1】上一轮第 7 节中仍然成立的部分
+
+1. **窄结果保留**：单个单射 $\Phi:D^2\to D$ 在裸集合模型下，isotopy（三个双射 $\alpha,\beta,\gamma$，正确术语，已改）分类由 $|D\setminus\mathrm{im}\,\Phi|$ 完全决定。“单射运算路线贫乏”成立。
+2. **化约同构本身保留**：$(\mathrm{im}\,\rho,\;F|,\;\pi_i|)\cong(T,\;g,\;\{\pi_i\circ\rho\})$ 是真的。
+3. **$\mathrm{Hom}(T,A_i)\cong A_i^X$** 保留（自由代数万有性质）。
+
+# 【2】第 7 节的错误推论 —— 撤回
+
+**"$\pi_i\in\mathrm{Hom}(T,A_i)$ 所以只是 metadata" 不成立。**
+
+**严格反例（就在手头情形里）**：$T=T_{f/2}(\{a\})$（自由独生成 magma，二叉树）。$\mathrm{Aut}(T)=\{\mathrm{id}\}$：若 $h$ 是自同构，由满射性 $\exists t,\ h(t)=a$；若 $t$ 可分解则 $h(t)\in\mathrm{im}(f)$ 而 $a\notin\mathrm{im}(f)$，矛盾；故 $t=a$ 是唯一不可分解元，$h(a)=a$，由自由性 $h=\mathrm{id}$。
+
+于是 $\mathrm{Con}(T)$ 中**任何**两个不同同余 $\theta_1\neq\theta_2$ 给出 $(T,\theta_1)\not\cong(T,\theta_2)$——它们没有一个是 canonical 的（$\mathrm{Aut}$ 平凡 ⟹ “不变性”无筛选力），**却两两非同构、有独立的同构分类**。若“非 canonical ⟹ metadata”成立，这些结构就该彼此无区别——矛盾。
+
+**正确的四分类**（补上你要求的区分）：
+
+| 类型 | 定义 | 同构分类 |
+|---|---|---|
+| derived / definable | 可在 $T$ 中无量词定义 | 每个可定义结构自动 $\mathrm{Aut}$-不变、唯一 |
+| freely chosen parameter | 无公理约束 | 数据集 $/\mathrm{Aut}(T)$，无理论 |
+| **constrained additional structure** | **有公理约束** | **模型类$/\cong$，可以很丰富** |
+| canonical | 分类收缩到单轨道 | 唯一代表 |
+
+**"非 canonical" 与 “是否为真结构” 正交**。拓扑、群结构、本例的同余选择都是“自由选择”，却各有丰富的数学理论。我上一轮把“自由选择”误当成“无数学内容”，撤回。
+
+# 【3】Resolution System 正式定义
+
+$$R=(T,\ \Sigma,\ \{A_i\}_{i\in I},\ \{\pi_i:T\to A_i\},\ \{p_{ji}:A_j\to A_i\},\ \{F_i\})$$
+
+公理：
+1. $\pi_i,\ p_{ji}$ 均为 $\Sigma$-同态；
+2. $p_{ki}=p_{ji}\circ p_{kj}$；
+3. $p_{ji}\circ\pi_j=\pi_i$；
+4. $\pi_i\circ g=F_i\circ(\pi_i\times\pi_i)$（若 $T$ 上有组合 $g$）；
+5. $p_{ji}\circ F_j=F_i\circ(p_{ji}\times p_{ji})$。
+
+**范畴身份（修正后的准确说法）**：$\{A_i,p_{ji}\}$ 是 $\Sigma\text{-}\mathbf{Alg}$ 中的一个 **diagram**（定向指标时是**逆系统**）；$\{\pi_i\}$ 以 $T$ 为**锥顶的 cone**（$T$ 是源，箭头 $T\to A_i$；上轮图我若画成 cocone 方向就错了，方向已核对：$p_{ji}\circ\pi_j=\pi_i$）。公理 4、5 恰好等价于“所有映射是 $\Sigma$-同态”——**没有额外数学内容**，这正是它能被标准理论完全吸收的原因。
+
+**满射情形**：$\ker\pi_i$ 构成 $\mathrm{Con}(T)$ 中的**定向族**（$\theta_j\subseteq\theta_i$），resolution system $=$ 同余格中的正向下向族。
+
+# 【4】忘却函子 $U$
+
+$$U:\mathbf{AddrStruct}\to\Sigma\text{-}\mathbf{Alg},\qquad (T,R)\mapsto T.$$
+
+**$U^{-1}(T)$** = “$T$ 上全部 resolution systems” 范畴：对象 = 满足公理 1–5 的 $R$；态射 = $h\in\mathrm{Aut}(T)$ 加上各 $A_i$ 间的同构，使一切三角/方块交换。
+
+# 【5】$U^{-1}(T)$ 不平凡 —— 证明
+
+**类型 C 成立（多个非等价结构）**。证明：【6】的构造。**且纤维同时含典范对象**（类型 D 也成立）：深度截断系统（见【8】）是可定义的，故 $\mathrm{Aut}$-不变。两者不矛盾：纤维是一个大范畴，其中有被选出的典范对象。
+
+（另注：非满射 $\pi$ 无损化归为满射——取像子代数——所以满射情形已经是通例；单生成元时一切 $\pi:T\to A$ 都是叶替换 $t[a\mapsto c]$，resolution 数据完全归约为 $(A_i,c_i,p_{ji})$。）
+
+# 【6】同一 $T$ 的非等价 resolution structures —— 最小构造
+
+$T=T_{f/2}(\{a\})$，$\mathrm{Aut}(T)=\{\mathrm{id}\}$。
+
+$$R_2:\ A_2=(\mathbb{Z}/2,\oplus),\quad \pi_2(t)=\mathrm{leafcount}(t)\bmod 2$$
+$$R_3:\ A_3=(\mathbb{Z}/3,\oplus),\quad \pi_3(t)=\mathrm{leafcount}(t)\bmod 3$$
+
+**逐项验证**：
+1. 同为 $T$ ✓；2. 同一基底组合 $g=f$ ✓；
+3. coherence：$\mathrm{leafcount}(f(s,t))=\mathrm{leafcount}(s)+\mathrm{leafcount}(t)$，故 $\pi_m$ 是到 $(\mathbb{Z}/m,\oplus)$ 的同态，公理 1、4 ✓（单指标系统无 $p$，公理 2、3、5 空真；如需含 $p$ 的链，取 $\{\mathbb{Z}/2^n,\oplus\}$ 与自然商）；
+4. **$R_2\not\cong R_3$**：$(\mathbb{Z}/2,\oplus)\not\cong(\mathbb{Z}/3,\oplus)$（基数）；
+5. **无交织**：需 $h\in\mathrm{Aut}(T)=\{\mathrm{id}\}$ 使 $\pi_2=\pi_3$ 逐点；但 $f(a,a)\mapsto 0\ (\mathrm{mod}\ 2)$ vs $2\ (\mathrm{mod}\ 3)$，不等 ✓。
+
+**结论**：resolution structure 是**附加的、受公理约束的、具有独立同构分类的真数学结构**——这正是你要证明的命题。
+
+**判定：[KNOWN STRUCTURE]。** 理论名称：逗号范畴 $(T\downarrow\Sigma\text{-}\mathbf{Alg})$ 的对象（cone over diagram）；逆系统 / pro-object（$\mathbf{Pro}(\Sigma\text{-}\mathbf{Alg})$）；满射情形 $=$ 同余格 $\mathrm{Con}(T)$ 中的定向族；打包后 $=$ many-sorted variety。
+
+# 【7】已有理论逐项对应
+
+| 候选 | 判定 |
+|---|---|
+| indexed algebra | **部分**：只覆盖 $\{A_i,p_{ji}\}$，不含 $(T,\pi)$ 的锥 |
+| many-sorted algebra | **完全等价（作为打包）**：全部内容可写成多排序 variety + 恒等式；但这把“选哪个 resolution”藏进了签名选择 |
+| inverse system | **完全**（定向情形的 $\{A_i,p\}$ 部分）+ 锥为标准附加 |
+| filtered algebra | **特例**：链指标 + 满射 |
+| graded algebra | **不等价**：直和分解 vs 投影族（对偶方向），仅经完备化相关 |
+| congruence system | **完全**（满射情形）：$=$ $\mathrm{Con}(T)$ 中定向族 |
+| subdirect representation | **特例**：$\{\pi_i\}$ 联合单射时 |
+| categorical limit | **完全**（完备化部分）：$T\to\varprojlim A_i$ |
+| profinite-style completion | **完全**（典范实例）：见【8】 |
+| coalgebra / observers | **不等价**：终余代数 $\nu X.(1+X\times X)$ 恰是深度系统的极限对象，但那是极限论不是余代数结构 |
+| clone / term operations | **部分**：见【9】的修正 |
+
+# 【8】"Address-native structure = NO" 的最终状态
+
+**撤回未限定版本的 NO。** 修正后的精确陈述：
+
+- **仍然成立**：单射运算路线失败（【1】）；$(A,F,\Pi)$ 化约到 $(T,g,\{\pi'\})$ 的同构（【1】）。
+- **撤回**：“$\Pi$ 是 metadata”（【2】的反例）。
+- **新结论**：enrichment 是真的、公理化的、有独立分类的结构；**但它被已有理论完全覆盖**。
+
+**A–E 对照**：
+- **A**（$T$）：基底对象，无 resolution。
+- **B**（$\rho:T\to\mathrm{Address}$ 任意编码）：由化约同构，代数上 $=$ A。
+- **C**（$T+$ 任意 metadata）：无公理 enrichment，分类 $=$ 数据$/\mathrm{Aut}(T)$，无理论。
+- **D**（$T+$ 公理化 resolution system）：**真结构，非平凡分类 $=$【6】**，理论已知。
+- **E**（$T+$ 典范 resolution system）：**存在**——深度截断系统 $\{A_n\}$（深度 $\le n$ 的项），$\pi_n=\mathrm{trunc}_n$，$F_n(s,t)=f(\mathrm{trunc}_{n-1}s,\mathrm{trunc}_{n-1}t)$。coherence 逐条验证成立；且 $\equiv_n$ 可由量词秩 $n$ 的归纳 FO-公式定义，故**可定义、典范、$\mathrm{Aut}$-不变**。其逆极限
+$$\varprojlim A_n\ \cong\ \nu X.(1+X\times X)\ =\ \text{有限}\cup\text{无限二叉树}$$
+$T$ 稠密嵌入——**这就是项代数的深度超度量 / profinite 式完备化**。
+
+**必须指出这个闭环**：本项目第 2–4 轮曾“猜测”非阿基米德赋值 / ultrametric / p-adic 式结构。现在它**不再是被猜的候选实现，而是被推导出来的典范对象**——$T_\Sigma(X)$ 上唯一 obvious 的可定义 resolution system 的完备化。研究的正确落点由此从“是否存在新结构”变为“**在已知结构中，哪个可定义 resolution system 适合概念表示**"——即你说的“发现已有结构的特殊实例与构造方法”。
+
+**最终判定：[KNOWN STRUCTURE]**（cone / pro-object / 同余格 / profinite 式完备化 / clone 与可定义性理论）。
+
+# 【9】唯一最关键的下一步定理
+
+**定理（可定义 Resolution 的刻画 + 典范系统的分类地位）**
+
+> 对 $T=T_\Sigma(X)$：
+> **(i)** resolution system $R$ **可定义** $\iff$ $\pi_i,p_{ji},F_i$ 的图在 $(T,f)$ 中 FO-可定义（无量词参数）。**注意这不是 clone 成员**：深度截断 $\mathrm{trunc}_n$ 可定义但不是自同态（$\mathrm{trunc}_n(f(a,t))\neq f(a,\mathrm{trunc}_n t)$），故 term-operation 刻画是错的，正确判据是**图的可定义性**。
+> **(ii)** 可定义 $\Rightarrow$ $\mathrm{Aut}$-不变；逆不成立（$|X|=1$ 时一切关系不变而可定义者稀少）。
+> **(iii)** 不可定义 resolution 的分类 $=\mathrm{Con}(T)/\mathrm{Aut}(T)$（对照项）。
+> **(iv)** 深度截断系统可定义，且是使 $\varprojlim$ 分离全部项（$\bigwedge\ker\pi_n=\Delta$）的最小深度链；任何其它可定义分离链（如 $\mathrm{trunc}_n\times$叶数 $\bmod\,2^n$）都严格细于它的某个有限段。
+
+**它决定的事**：筛选 Address-appropriate resolution 的搜索空间从“$\mathrm{Con}(T)$ 的全部定向族”（不可枚举、依赖选择）收缩到“**可定义 resolution systems**"（$=$ clone/FO-可定义性的已知分类）。下一轮的问题因此变成一个良定义的选择问题：
+
+> **在可定义分离链中，深度截断是否是唯一使“组合在粗层上的投影 $F_n$”保持概念语义内容的系统？**
+
+若唯一——Address 的 hierarchical resolution = 深度完备化，整个公理层（M4/M6/M7/prefix locality）在该对象上逐条落地；若不唯一——分类“语义等价类”成为真正的研究任务。两条路都在已知理论之内，这正是本轮审计给出的、诚实的定位。
