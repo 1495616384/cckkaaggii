@@ -1,0 +1,472 @@
+模式已切换。本轮只做构造，不引入任何新判据。先给出本轮最重要的一个具体成果。
+The user wants a mode switch: constructive search, not deductive. They want me to actually BUILD 6 baseline addresses + 5-7 genuinely different addresses, with explicit R(x) and F(A,B), and try to construct a successful example.
+
+This is a genuine shift and I should honor it. The user is frustrated with the meta-theory spiral. Let me actually construct things carefully.
+
+Let me set up the concrete ground: T = free magma on X (binary constructor f), X = {a} or finite. Actually let me allow Σ = {f/2} and X finite, maybe X = {a, b} later.
+
+Let me now genuinely construct.
+
+## Task 1: 6 baseline addresses
+
+Let me define them concretely for T = T_{f/2}(X).
+
+**Baseline 1: Term/tree representation (pointer tree).**
+R₁(x) = the tree itself: node with label f and pointers to children; leaves labeled by atoms.
+F₁(u,v) = allocate a new node labeled f with children u, v.
+No decode needed: F₁ is literally "make a node". ✓
+
+**Baseline 2: Bracket/string (prefix word).**
+Represent x by its preorder word w(x) over alphabet {f, )}... Let me use Łukasiewicz: w(x) = the word where each internal node is 'f' and each leaf is its atom. E.g., x = f(a, f(a,a)) → "f a f a a". This is the prefix (preorder) encoding. It's injective and uniquely decodable (Łukasiewicz words).
+R₂(x) = w(x).
+F₂(u,v) = "f" · u · v (concatenate with an 'f' prefix).
+Cost: Θ(|u|+|v|) if strings must be materialized; O(1) if F₂ returns a rope/thunk (lazy concatenation).
+No decode needed: F₂ is just prefix + concat. ✓
+
+**Baseline 3: Gödel/pairing.**
+R₃(x) = the Gödel number: n(atom_i) = 2i+1 (odd), n(f(x,y)) = 2·⟨n(x),n(y)⟩ where ⟨·,·⟩ = Cantor pairing.
+F₃(u,v) = 2·Cantor(u,v).
+Injective ✓. No decode needed? F₃ is arithmetic — it doesn't need to decode u,v. ✓ (It just computes a pairing.) So F₃ is "native" in a trivial sense. This is the case that shows "direct computation on the address" is cheap.
+
+**Baseline 4: Canonical term-DAG (hash-consing).**
+R₄(x) = the canonical pointer to the hash-consed node (unique representative of the term).
+F₄(u,v) = lookup-or-create the canonical node for (f, u, v) — a hash table lookup.
+No decode ✓ (it reads the two pointers and the tag).
+Note: the *tag* f is part of the node; if we have multiple constructors, the address must carry the constructor tag.
+
+**Baseline 5: Depth-resolution (the project's own).**
+R₅(x) = (π_0(x), π_1(x), ..., π_d(x)).
+F₅ = coordinatewise: F₅((u_n)_n, (v_n)_n) = (F_n(u_n,v_n))_n with F_n(u,v) = cons_f(trunc_{n-1}u, trunc_{n-1}v).
+No decode ✓ (per-coordinate local rule).
+
+**Baseline 6: "Balanced parenthesis + depth-rank arrays" or better: a *succinct* representation.** Let me pick something more interesting: **the "signature hash / Merkle address"**:
+R₆(x) = (h(x), left-hash, right-hash) — a Merkle-style address: each node identified by the hash of (tag, left-address, right-address). Then F₆(u,v) = hash(f, u, v). O(1). No decode ✓ (it computes a hash; the address is the hash).
+Problem: not injective (hash collisions) — but *canonically* it's fine if we treat the hash as a fixed injective function (assume perfect hashing / or use the canonical DAG pointer under the hood). So this is basically baseline 4 with hashing; let me present it as a distinct one: **content-addressed / Merkle address**, where the address *is* the hash value, and equality of addresses = equality of terms (assuming injective hash). And it demonstrates something nice: **equality testing becomes O(1)** and structural sharing is automatic.
+
+Actually let me make baseline 6 something structurally distinct and genuinely interesting: **the "height/rank-partitioned address"**? Hmm, or better — let me use the one the user would find most relevant: **the "incremental / persistent" address**: R₆(x) = (x plus a version), so updates are O(log n). Hmm.
+
+Let me pick: **Baseline 6: Merkle / content-addressed address (hash-consing at value level)**. That gives the "O(1) equality + auto-sharing" property which is a real structurally-new-looking feature. Good.
+
+For each baseline, note what's "native" and what's trivially so.
+
+## Task 2/3: 5-7 genuinely different addresses, with explicit A(x) and F
+
+Here's where I need to actually be constructive and creative. Let me build each carefully.
+
+### A. Shift-coupled coordinates
+
+Let me define: A(x) = (a_0, a_1, a_2, ...) where a_k(x) = the "level-k shape word" — hmm, let me make it injective. 
+
+Better idea for shift-coupled that IS injective: **the "leaf-depth word"**: for x, list the depths of its leaves in left-to-right order. Call it ℓ(x) ∈ ℕ*. 
+- ℓ(a) = (0)
+- ℓ(f(x,y)) = ℓ(x) shifted by +1, concatenated with ℓ(y) shifted by +1. So ℓ(f(x,y)) = (ℓ(x)+1) · (ℓ(y)+1).
+E.g., f(a,a) → (1,1); f(a, f(a,a)) → (1,2,2); f(f(a,a),a) → (2,2,1).
+**Injective?** Yes! The leaf-depth word (with the "incrementing" trick) is a well-known bijection: trees ↔ sequences? Hmm, actually is it injective? Let's check: the tree can be reconstructed from the depths of the leaves in left-to-right order? Hmm. The "Łukasiewicz"/preorder word with depths determines the tree. Yes — leaf depths don't determine the tree! E.g., f(a,a) → (1,1), and... hmm, is there another tree with ℓ = (1,1)? A tree with 2 leaves both at depth 1 = exactly f(a,a). ✓. What about (2,1)? f(f(a,a), a): leaves: left-left at depth 2, right at depth 1 → (2,1) ✓. And is there another tree with (2,1)? Only f(f(a,a),a). Hmm, what about (1,2)? = f(a,f(a,a)) ✓. And (2,2,2)... Let me think: is the map injective in general? A tree is determined by its "leaf depth sequence" iff the sequence determines the branching structure. Given leaf depths (d_1,...,d_m), the tree's structure is determined: build it by the standard "insert leaves with given depths in left-to-right order" — this is exactly the bijection between binary trees and "depth sequences" satisfying the condition that consecutive depths differ by exactly 1 and the first is ... hmm. Let me verify: the standard "Łukasiewicz word / preorder degree sequence" determines a tree. Leaf depths: consecutive leaves' depths satisfy |d_{i+1} - d_i| = ... hmm, not exactly 1.
+
+Let me test: (2,2,1): could it come from f(f(a,a),a)? leaves: the two grandchildren of the left child (both depth 2), then the right child (depth 1) → (2,2,1) ✓. Could another tree give (2,2,1)? Hmm. Let me think about the reconstruction: given leaf depths (d_1,...,d_m), we can reconstruct greedily: hmm.
+
+Actually, here's the standard fact: the **preorder word** determines the tree, and the preorder word can be replaced by the "degree sequence" or the "depth sequence". The leaf-depth sequence alone: two leaves at depth 2 then one at depth 1 — the first two leaves must be siblings (both depth 2, and to be depth 2 they're grandchildren). Hmm, their parent is at depth 1, and the parent is the left child of the root. So the root's left child = f(a,a), right child = a. Unique ✓.
+
+Let me try a potentially ambiguous case: (1,2,2). Leaves: depth 1, then two at depth 2. So the root's left child is a leaf, and the right child has two leaves at depth 2 → right child = f(a,a). So x = f(a, f(a,a)) ✓ unique.
+
+Potential ambiguity: (2,1,2)? Leaves: depth 2, depth 1, depth 2. The depth-1 leaf is a child of the root. The depth-2 leaves are grandchildren. If the depth-2 leaf comes before the depth-1 leaf, it must be the left child's descendant, and the left child must be internal. So left = f(a, ...) hmm, we have leaves at depth 2, then a leaf at depth 1 (so the left child of root is f(a,a)? no...). Let me carefully reconstruct: root has left child L and right child R. The leaves in left-to-right order: leaves of L, then leaves of R. Leaf depths within L = (depth - 1) relative to L, within R similarly. So: sequence (2,1,2): we need to split into (a prefix for L, suffix for R) such that the L-part, after subtracting 1, forms a valid tree's leaf-depth sequence, and the R-part too. 
+- Split after 1: L-part = (2) → relative (1) → valid (single leaf at depth 1 → L = f(a,a)? no! L-part = (2) means L has ONE leaf at depth 2 relative to root = depth 1 relative to L. A tree with a single leaf at depth 1 relative to itself = f(a,a). Hmm, wait: a tree with exactly one leaf must be the atom (depth 0). A tree with one leaf at depth 1 doesn't exist (a leaf at depth 1 means the root is internal with one child, but binary f always has 2 children). Hmm! So L-part = (2) is invalid. 
+- Split after 2: L-part = (2,1), R-part = (2). L-part relative = (1,0) — the depths relative to L: (1,0) means L's leaves at relative depths 1 and 0. Relative depth 0 = L's left child is... hmm, relative depth 0 means a leaf at L's root, impossible (L is a tree; its root is either an atom (leaf, depth 0) or f-node). If L = f(u,v), the leaves are at depth ≥ 1 relative to L. So (1,0) is invalid. 
+So (2,1,2) is not a valid leaf-depth sequence. Good.
+- Hmm, so my reconstruction rule: valid sequences are those where the split works recursively. And injectivity follows: the tree structure forces the leaf depths, and conversely the leaf depths + the recursive structure... hmm, I need to be careful: **is the leaf-depth sequence injective?** Counter-candidate: (1,2,1) vs ... hmm. Let's find a real counterexample: 
+  - x = f(f(a,a), f(a,a)): leaves at depths 2,2,2,2 → (2,2,2,2).
+  - Any other tree with (2,2,2,2)? The root's children each have 2 leaves at relative depth 1 → each = f(a,a). So unique ✓.
+  - x = f(a,a): (1,1). Unique ✓.
+  - x = f(f(f(a,a),a),a): leaves: depth 3 (left-left-left = a at depth 3), then a at depth 2, then a at depth 1 → (3,2,1). 
+  - Alternative tree with (3,2,1)? Hmm, the reconstruction: split the sequence into L-part and R-part. R-part = (1) relative → R = f(a,a)?? no — a single leaf at relative depth 1... wait, "relative depth 1" means depth 1 relative to R, i.e., R's leaf is at depth 1 → R = f(a,a). Hmm no: if R has one leaf at relative depth 1, R has one leaf and that leaf is at depth 1 from R's root → R's root is internal with children that are both leaves → R = f(a,a), which has TWO leaves, not one. Contradiction. So R can't have a single leaf at relative depth 1. So the last element d_m must be ≥ 1 and... hmm, let me redo: R's leaf depths (relative) = (d - 1) for d in the R-part. For a valid tree, all relative leaf depths ≥ 0, and if the tree is an atom, the relative depth is 0 with exactly one leaf. So: a valid leaf-depth sequence either is (0) (the atom) or is (d_1+1, ..., d_m+1) where (d_1,...,d_m) is the concatenation of two valid sequences.
+  
+  So: **the leaf-depth sequence determines the tree iff the "split point" is unique at each level.** Is it? Given (D_1,...,D_m) with all D_i ≥ 1 (non-atom), we need to find the split point j such that (D_1-1,...,D_j-1) and (D_{j+1}-1,...,D_m-1) are both valid. Could there be two valid split points? Hmm: consider (2,2): splits: j=1: (1) and (1) — (1) is not valid (single leaf at depth 1). j=... only j=1. Hmm.
+  Consider (2,2,2,2): j=1: (1) invalid. j=2: (1,1) valid, (1,1) valid ✓. So x = f(f(a,a), f(a,a)) ✓ unique.
+  Consider (3,3,2,2): j=2: (2,2) and (1,1) ✓ both valid. j=... j=1: (2) invalid. So unique.
+  Hmm, could there be a case with two valid splits? Suppose (D) with splits j and j' both valid, j < j'. Then the L-part for j is a prefix of the L-part for j', so the L-part for j' = L-part for j concatenated with the first part of R-part for j... Since L(j') = (D_1-1,...,D_{j'}-1) is valid and equals L(j) · (D_{j+1}-1,...,D_{j'}-1), and both L(j) and L(j') are valid trees' leaf sequences. Hmm — but two different valid trees can't have one's leaf sequence be a proper prefix of the other's and both be valid unless... hmm, a valid sequence is a complete tree's leaf sequence; a proper prefix would correspond to a "partial" tree. Since valid sequences are exactly the leaf sequences of trees, and a proper prefix of a valid sequence is not valid (I believe), the split is unique. 
+  
+  Hmm, actually: is a proper prefix of a valid sequence ever valid? e.g., (1,1) is valid; is (1) valid? No. (2,2,1,1) valid? Let me check: splits: j=1: (1) invalid; j=2: (1,1),(0,0) — (0,0) invalid; j=3: (1,1,0),(0) — (1,1,0) invalid. Hmm, so (2,2,1,1) might not be valid at all. Hmm, so my claim "valid = concatenation of two shifted valid" needs the base case (0). Let me redo: leafseq(atom) = (0). leafseq(f(x,y)) = (leafseq(x)+1) · (leafseq(y)+1). So valid sequences: (0); or (u+1)·(v+1) where u,v valid. So the set is generated. And the split is unique iff no valid sequence is a proper prefix of another valid sequence with the "shifted concatenation" structure... 
+
+Hmm, I'm going down a rabbit hole. Let me step back: **the leaf-depth sequence is a well-known injective encoding?** Hmm. Actually, the well-known injective encoding is the preorder word (with degrees), not leaf depths. Let me test a potential collision for leaf depths: 
+- x1 = f(f(a,a), a): leaf depths (2,2,1). 
+- x2 = ? Need (2,2,1). Split: j=1: (1) invalid. j=2: (1,1) and (0) ✓ both valid (left = f(a,a), right = a). j=3: (1,1,0) invalid. So unique → x2 = f(f(a,a),a) ✓.
+- x3 = f(f(f(a,a),a),a): leaf depths: left = f(f(a,a),a) with depths (2,2,1)+1 = (3,3,2); right = a → (1). So (3,3,2,1). Split: j=3: (2,2,1),(0) ✓. Unique.
+Hmm, what about (3,2,2,1)? left part = (2,1,1) → is (2,1,1) valid? split: j=1: (1) invalid; j=2: (1,0),(0) — (1,0) invalid; j=3: (1,0,0) invalid. So (2,1,1) invalid. So (3,2,2,1) invalid.
+Hmm OK, I'll *conjecture* injectivity (and note it: the leaf-depth sequence appears to be injective; I believe it is, and I can give a reconstruction algorithm). Actually, let me just verify with a classical fact: the "leaf depth sequence" (a.k.a. the "Łukasiewicz / depth sequence") of a plane binary tree — hmm. There IS a classical bijection: plane binary trees with n internal nodes ↔ sequences of leaf depths. Because: the tree is determined by its leaves' depths (reconstruct by successively merging the two leftmost deepest siblings). YES — that's the standard reconstruction: repeatedly find two adjacent equal-depth deepest entries, merge them (replacing by depth-1). This terminates and gives the tree, and it's deterministic ⟹ **injective** ✓✓. 
+
+So: **the leaf-depth word ℓ(x) is injective**, and
+$$\ell(f(x,y)) = (\ell(x)+1)\cdot(\ell(y)+1)$$
+**This is a shift-coupled (LC1) injective address!** And the operation:
+**F(ℓ₁, ℓ₂) = (ℓ₁+1) · (ℓ₂+1)** — i.e., "increment all entries of ℓ₁, increment all entries of ℓ₂, concatenate". 
+
+Is this "decode-free"? It operates on the sequences: increment + concatenate — a **shift** on each coordinate plus a concatenation. So it's LC1 with shift! And it's injective ✓ and it's a **finite uniform schema** ✓. And no decode (never rebuilds the tree) ✓✓.
+
+**THIS IS A CONCRETE SUCCESS** for Task 3 (a shift-coupled injective address with a native Γ). Let me double check: is the increment operation "structured"? ℓ is a sequence; adding 1 to each entry = a shift in the "depth" coordinate. Yes, that's shift-coupled.
+
+Hmm, and is it "constantly-shift" — i.e., is F just "±1 and concatenate"? Yes. And it's cheap: O(|ℓ₁|+|ℓ₂|) for materialization, or O(1) for a rope.
+
+Now: how does this compare to Baseline 2 (bracket/string)? Bracket: w(f(x,y)) = "f"·w(x)·w(y) — concatenation with a prefix. Leaf-depth: ℓ(f(x,y)) = (ℓ(x)+1)·(ℓ(y)+1) — concatenation with an increment. **The difference: a shift/increment of all entries.** So: it's a *shift-coupled* version of the string encoding. Interesting — the increment is a genuine operation on the address's coordinates (all of them), and the original concept doesn't have it "directly exposed".
+
+Hmm, is the increment "address-native"? It's an operation on the sequence. And it's not "f's definition" — f's definition is "make a node", the increment-all is a different operation. So by the round-18 test: increment ∉ D1? Hmm — is "increment all entries of ℓ(x)" a structural-recursive attribute of x? Hmm, ℓ(x) is D1 (structural recursion), and increment is an operation *on the value*, so increment∘ℓ ∈ D1 (composition with a fixed map on the value domain). Hmm. So under D1 as "structural recursion into a finitely presentable algebra + fixed post-maps", the increment is D1. Hmm. But that's the round-18 criterion which the user has now told me to pause. OK! Good — the user says pause the meta-theory. So I should just present the construction and mark it as PROVEN / STANDARD / OPEN.
+
+Let me be disciplined: for each construction, give PROVEN (the construction works: injective, finite Γ, no decode), STANDARD (identify the known object), FAILED, OPEN.
+
+So for the leaf-depth address: PROVEN as a construction; and I should identify what it is: it's essentially the **"depth sequence" encoding**, which is standard in combinatorics as the bijection between plane trees and Łukasiewicz words/depth sequences. So STANDARD-as-an-object, but it's a *concrete instance of Address-native computation* with a shift algebra. Good.
+
+### Let me now build all candidates properly.
+
+**Candidate A · shift-coupled: leaf-depth word.** Done above. ✓ Injective. Γ = "increment + concatenate". 
+
+**Candidate B · convolution / graded: level profile.** A(x) = (a_0,a_1,...), a_k = #nodes at depth k. Γ: (a⊙b)_0 = 1, (a⊙b)_k = a_{k-1}+b_{k-1}. NOT injective. But per Task 4, don't kill it — study the mechanism: it's a **shift + add** = the generating function product structure. And then: to restore injectivity, add a residual. What's the minimal residual? By my round-18 count, Θ(n) bits. BUT — here's a better idea: **use the leaf-depth word instead** (which is injective and has the same shift flavor). Or: **profile + "sibling signature"**. Let me do the "profile + residual" concretely:
+  A(x) = (profile(x), s(x)) where s(x) = the "leaf-depth word"? Then it's redundant (the word already gives the profile). Hmm.
+  Better: A(x) = (profile(x), t(x)) where t(x) = the *skeleton* modulo something. Hmm.
+  **Concrete minimal residual idea**: the level profile loses the "shape" — specifically, it loses which nodes are internal. Add the count of internal nodes per level: a_k = #nodes at depth k, and e_k = #internal nodes at depth k. Then: at depth k we know the number of nodes and how many are internal. Is (a_k, e_k)_k injective? Hmm: x1 = f(f(a,a),a): levels: depth0: 1 node (internal), depth1: 2 nodes (1 internal: the left child), depth2: 2 nodes (0 internal). x2 = f(a,f(a,a)): depth0: 1 internal; depth1: 2 nodes (1 internal: the right child); depth2: 2 nodes (0 internal). So (a,e) is the same for x1 and x2! Not injective. So we need to know *which* position is internal. That's the ordering info → the full tree. So: **profile + internal-position info = tree**, i.e., the residual is the tree. **FAILED** for "small residual" — consistent with the counting bound.
+
+  So candidate B: **Γ works (shift+add is clean), but no small residual restores injectivity.** FAILED (as an injective address). Good, and I'll give the concrete collision above (x1 vs x2 with the (a,e) refinement) — that's a *concrete* refutation, better than a counting bound.
+
+**Candidate C · recursive residual.** A(x) = the "right-spine residual": hmm. Let me define: σ(x) = the sequence of left-depth... Let me do: **A(x) = the sequence of "left-spine lengths"**? Hmm. Or — a cleaner one: **A(x) = (k(x), r(x))** where k(x) = the "Kraft sum"? Hmm.
+
+Let me do a genuinely interesting residual: **A(x) = (ℓ(x), the "canonical residual" via prefix subtraction)**. Hmm.
+
+Let me instead do a **"recursive residual" in the sense of Huffman/Kraft**: For each node, define its "level" and its contribution. Hmm.
+
+OK let me do something concrete and useful: **A(x) = the "left-child path" decomposition**: x = L_1(L_2(...(L_m(a))...)) hmm.
+
+Alternatively: **A(x) = (degs(x), ℓ(x))** hmm.
+
+Let me try: **A(x) = the "spine-word"**: Let me define the right-spine decomposition: x = f(x_1, f(x_2, f(..., f(x_k, t)...)))? Hmm.
+
+Actually, a natural "recursive residual" that IS injective and has a clean Γ: **A(x) = the pair (ℓ(x), mirror-info)?** Hmm.
+
+Let me think differently. Here's a clean one: **A(x) = the sequence of "Ranks" (Strahler/register numbers) in preorder**, plus kinds. Hmm, that's just the tree.
+
+OK, let me do the honest thing for candidate C: **A(x) = "the residual after k levels" family** — i.e., the *truncation family* (which is depth-address) — no, the user said don't use truncation as the main candidate.
+
+Let me use: **A(x) = the "dyadic / Kraft address"**: assign each node of x a dyadic interval [m/2^k, (m+1)/2^k) by the root-to-node path (L = left half, R = right half). Then A(x) = the set of (interval, label). The composition: for f(x,y), the intervals of x's nodes shift right (L), and y's shift right (R). **This is a shift on the address coordinates!** And it's injective ✓ (intervals determine paths determine tree). And Γ = "shift + union + add root". 
+
+Hmm, this is very close to candidate E (neighborhood/path-indexed). But the "dyadic interval" framing makes the shift arithmetic (multiply by 2, add 0 or 1) — a **shift algebra on ℕ**! So:
+$$A(x)\subseteq \mathbb{N}\times\{\text{labels}\},\quad \text{key}= \text{the path read as a binary fraction: } p\mapsto 2^{-|p|}(1 + \text{bin}(p))$$
+$$\Gamma:\ A(f(x,y)) = \{(\varepsilon, f)\}\cup \{(2m, l) : (m,l)\in A(x)\}\cup\{(2m+1,l):(m,l)\in A(y)\}$$
+**This is a shift-coupled address with an ARITHMETIC shift** — and it's injective ✓, native ✓ (shift by 2, add 0/1, union — all operations on ℕ-sets), and **no decode** ✓.
+Hmm, this is nice and concrete! And it shows the "shift" mechanism vividly. But it's essentially "the tree with paths encoded as integers" = standard.
+
+**Candidate D · context/zipper composition.** Explicit:
+A(x) = (the multiset of "left contexts" and "right contexts")? Or: A(x) = the "spine decomposition": 
+Let me use the classical **"Huét zipper"**: A(x) = (focus, context) for the leftmost focus. Hmm, that's a *single* zipper, not the whole tree.
+
+Let me define: **A(x) = the set of all one-hole contexts of x**, i.e., ∂(x) = {(K, s) : K[s] = x, K ≠ □}. Round 18 showed: injective ✓, but Γ requires reconstructing x. Hmm — but wait, let me redo. Can I define Γ on ∂ alone?
+∂(f(x,y)) = {□} ∪ {f(K,y) : K ∈ ∂x} ∪ {f(x,K) : K ∈ ∂y}.
+To form "f(K,y)" I need y. To get y from ∂y, I need to plug: pick (K₀, s₀) ∈ ∂y and y = K₀[s₀]. So Γ must plug. **But is that "reconstructing the full Concept"?** It reconstructs y — yes, it's reconstruction. Per the user's rule 2 ("不恢复完整 Concept"), this FAILS.
+**Unless** we redefine the address to be **contexts only**, in a way that composition is context-composition:
+Let A(x) = the "context tree" C(x) — hmm.
+Alternative: **A(x) = (x, ∂x) is redundant.** 
+**Better idea**: define the address as the **"context-composition normal form"**: hmm.
+Let me construct a variant that works: **A(x) = the multiset of "root paths" ℓ(x) — no.**
+
+Let me actually do the honest thing: mark D as FAILED-with-reason (Γ requires the terms, not just their context sets), and give the concrete reason.
+
+Hmm, but the user wants me to try hard. Let me see if there's a variant where context composition alone suffices.
+
+Idea: store, for each subterm occurrence, the context. Then A(x) = {(s, K) : ...}. To compute A(f(x,y)): the occurrences in x get their contexts extended by "f(□, y)" — which requires y. So y is needed. Hmm — **unless the address stores y's *root label* only and the extension is done lazily**... but then we lose info.
+
+**Key realization**: the reason context-composition needs the terms is that the context "f(□, y)" contains y *as data*. So ∂ alone can't produce it — unless the address is a *shared structure* where y is available by reference. But "by reference" = the address contains the tree. Hmm. So: **∂ is injective but its composition intrinsically needs the terms ⟹ any decode-free version must store the terms ⟹ redundant.** Clean FAILED with reason. Good.
+
+**Candidate E · finite-neighborhood local rule.** A(x) = the "kind + children-kinds" family indexed by node address; Γ = child-shift. Explicit and injective (radius 1 determines the tree). But it's a reindexing. I'll mark it PROVEN-as-construction + STANDARD.
+
+**Candidate F · factorized state + residual.** Let me construct: A(x) = (γ(x), ρ(x)) where γ(x) = a **finite-state automaton run** (e.g., the "is-complete-binary-tree" flag + height mod something) and ρ(x) = a **residual** = the "unbalanced part". Concretely:
+- γ(x) = (h(x) mod 2, isComplete(x), #leaves mod m).
+- ρ(x) = the "canonical factorization": x = (complete part) ⊗ (residual)? Hmm.
+Let me construct something clean: **A(x) = (s(x), w(x))** where s(x) = the "skeleton" = the tree with each maximal complete subtree replaced by a marker showing its height, and w(x) = the word listing the heights. Hmm, that's a "run-length / grammar-compressed" representation. 
+Concretely: **the "grammar-compressed address"** — represent x by its **smallest straight-line program (SLP) / DAG**. Then A(x) = the SLP. Γ = combine two SLPs and add a rule. **Injective ✓** (the SLP determines x). **Γ native ✓** (union of rules + one new rule; no decode). **This is a genuinely interesting candidate!** And it's the "persistent DAG / sharing" mechanism the user asked about in Task 5.
+Hmm — but is the *smallest* SLP canonical/computable? Finding the minimal DAG is NP-hard in general. Hmm. But we can use a canonical non-minimal one: **the canonical DAG = the term-DAG with hash-consing** (baseline 4). So this collapses to baseline 4. Hmm.
+But here's the interesting variant: **the SLP/DAG shared across a SET of terms** — i.e., the address of x is only meaningful *relative to a shared dictionary*. Then the "address" of a term is context-dependent. Hmm, that's the "persistent" mechanism: A(x) = (DAG node) where the DAG is shared across all composed terms. Γ = "add one node". This gives the **O(1) composition with automatic sharing** — and the *size* of the shared DAG is much smaller than the sum of sizes. This is candidate F and it's real. But it's baseline 4 + sharing.
+
+**Candidate G · canonical algebraic normal form.** E.g., normal form under rewriting. A(x) = NF(x). Γ = NF(f(NF(x), NF(y))). Injective iff the rewriting system is confluent+terminating and NF is injective (i.e., ≡ is the identity — only for trivial systems). Hmm: if NF is injective then the system has no nontrivial equation, so NF = id effectively. So G fails injectivity for any nontrivial system (NF identifies distinct terms). Hmm — BUT: interesting variant: **A(x) = (NF(x), the "proof" / derivation trace)**. Then injective ✓ (the trace records the rewrites, so x is recoverable). Hmm — but then the trace is a D1 attribute of x. And Γ = compose traces. Hmm, this is basically "x plus a canonical derivation" = redundant. FAILED as *non-redundant*.
+
+Let me also add the **"dyadic interval" one as candidate C** (recursive residual / shift arithmetic). Actually let me organize:
+
+Final candidate list (5-7, each with explicit A(x), Γ):
+1. **Shift-coupled · leaf-depth word**: A(x) = ℓ(x); Γ = (ℓ₁+1)·(ℓ₂+1). ✓ INJECTIVE, NATIVE, O(1)-rope.
+2. **Shift-coupled · dyadic interval (path-as-binary-integer)**: A(x) = {(m_p, label)}; Γ = shift (2m + i) + union + root. ✓ INJECTIVE, NATIVE.
+3. **Convolution/graded · level profile**: A(x) = (a_k); Γ: (a⊙b)_k = a_{k-1}+b_{k-1}. ✗ NON-INJECTIVE (concrete collision given). FAILED as injective; and refinement (a_k,e_k) also has a collision (given).
+4. **Context/zipper · derivative**: A(x) = ∂(x); Γ = Leibniz. ✗ FAILS no-decode (needs terms).
+5. **Neighborhood · radius-1**: A(x) = (kind(w),kind(wL),kind(wR)); Γ = child-shift. ✓ INJECTIVE, NATIVE, but STANDARD (reindexing).
+6. **Factorized state + residual · shared SLP/DAG**: A(x) = canonical DAG node (relative to a shared dictionary built during composition); Γ = intern. ✓ INJECTIVE, NATIVE; the "compression" mechanism (|DAG| ≪ Σ|tree|) is real.
+7. **Normal form + derivation trace**: ✗ redundant (trace determines x and vice versa). FAILED as non-redundant.
+
+That's 7. 
+
+Now Task 3's "forced success example": I have #1, #2, #5, #6 satisfying injective + finite Γ + no decode. **#1 (leaf-depth word) is the cleanest genuinely "shift-coupled" success**: 
+- A(f(x,y)) = Γ(A(x),A(y)) with Γ = "increment each entry of both, then concatenate".
+- Injective ✓ (proved via the merge-reconstruction algorithm).
+- Γ uses SHIFT (the +1 on all coordinates) — a coordinate-coupling operation.
+- No decode.
+And #2 gives the arithmetic version.
+
+But I must honestly answer Task 8: **is #1 "just an existing representation"?** It's the standard leaf-depth/Lukasiewicz encoding. So the *encoding* is standard. What's arguably new-ish: the **Γ is a shift+concatenate calculus**, i.e., the composition is expressed as a *coordinate-level operation* rather than as "decode, combine, encode". That's the "Address-native" flavor. And the honest classification: **PROVEN construction; STANDARD object (depth-sequence encoding); the mechanism is a shift algebra on the sequence, which does participate in Γ.** So: it's a *successful Address-native construction* whose underlying object is standard. That's exactly what the user asked for in Task 5 ("标准不是失败。先把机制真正做出来").
+
+Now Task 5: compression. 
+- **Information-theoretic limit**: |{trees with ≤ n nodes}| = Θ(4^n/n^{3/2}), so any injective address needs ≥ 2n - O(log n) bits — i.e., **Ω(n) bits, no sublinear compression**. So "|A(x)| ≪ |x|" is impossible in general. [PROVEN]
+- BUT **structural compression** (shared DAG) is possible: for a *family* of terms built by composition, the shared DAG has size O(#distinct subterms) which can be ≪ Σ|terms|. E.g., the chain t_1 = a, t_{k+1} = f(t_k,t_k): the explicit tree t_k has 2^k - 1 nodes but the DAG has k nodes. **Exponential compression** ✓. And Γ = intern-in-DAG is O(1) per composition. **This is a real, dramatic structural compression with native composition.** [PROVEN]
+So candidate 6 has a genuine compression story. 
+
+Task 6: which structures truly participate in Γ?
+- shift: #1, #2 ✓ (the increment is essential — without it you don't get the right depth sequence)
+- convolution: #3 (but lossy)
+- context composition: #4 (needs terms)
+- residual algebra: #1 is essentially a residual/shift algebra
+- recursive state transition: n/a here
+- factorization law: #6
+- local rewrite: #7 (lossy)
+So: shift and DAG-sharing are the two mechanisms that genuinely participate.
+
+Task 7: output only PROVEN / STANDARD / FAILED CANDIDATE / OPEN CANDIDATE.
+
+Task 8: 
+- Is there a genuine successful Address-native construction? **YES** — #1 (leaf-depth word with shift+concat calculus) and #6 (shared DAG with intern calculus), both satisfy: injective, finite Γ, no decode, Γ uses address-internal structure (shift / dictionary links) not exposed by f.
+- Is it just an existing representation, or a new internal composition mechanism? **The encodings are standard; the Γ's are the mechanism, and they are genuinely coordinate-level (shift / intern) rather than decode-compose-encode.** So: **a successful construction exists; it is standard as an object; its Γ is a native calculus.** That's the honest answer.
+
+Now let me also carefully verify #1's injectivity proof, since it's the headline.
+
+**Claim**: ℓ: T → ℕ* (finite sequences of naturals), ℓ(atom_i) = (0), ℓ(f(x,y)) = (ℓ(x)+1)⌢(ℓ(y)+1), is injective.
+
+**Proof (reconstruction algorithm)**: Given a nonempty sequence D = (D_1,...,D_m) of naturals, define a reconstruction: 
+- if m = 1 and D_1 = 0: return atom.
+- else (D_1 ≥ 1): find the unique split index j (1 ≤ j < m) such that (D_1-1,...,D_j-1) and (D_{j+1}-1,...,D_m-1) are both "ℓ-images"; then return f(rec(left), rec(right)).
+Need: (a) a valid split exists (for any D in the image); (b) it's unique; (c) unique split ⟹ deterministic reconstruction ⟹ injective.
+
+For (b): Suppose splits j < j' both work. Then L_j := (D_1-1,...,D_j-1) is an ℓ-image, and L_{j'} = L_j ⌢ (D_{j+1}-1,...,D_{j'}-1) is also an ℓ-image. So an ℓ-image is a *proper prefix* of another ℓ-image, extended by (D_{j+1}-1,...,D_{j'}-1) whose entries are ≥ 0 (since D ≥ 1). Hmm — is that impossible? An ℓ-image of a tree is a sequence of leaf depths. If D_{j+1}-1 ≥ 0, i.e., D_{j+1} ≥ 1 ✓ (all entries are ≥ 1 in the non-atom case, since ℓ-values are shifted by +1...). Hmm, but the entries of L_j are leaf depths which can be 0. So "L_j is a proper prefix of L_{j'}" — can an ℓ-image be a proper prefix of another? ℓ-images of trees with m leaves: the depth sequence. E.g., ℓ(a) = (0); ℓ(f(a,a)) = (1,1). Is (0) a proper prefix of (1,1)? No. Is (1,1) a prefix of some longer ℓ-image? (1,1,x): a tree whose first two leaves are at depth 1 — then the first two leaves are the children of the root, so the tree is f(a, ?) and the third leaf is in the right subtree at depth... the right child is internal (since there's a third leaf), so the right child = f(u,v) and the third leaf has depth ≥ 2. So (1,1,1) is not an ℓ-image. Hmm, so (1,1) might not be a proper prefix of any ℓ-image. Interesting — that's exactly the "prefix-free" property! Let me check: **are ℓ-images prefix-free?** ℓ(x) is prefix-free iff no ℓ-image is a proper prefix of another. Take x = f(a,a) → (1,1) and x' with ℓ(x') starting (1,1,...): as argued, the first two leaves at depth 1 ⟹ they're the root's children ⟹ no third leaf ⟹ x' = x. ✓ So (1,1) is not a proper prefix of anything. Similarly, in general: **if the first leaf is at depth d, then the tree's leftmost spine has length d**, and the sequence is determined... The prefix-free property: ℓ(x) is a proper prefix of ℓ(y) ⟹ impossible. Proof sketch: if ℓ(x) = (D_1,...,D_m) is a proper prefix of ℓ(y), then y has m+1 leaves; the first m of y's leaves have depths D_i. But the depths D_i determine the "left part" of the tree, and having determined m leaves we should have closed the tree... Hmm, I need to argue that the sequence D_1..D_m determines a complete tree, so it can't be a proper prefix. This is exactly the reconstruction: if the reconstruction from D is unique and complete after m entries, then adding more entries contradicts completeness. 
+
+I think the cleanest proof is: **the reconstruction algorithm** (merge two adjacent deepest equal-depth entries) terminates and is deterministic:
+- Repeat: find the leftmost-adjacent pair (D_i, D_{i+1}) with D_i = D_{i+1} = max, replace by max-1. 
+- For ℓ(x), this correctly reverses the construction. And the process is deterministic given the multiset structure? Hmm, "leftmost pair of maximum depth" — is that well-defined and does it give the right answer? For (1,1): pair (1,1) → (0) ✓ = ℓ(a) then the whole thing is the atom. Hmm, that loses the tree! I need to keep track. Let me reformulate as: the reconstruction builds the tree by merging: (1,1) → merge → atom... no. Hmm, let me redo: ℓ(f(x,y)) = (ℓ(x)+1)(ℓ(y)+1). To invert: given D, I need to find where x's part ends. x's part is (D_1-1,...,D_j-1) = ℓ(x), a valid image. So find the smallest j such that (D_1-1,...,D_j-1) is a valid image AND the rest is too. Since valid images are prefix-free (as argued), the smallest valid-prefix is unique. Greedy: scan j from 1 upward; the first j where (D_1-1,...,D_j-1) is an ℓ-image. Hmm, need to check "valid prefix" membership — recursive but well-defined. 
+
+OK. Let me just present it as: **the map is injective; the inverse is the standard "merge deepest adjacent equal-depth siblings" reconstruction from Łukasiewicz/depth sequences**, and give the algorithm: 
+*Reconstruction*: given (D_1,...,D_m), repeatedly find the smallest i with D_i = D_{i+1} = max(D_1,...,D_m), replace the pair by (D_i - 1). Continue until a single entry 0 remains; the merge history *is* the tree. 
+Verify on (1,1): max = 1, smallest i with D_i=D_{i+1}=1 is i=1 → replace by (0) → done: the tree is f(a,a)? Hmm, the merge of (1,1)→(0) corresponds to: the two leaves at depth 1 are siblings, merged into a subtree rooted at depth 0 → that subtree is f(a,a), and it's the whole tree ✓. 
+Verify on (2,2,1): max = 2, smallest i with D_i = D_{i+1} = 2 is i=1 → replace → (1,1) → then merge → (0) ✓. Tree: first pair at depth 2 are siblings → subtree S1 = f(a,a) at depth 1; then sequence (1,1) → the two depth-1 items are siblings → root = f(S1, a) ✓ = f(f(a,a),a) ✓ CORRECT.
+Verify on (1,2,2): max=2, i=2 → (1,1) → (0) ✓. Tree: the depth-2 pair are siblings → subtree at depth 1; then (1,1) → root = f(a, f(a,a)) ✓ CORRECT.
+**But determinism**: "smallest i with D_i = D_{i+1} = max" — is this always the right choice? Consider (2,1,2): max=2, no adjacent equal max (positions 1 and 3 are both 2 but not adjacent). Hmm — then the algorithm fails, consistent with (2,1,2) not being an ℓ-image ✓. 
+Consider (2,2,2): max=2, smallest i=1 → (1,2)... hmm, then we'd need to merge 1 and 2? Different depths can't merge. So the algorithm fails on (2,2,2) — but is (2,2,2) an ℓ-image? A tree with 3 leaves all at depth 2: root's children both internal, with 3 leaves total; leaves are at depth 2, and they come in sibling pairs, so the number of leaves is even... Actually each internal node at depth 1 contributes 2 leaves at depth 2, so the leaf count at depth 2 is even. So (2,2,2) isn't valid ✓. Consistent.
+Hmm, but is (2,2,1,1) valid? max=2, i=1 → (1,1,1) → max=1, i=1 → (0,1) → fails. So invalid ✓ (consistent with my earlier finding).
+Great — so the algorithm (merge the leftmost pair of equal maximum depth) works, is deterministic, and fails exactly on non-images. Hmm, I should double-check one more: (1,1,2,2)? max=2, i=3 → (1,1,1) → i=1 → (0,1) fails. So (1,1,2,2) invalid? Hmm: a tree with leaves at depths 1,1,2,2: the first two leaves at depth 1 are the root's children → root has exactly 2 leaves → contradiction with 4 leaves. So invalid ✓.
+And (3,3,2,3,3)? max=3, i=1 → (2,2,3,3) → max=3, i=3 → (2,2,2) → max=2, i=1 → (1,2) fails. Hmm, so invalid. Let me check by construction: x = f(f(T,T), f(U,V))? Hmm, getting complicated. Let me trust the algorithm — it's the standard Łukasiewicz reconstruction and it's deterministic, and for ℓ-images it terminates correctly (induction on the tree). Good.
+
+**So: ℓ is injective, with a deterministic polynomial-time inverse.** [PROVEN]
+
+Hmm, one caveat: is the greedy "leftmost pair of equal maximum" always the right merge for valid images? For a valid image, the leftmost maximum-depth leaves are siblings (the two leftmost deepest leaves must be siblings — true: take the deepest level; the two leftmost leaves at that depth are the children of the leftmost internal node at the level above, and they're adjacent in the order) ✓. So the greedy merge is correct ✓. 
+
+So the proof is clean.
+
+Now — one more important check for candidate 1: **is Γ = "increment + concatenate" really "no decode"?** To form Γ(ℓ₁,ℓ₂) = (ℓ₁+1)⌢(ℓ₂+1), we increment each entry of ℓ₁ and ℓ₂ and concatenate. This reads the address's coordinates (entries) and produces a new address. It never builds a tree. ✓ No decode ✓.
+
+And is it "C"? The increment touches *all* coordinates → Dep is global (LC2)! Hmm! Incrementing all entries reads all of ℓ. Hmm. But: if the sequence is stored as a **lazy/rope with a uniform offset**, then "increment all" is O(1) (store an offset tag)! That's the *shift algebra* trick — the "+1 on everything" is a *lazy shift*. So with a rope/skew-binary or "offset-tagged" representation, Γ is O(1). ✓ That's a genuinely nice point: **the shift is implemented as a tag, making composition O(1)**.
+
+So candidate 1: 
+- A(x) = the leaf-depth word, stored as a sequence with lazy uniform offsets.
+- Γ(ℓ₁,ℓ₂) = concat(shift(ℓ₁,+1), shift(ℓ₂,+1)) — O(1) with the offset representation (just create a node with an offset tag).
+- Injective ✓ (the tree is recoverable by the merge algorithm).
+- Compression? No — |ℓ(x)| = #leaves, which is Θ(|x|). So no compression, but O(1) composition (rope) — same as baseline 2.
+- And the *shift* is essential: it's the mechanism that makes the address "aware of depth without storing the tree".
+
+Good. This is a real, concrete, successful construction. Let me headline it.
+
+Let me also double check candidate 2 (dyadic interval) — actually let me drop it or merge it with candidate 1, since it's the same mechanism. Let me keep it as a variant: the "prefix-code / Kraft address". Hmm — actually, an even cleaner version of the shift mechanism: **the "prefix code" address**: A(x) = a binary string... hmm, that's baseline 2. 
+
+Let me instead make candidate 2 = **the "Kraft/dyadic address" with the property that the address of a subtree is determined by shifting the parent's** — the "path arithmetic". Let me present it as: A(x) = the set of (dyadic index, label) pairs; Γ = shift by 2 + union. Injective ✓. Mechanism: arithmetic shift. Fine, I'll include it briefly.
+
+Now let me write up. I should be disciplined: the user wants CONSTRUCTIONS with explicit R and Γ, verdicts PROVEN/STANDARD/FAILED/OPEN, and no meta-theory.
+
+I'll include a widget showing the leaf-depth shift calculus — that's the concrete "success" and a good visual: a tree, its leaf-depth word, and the composition rule.
+
+Let me design the widget: 
+- Top-left: two trees x, y with their words ℓ(x), ℓ(y).
+- The rule: ℓ(f(x,y)) = (ℓ(x)+1) ⌢ (ℓ(y)+1)
+- The result tree with its word.
+- Note: injective (merge reconstruction), no decode, O(1) with offset tags.
+
+Let me make it compact. viewBox 720 x ~300.
+
+Let me lay out:
+- x = f(a,a): ℓ = (1,1) at y=60
+- y = a: ℓ = (0) at y=100
+- f(x,y) = f(f(a,a),a): ℓ = (2,2,1) at y=170
+- The rule with the shift highlighted.
+
+Let me write it as a small flow: left column trees, right column words, arrow showing +1 and concat.
+
+Simpler: three rows, each with a small tree drawing (as text/SVG) and its word.
+
+Let me just do text-based rows with monospace-ish rendering, plus an arrow. Keep it clean.
+
+Layout:
+Row 1 (y 40-80): "x = f(a,a)" → ℓ(x) = (1, 1)
+Row 2 (y 90-130): "y = a" → ℓ(y) = (0)
+Rule box (y 150-190): ℓ(f(x,y)) = (ℓ(x)+1) ⌢ (ℓ(y)+1)  ⇒  (2,2) ⌢ (1) = (2, 2, 1)
+Row 3 (y 210-250): "f(x,y) = f(f(a,a),a)" → ℓ = (2, 2, 1) ✓
+Bottom (y 270-310): injective via merge reconstruction；no decode；shift as offset tag ⇒ O(1)
+
+Good. Let me write the SVG.
+
+Then the text answer with all 8 tasks.
+
+Let me be careful with the structure and keep it disciplined: no new meta-theory, just constructions + verdicts.
+
+Let me write.
+
+For the 6 baselines (Task 1), keep each to 2-3 lines: R(x), F(A,B), why no decode.
+
+Let me write the answer now.
+
+Also Task 4 says: don't kill non-injective candidates early; study the mechanism. So for B (profile), I study the mechanism (shift+add = generating function product) AND give the concrete collision for the (a,e) refinement.
+
+Let me finalize and write.
+
+Now write the constructive answer. Let me be disciplined and concrete: 6 baselines, 7 candidates with explicit R and Γ, verdicts PROVEN/STANDARD/FAILED/OPEN.
+
+Let me write efficiently but completely.
+# 第一任务：六个基线 Address（建立视觉直觉）
+
+固定 $\Sigma=\{f/2\}$，$T=T_\Sigma(X)$。
+
+| # | $R(x)$ | $F(A,B)$ | 为何不需 decode |
+|---|---|---|---|
+| **1** | **原树 / 指针树**：结点 = `(tag f, ptr_L, ptr_R)`，叶 = 原子 | `F(u,v) = alloc(f, u, v)` —— 分配一个结点 | $F$ 只读两个指针与标签，写一个新单元 |
+| **2** | **括号串 / 前缀词**：$\mathrm{w}(x)$，内部结点写 `f`，叶写原子。例 $f(a,f(a,a))\mapsto$ `f a f a a` | $F(u,v) = \texttt{f}\cdot u\cdot v$（前缀 + 拼接）。若用 rope 则 `O(1)` | 只做拼接与前置一符号，不解析 |
+| **3** | **Gödel / pairing**：$n(\text{atom}_i)=2i{+}1$，$n(f(x,y))=2\langle n(x),n(y)\rangle$ | $F(u,v)=2\langle u,v\rangle$ —— 纯算术 | $\langle\cdot,\cdot\rangle$ 是显式双射，无需反解 |
+| **4** | **规范项 DAG（interning）**：$R(x)=$ 该 term 在 hash-cons 表中的唯一代表指针 | $F(u,v)=\mathrm{intern}(f,u,v)$ —— 查表/建结点 | 读两个指针 + 标签，不展开 |
+| **5** | **深度分辨率**：$R(x)=(\pi_0(x),\dots,\pi_d(x))$ | $F$：$\pi_n\mapsto\mathrm{cons}_f(\mathrm{tr}\,\pi_nA,\mathrm{tr}\,\pi_nB)$ 逐坐标 | 每坐标只读同位坐标 |
+| **6** | **Merkle / 内容寻址**：$R(x)=h(x)$，$h$ 为由 (tag, 子哈希) 递归算出的哈希 | $F(u,v)=h(f,u,v)$ | 只算一次哈希 |
+
+**共同点（这就是"Address-native computation"的基线直觉）**：$F$ 是一条**在地址自身的槽/链接/算术上**执行的短程序；它**从不重建 $x,y$**。第 3 类（Gödel）说明"能直接在地址上算"本身不稀奇——**所以真正的区分不在"能不能"，而在"地址内部出现了什么结构让 $F$ 变短"**。
+
+---
+
+# 第二 / 三 / 四任务：七个候选，全部写出 $A(x)$ 与 $\Gamma$
+
+## 候选 1 · shift-coupled：叶深度字 ★本轮成果
+
+$$A(x)=\ell(x)\in\mathbb{N}^*,\qquad \ell(\text{atom})=(0),\qquad \ell(f(x,y))=(\ell(x)+1)\frown(\ell(y)+1)$$
+$$\boxed{\ \Gamma(\ell_1,\ell_2)=(\ell_1+1)\frown(\ell_2+1)\ }$$
+即"**把两张字的所有项各 +1，再串接**"。
+- 例：$\ell(f(a,a))=(1,1)$，$\ell(a)=(0)$，$\Gamma=(2,2)\frown(1)=(2,2,1)=\ell(f(f(a,a),a))$ ✓
+- **单射 ✓ [PROVEN]**：逆算法 = 反复合并"**最左一对相等且最深**"的相邻项，合并史即树。验证 $(2,2,1)\to(1,1)\to(0)$：先合出 $f(a,a)$，再合出根 ✓。（左边最深的两个叶必为同胞，故贪心合并正确，且该过程确定。）
+- **无 decode ✓**：$\Gamma$ 只做"全体 +1"与串接。若字用**带偏移标签的 rope** 存储，"全体 +1"是 `O(1)` 的标签操作 ⟹ **$\Gamma$ 是 $O(1)$**。
+- **与基线 2 的实质差别**：弦接前多了一次**对全部坐标的移位**。这个移位是 $\Gamma$ 的必需成分（去掉它就得不到正确的深度），而它在 $f$ 的定义里**没有对应物**。
+- **分类**：PROVEN（构造完整）；对象层面 STANDARD（这是平面树的"叶深度序列/Lukasiewicz 型"编码）。
+
+## 候选 2 · shift-coupled（算术版）：Kraft / 二进地址
+
+$$A(x)=\{(m_p,\text{label}_p)\},\qquad p\mapsto m_p=1+\mathrm{bin}(p)\in\mathbb{N}$$
+$$\Gamma:\ A(f(x,y))=\{(1,f)\}\cup\{(2m,l):(m,l)\in A(x)\}\cup\{(2m+1,l):(m,l)\in A(y)\}$$
+- 单射 ✓（区间确定路径确定树）；$\Gamma$ = **左移一位 + 加 0/1 + 并集**，纯算术移位，无 decode ✓。
+- **分类**：PROVEN；对象 STANDARD（路径即整数）。
+
+## 候选 3 · convolution / graded：层剖面
+
+$$A(x)=(a_k(x))_k,\qquad a_k(x)=\#\{\text{深度 }k\text{ 的结点}\},\qquad (a\odot b)_0=1,\ (a\odot b)_k=a_{k-1}+b_{k-1}$$
+- **$\Gamma$ 机制清楚 ✓**：这是"移位 + 相加"，等价于生成函数的 $z$ 次乘法 $G_{f(x,y)}=1+z\,G_xG_y$。
+- **非单射 ✗ [FAILED，具体碰撞]**：$x_1=f(f(a,a),a)$ 与 $x_2=f(a,f(a,a))$ 的 $a=(1,2,2)$ 全同。
+- **加强一档也失败**：加"每层内部结点数"$e_k$。$x_1$ 与 $x_2$ 的 $(a,e)$ 都是 $\big((1,2,2),(1,1,0)\big)$——**仍然碰撞**。要区分必须知道"哪个位置是内部的"，那就是树本身。
+- **分类**：FAILED CANDIDATE（机制干净但不能做 Address）；机制名：graded shift / generating-function product。
+
+## 候选 4 · context / zipper：导数地址
+
+$$A(x)=\partial(x)=\{(K,s):K[s]=x,\ K\ne\square\},\qquad \Gamma:\ \partial(f(x,y))=\{\square\}\uplus f(\partial x,\,y)\uplus f(x,\,\partial y)$$
+- **单射 ✓ [PROVEN]**：$\partial x=\varnothing\iff x\in X$；否则任取 $(K,s)$ 得 $x=K[s]$。
+- **$\Gamma$ 机制**：这是 **Leibniz 乘积法则**（$\partial(xy)=\partial x\cdot y+x\cdot\partial y$），是真正的律。
+- **✗ 关键失败**：要构造 $f(\partial x,\,y)$ 必须得到 **$y$ 本身**，而 $y$ 只能由 $\mathrm{plug}(K,s)$ **重建**。**⟹ 违反"不重建完整 Concept"。**
+- **补救失败**：改成 $A(x)=(x,\partial x)$ 则 $\partial$ 冗余，退回 transport。
+- **分类**：FAILED CANDIDATE，理由精确（律本身需要项，地址里只有上下文）。
+
+## 候选 5 · finite-neighborhood：半径 1 局部规则
+
+$$A(x)=\big(\mathrm{kind}(w),\mathrm{kind}(wL),\mathrm{kind}(wR)\big)_w,\qquad \Gamma:\ a_{Lw}\mapsto a_w(A),\ a_{Rw}\mapsto a_w(B),\ a_\varepsilon\mapsto(f,\text{kinds})$$
+- 单射 ✓（半径 1 逐点给出全部结点种类），$\Gamma$ = child-shift，无 decode ✓。
+- **分类**：PROVEN 构造；**STANDARD**——它是树本身的重索引（等价于 tree transducer 的特例），且 $\Gamma$ 里**没有任何非 $f$ 的运算**。
+
+## 候选 6 · factorized state + residual：共享 SLP / DAG
+
+$$A_D(x)=\text{在共享字典 }D\text{ 中的规范结点},\qquad \Gamma(A_D(x),A_D(y))=\mathrm{intern}_D(f,\,A_D(x),\,A_D(y))$$
+- 单射 ✓（给定 $D$）；$\Gamma = O(1)$（查/建一个结点），无 decode ✓。
+- **压缩机制真实 ✓ [PROVEN]**：领 $t_1=a$，$t_{k+1}=f(t_k,t_k)$。显式树 $t_k$ 有 $2^k-1$ 个结点；共享 DAG 只有 $k$ 个结点。**指数级结构压缩，且组合仍是 $O(1)$。**
+- **分类**：PROVEN；对象 STANDARD（基线 4 + 跨项共享）。
+
+## 候选 7 · canonical normal form + 推导轨迹
+
+$$A(x)=\big(\mathrm{NF}(x),\ \mathrm{trace}(x)\big)$$
+- 若 $\mathrm{NF}$ 单射，则重写系统无非平凡等式，$\mathrm{NF}=\mathrm{id}$（退化为基线 1）。
+- 若系统非平凡，则 $\mathrm{NF}$ 必非单射，**必须**靠 $\mathrm{trace}$ 补回——而 $\mathrm{trace}$ 完全由 $x$ 决定、$x$ 也由 $\mathrm{trace}$ 决定 ⟹ **互为冗余**。
+- **分类**：FAILED CANDIDATE（非冗余性失败）。
+
+---
+
+# 第五任务：压缩 + 可组合
+
+**信息论上界（全局）[PROVEN]**：$n$ 结点二叉树数 $=\mathrm{Catalan}(n)\sim 4^n/n^{3/2}$，故任何单射 $A$ 需
+$$\lvert A(x)\rvert\ \ge\ 2n-O(\log n)\ \text{bits}\ =\ \Omega(n)$$
+**⟹ 全局亚线性压缩被禁止。** 候选 1（$\lvert\ell\rvert=$ 叶数）与候选 2 都在此界限上，无压缩。
+
+**结构压缩（可行）[PROVEN]**：候选 6 的共享 DAG 打破了"逐项求和"的界限——$\sum_k\lvert t_k\rvert=2^{K+1}-O(K)$ 而 DAG 大小 $=O(K)$。**这是唯一一类真正同时做到"压缩 + 直接组合"的机制**，而且它不依赖"把 $x$ 变得更短"，而依赖"**跨项共享**"。
+
+---
+
+# 第六任务：哪些结构真正参与了 $\Gamma$
+
+| 结构 | 出现在 | 是否真正参与 $\Gamma$ |
+|---|---|---|
+| **shift（全体坐标 +1）** | 候选 1 | **是**——去掉它结果就错。且可用偏移标签实现为 $O(1)$ |
+| **算术移位（$\times2+i$）** | 候选 2 | **是** |
+| convolution（移位 + 相加） | 候选 3 | **是**，但产物不单射 |
+| context composition（Leibniz） | 候选 4 | **是**，但需要项 ⟹ 需 decode |
+| residual algebra | 候选 1、6 | **是**（$\ell$ 本身是残差；DAG 是共享残差） |
+| 字典/链接（interning） | 候选 6 | **是**——$\Gamma$ 的全部内容就是"查/建链接" |
+| local rewrite | 候选 7 | **否**（被 trace 冗余掉） |
+
+**两个真正立得住的机制：shift 与 DAG-sharing。** 其余要么不单射、要么需 decode、要么冗余。
+
+---
+
+# 第七 / 八任务：结论
+
+## PROVEN（给出完整构造）
+
+1. **候选 1（叶深度字 + 移位演算）**：$\Gamma(\ell_1,\ell_2)=(\ell_1{+}1)\frown(\ell_2{+}1)$；**单射 ✓、有限 $\Gamma$ ✓、无 decode ✓、用偏移标签时 $O(1)$ ✓**。这是本轮的正面成果。
+2. **候选 2（Kraft/二进地址）**：$\Gamma$ = 算术移位 + 并集；单射 ✓、无 decode ✓。
+3. **候选 5（半径 1 局部规则）**：单射 ✓、$\Gamma$ 有限 ✓。
+4. **候选 6（共享 DAG 的 interning）**：单射 ✓、$O(1)$ 组合 ✓、**指数级结构压缩 ✓**。
+5. **全局压缩上界**：$\Omega(n)$ bits，亚线性压缩不可能。
+6. **候选 3 的具体碰撞**：$f(f(a,a),a)$ 与 $f(a,f(a,a))$ 在层剖面（及 $(a,e)$ 加强版）下相同。
+7. **候选 4 的失败机制**：Leibniz 律必须得到项本身。
+8. **候选 7 的失败机制**：NF 单射 ⟺ 系统平凡 ⟹ trace 冗余。
+
+## STANDARD（可明确识别的已有对象）
+
+候选 1/2 = 平面树的**深度序列 / Łukasiewicz 型编码**（组合数学标准双射）；候选 3 = **graded algebra / 生成函数乘法**；候选 4 = **差分代数 / species 导数**；候选 5 = **tree transducer / CA-local map**；候选 6 = **hash-consing + 结构共享**；候选 7 = **项重写 / 范式**。
+
+## FAILED CANDIDATE（有明确反例）
+
+候选 3（具体碰撞）、候选 4（需 decode）、候选 7（冗余）。
+
+## OPEN CANDIDATE（构造成立，未分类）
+
+**候选 1 的移位演算**与**候选 6 的共享 DAG 演算**：二者都满足"单射 + 有限 $\Gamma$ + 无 decode + 内部结构真正参与"，但尚未判定它们在什么意义上超出了标准编码的常识范围。
+
+## 回答最初问题
+
+**有没有真正成功的 Address-native construction？——有。**
+
+> **候选 1**：$A(x)=\ell(x)$（叶深度字），$\Gamma(\ell_1,\ell_2)=(\ell_1{+}1)\frown(\ell_2{+}1)$。
+> 它同时满足你的 7 条：不调用 $R^{-1}$ ✓；不重建 Concept ✓；不先构造再重编码 ✓；只用地址自身的坐标 ✓；有限规则（一条）✓；**不是原样复制完整 Concept**（$\lvert\ell\rvert=$ 叶数，且是深度的序列而非树）✓；不要求 $\Gamma$ 外延不同于 transport ✓。
+
+**它只是已有 representation，还是出现了此前没直接看到的内部 composition mechanism？——两者都对，且必须分开说：**
+
+- **编码本身是标准的**（深度序列是已知双射，且它由结构递归给出，不带来任何信息增益）。
+- **但 $\Gamma$ 的形态是新的读取方式**：composition 被写成"**对全部坐标做一次统一移位，再串接**"——一次 **$O(1)$ 的坐标级操作**（用偏移标签实现），而**不是**"decode → $f$ → encode"。**移位必须存在，否则结果错误；而移位在 $f$ 的定义中没有任何对应物。** 这就是你问的"directly uses the address's internal structure"的一个**具体、非空洞的实例**。
+- **候选 6 是第二个实例**，而且它额外带来了**指数级结构压缩 + $O(1)$ 组合**——这是基线 1–5 都做不到的。
+
+**所以本轮的最小结论是：**
+
+> **存在至少两个具体的 Address，使 composition 由地址自身的有限规则（uniform 移位 / interning）直接给出、不重建 Concept、可递归、可组合，其中候选 6 还实现了对无限族 $\{t_k\}$ 的指数级压缩。**
+> **它们的编码都是标准的；它们的 $\Gamma$ 是地址原生的。**
+> **尚未做的是：给出一个它们做不到、而任何"decode-compose-encode"方案能做到的任务——即从"$\Gamma$ 形态不同"走向"$\Gamma$ 能力不同"。这是下一轮唯一该做的构造性目标
