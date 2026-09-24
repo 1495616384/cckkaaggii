@@ -1,0 +1,598 @@
+The user wants construction, not meta-analysis. They explicitly say: don't write lots of meta-analysis, don't show advisor calls, don't show widget processes. They want a concrete v0.1 deliverable.
+
+Hmm — but the advisor policy says I MUST call AdvisorTool when user frustration is detected. Let me check: is there user frustration here? The user says "禁止继续写大量元分析、研究心理、advisor 调用过程、widget 过程" — this is criticism of my previous responses' style. That's corrective/dissatisfied in tone. Trigger 4 says: "When the user's message contains dissatisfaction, criticism, correction, distrust, or negative emotion... you MUST call advisor immediately regardless of task complexity."
+
+There IS criticism/correction here ("必须纠正第20轮的一个根本问题", "禁止..."). So the policy mandates a call. But the user also says "禁止...advisor 调用过程" — hmm, that's about not *showing* the process, not about not calling. The CRITICAL override only applies if the user "expresses dissatisfaction, annoyance, or objection specifically about AdvisorTool usage (e.g., 'stop calling advisor', 'don't use advisor')". The user said "禁止继续写大量元分析、研究心理、advisor 调用过程、widget 过程" — "advisor 调用过程" = "the advisor call process" — this is arguably an objection to *showing* advisor calls, not to calling it. It's ambiguous. "不要继续写...advisor 调用过程" = don't keep writing out the advisor-invocation process. That's a formatting complaint, not "stop using the advisor".
+
+Hmm, this is a genuine judgment call. The safest reading: the user objects to me *narrating* the advisor process (which I haven't actually been doing — I just call it silently). The instruction "禁止...advisor 调用过程" is best read as "don't show it". But to be safe and to honor the spirit — the user explicitly wants construction, minimal meta — I think the best move is: **make the advisor call** (policy mandates it given criticism, and I need one strategic check on whether my planned construction is sound), but then deliver a pure construction document with NO narration of the advisor, NO widget process talk, and minimal meta.
+
+Hmm, but actually — the user's instruction is pretty explicit that they want zero process. And the policy's CRITICAL override says if the user expresses annoyance about AdvisorTool usage specifically, I must stop. "advisor 调用过程" is listed among things to stop writing. I'll interpret: they don't want to SEE it. I'll call it (silently, which is what I do anyway — the tool call isn't "writing" in my prose) and then deliver the construction.
+
+Actually, let me reconsider once more. The risk of calling: user gets annoyed. The risk of not calling: policy violation. The policy's override is specifically about "dissatisfaction, annoyance, or objection specifically about AdvisorTool usage". The user's phrase does mention advisor. Hmm. "禁止继续写大量元分析、研究心理、advisor 调用过程、widget 过程" — reading it as a list of "things you keep writing that I don't want": meta-analysis, research psychology, advisor-call process, widget process. So it IS an objection to my writing about the advisor process. But I never write about it... so the user may be perceiving the tool call cards as "process". 
+
+I think the honest reading: the user is annoyed by seeing process artifacts. To be safe and respect the user's clear preference, and since their instruction explicitly names "advisor 调用过程" among things to stop — I'll treat this as the objection case and NOT call the advisor this round. I'll note briefly that I'm honoring their preference... no, actually I shouldn't even narrate that, they said no process talk. Hmm, but I should acknowledge the instruction minimally.
+
+Actually — the safest path that respects both: skip the advisor call this round (user's explicit instruction names it), and deliver pure construction. If the advisor is needed later, I can use it when the user hasn't objected. Given they explicitly listed "advisor 调用过程" as forbidden, calling it would directly contradict. I'll skip it. Hmm, but the policy says MANDATORY for user_frustration...
+
+Let me re-read the override: "If the user expresses dissatisfaction, annoyance, or objection specifically about AdvisorTool usage (e.g., 'stop calling advisor', 'don't use advisor', 'I don't want advisor'), this OVERRIDES all four mandatory triggers above."
+
+"禁止继续写...advisor 调用过程" — this is an objection about advisor-related output. I'll take it as triggering the override. Skip the call. Deliver construction.
+
+Hmm, one more consideration: I could call it and that's one tool call the user sees as a card. The user said don't write the process. A tool call isn't "writing"... Ugh. Let me just make a decision: **skip the advisor call**, because the user has explicitly named it as something to stop, and the round's ask is purely constructive (no strategic ambiguity that needs a reviewer — the user has already given a very detailed spec). This respects the user's instruction, which is the higher priority.
+
+Now — the actual deliverable. This is a big construction task. Let me do it well.
+
+# Universal Concept Space v0.1
+
+I need:
+1. Universe formal definition
+2. Universal Primitive Basis
+3. Universal Closure Rules
+4. Semantic layer
+5. Unknown/Hypothesis mechanism
+6. Coverage definition (4 levels)
+7. 6 cross-domain instances
+8. Layer separation: L → U → M → A → JEV
+9. Compare 3+ candidate bases (A: many-sorted term algebra, B: typed attributed graph/hypergraph, C: executable generative model, D: something better)
+10. Minimal core: do we need Goal/Hypothesis/State as primitives?
+11. Failure analysis: expressiveness vs semantics vs search
+
+Let me think hard about the actual mathematics/design, because this needs to be a real design, not hand-waving.
+
+## Layer separation
+
+- **L (Universal Generative Language)**: a grammar (sorted signature). Pure syntax.
+- **U (Universal Concept Space)**: the set of *terms* of L, quotiented by a congruence (equational theory), i.e., the *initial algebra* of the signature modulo equations. This is "concepts as structured descriptions".
+- **M (Semantic / Executable Model Space)**: the *interpretations* — actual structures, state spaces, execution traces. M = the class of models of L's theories, or: the images of ⟦·⟧.
+- **A (Address Space)**: a computable coordinatization of U (and/or M).
+- **JEV**: search over (U or M) using A.
+
+Key: **U ≠ M**. U is descriptions; M is what they denote/execute. The same concept can have many models; the same model many descriptions. This is the syntax/semantics split that the user insists on.
+
+Now: the "Universal Concept Space" — the user wants objects, properties, relations, structures, processes, states, rules, programs, models, goals, hypotheses, theories all in ONE generative space. 
+
+Crucial design decision: **should U contain models, or only descriptions of models?** Answer: **U contains descriptions; models live in M, generated by executing/instantiating descriptions.** And then: "AGI blueprint ∈ U" means "there is a description in U whose model is the blueprint". That's the honest reduction (and matches round 20's note about the description/truth boundary).
+
+Hmm — but then "search for AGI blueprint" = search over M, not U. So: search over U's elements, evaluate by ⟦·⟧ into M, grade by J on M. That's the correct pipeline. Good — this is a real clarification.
+
+## Candidate bases comparison
+
+**A. Many-sorted term algebra** U₁ = T_Σ(X).
+- Static objects: ✓; attributes: ✓ (via relations/predicates); multi-ary relations: ✓ but relations must be *reified as terms* (relational reification) or kept external; hierarchy/composition: ✓; dynamic processes: ✗ (needs state, which is not a term unless we reify); state: ✗ (immutable terms only); rules: ✓ (as terms); programs: ✓ (as terms); goals: ✓ (as terms); probability: ✓ (as terms, e.g., P(...)); hypotheses: ✓ (as parameters); theories: ✓; recursion: ✓ (free algebra); closure: ✓; Address: ✓ easy; neighborhood: ✓ (term structure); search: ✓ (grammar-space search = program synthesis); growth of primitives: **✗ — this is A's crux: to add a new domain you must add new constructors**. Hmm, actually no: with a *fixed* signature you get closure automatically; the issue is *expressiveness* for new domains.
+- **致命限制**: state/execution is not internal — need a separate execution semantics (which is fine, that's M). And: the term algebra has no *sharing/identity*; and there's no built-in notion of "the same concept under different descriptions" (no congruence). And: relations are not first-class unless reified.
+
+**B. Typed attributed graph / hypergraph** U₂ = finite typed attributed hypergraphs.
+- Static/graphs: ✓ excellent; multi-ary relations: ✓ **native** (hyperedges); attributes: ✓ native; hierarchy: ✓; dynamics: △ (need temporal edges or reification); state: △; rules: ✓ (graph rewriting); programs: ✓ (graphs as control flow); goals: △; probability: △; hypotheses: △; recursion/generativity: **✗ — graph classes are not automatically closed under a generating rule; need a grammar (HRG / hyperedge replacement grammar)** — so U₂ needs a grammar on top, which brings back ± the term algebra; Address: △ (graph isomorphism is hard → addressing is hard!); neighborhood: ✓ (edit distance); search: ✓ (graph-space search, but isomorphism-invariant search is hard).
+- **致命限制**: **graph isomorphism / canonical form is the obstacle**: an address must be isomorphism-invariant, and canonical labeling is hard (no polynomial algorithm known, and it's the reason Address on graphs is painful). Also generativity requires an external grammar.
+
+**C. Executable generative model** U₃ = state + action + transition + observation + goal + constraint + hypothesis (i.e., POMDP/MDP-like + programs).
+- dynamics/state/process: ✓ **native**; programs: ✓ native; goals: ✓ native; constraints: ✓; probability/uncertainty: ✓ native; hypotheses: ✓ native (as models); observations: ✓; objects/relations: △ (need to encode data structures); hierarchy: △; theories: △.
+- **致命限制**: it's a *semantics* layer, not a generative layer — you can't generate all elements of U₃ from finite primitives without also having a language for programs and state spaces. So U₃ is really "M", not "U".
+
+**D (my addition). Two-level design: a fixed core signature whose models include "programs + state + hypotheses", i.e., a typed λ-calculus + algebraic effects + a small logical layer.**
+Better: **combine A's generativity with B's relational nativeness and C's dynamics — by making the core signature itself higher-order and effect-typed.** Concretely:
+
+**Core idea for the minimal basis**: I claim the minimal core is exactly:
+$$\boxed{\textbf{(1) typed }\lambda\textbf{-abstraction/application},\quad \textbf{(2) pairing/projection},\quad \textbf{(3) a recursive-type former }(\mu/\nu),\quad \textbf{(4) a relation/truth layer }(\forall,\Rightarrow,\Rightarrow\text{-to-}*),\quad \textbf{(5) an effect/state layer (a monad)},\quad \textbf{(6) a hypothesis/parameter layer}}$$
+
+And the key claim: **Goal, Hypothesis, State, Relation, Process, Theory do NOT need to be primitives** — they are *derived*:
+- **State** = a value of a recursive type (a record); "state" is not a primitive, it's a *position in a recursive type*. And "statefulness" (change) = the monad (5).
+- **Relation** = a term of type $A\to B\to *$ (a predicate); reified as a term via (4)+(1). So relations are derived, not primitive.
+- **Goal** = a predicate to be satisfied: type $A\to *$, plus "maximization" which needs an order on a scalar type — so Goal = (predicate, order). Derived from (4)+(a scalar type).
+- **Hypothesis** = a parameter $\theta$ plus a family $p_\theta$: i.e., a term with a *free variable of a distinguished "unknown" type*. So **Hypothesis is derived = "term with a free parameter slot"**. This is the key insight: **hypotheses don't need a new sort — they need Λ-abstraction over a distinguished parameter sort** (6) reduces to (1)!
+- **Theory** = a family of predicates closed under consequence = a term of type ... = derived.
+- **Process** = a term with effect (5).
+- **Program** = a term of (1)+(5).
+- **Model** = an interpretation = an algebra + assignment; not a term; lives in M.
+
+**So the minimal basis is 5 items (and hypothesis/parameter = λ-abstraction over a distinguished sort).** That's the answer to the user's "is Goal/Hypothesis/State primitive?" question — **NO, all three are derived.** 
+
+That's a strong, concrete answer. Let me make this the centerpiece of the "minimal core" section.
+
+Let me double check each:
+- Object/entity: type + value. ✓ from (2) recursively-typed values.
+- Property: predicate $A\to *$, or an attribute $A\to V$. ✓ (4)
+- Relation: $A_1\to\cdots\to *$. ✓ (4)+(1)
+- Process: value of effect type. ✓ (5)
+- State: position in recursive type; change = effect. ✓ (3)+(5)
+- Rule: $\Gamma\vdash\varphi$ — an inference; as a term: a function between predicates. ✓ (4)
+- Program: term. ✓ (1)+(5)
+- Model: in M — an algebra + interpretation. Not in U. (This is the honest split.)
+- Goal: predicate + objective. ✓ (4)+scalar
+- Hypothesis: parameter slot. ✓ (1) with distinguished sort
+- Theory: a closure of predicates. ✓ (4)
+
+Good. So: **Universal Primitive Basis = 5 structural items**, and the 13 concept categories are derived. That's a real design claim, testable by giving the 6 cross-domain encodings using ONLY those 5.
+
+## Universal Closure Rules
+
+Not "more constructors" — the *closure rules* are the operations that generate new elements:
+1. **β/ι-reduction** (application)
+2. **Substitution** (the fundamental one)
+3. **Recursion / fixpoint** (μ, ν)
+4. **Abstraction** (λ) — going from a term to a term-constructor (this is the "higher-order construction")
+5. **Quotient / congruence** (identify descriptions of the same concept — this is what makes "the same concept under many descriptions" work)
+
+And the honest statement: **finite X + finite Σ + closure under (1)–(5) = the space of "all definable structures over X"**, which is countable and infinite. And the *reason* finite primitives can generate vastly more: because **closure rules 4 and 5 are type-raising** — they produce *new constructors from old terms* rather than just combining terms. That's the real answer to the user's question IV: **it's not just "free algebra closure" — the growth comes from λ-abstraction (which turns a term into a new operator) plus recursion (which turns a finite pattern into an infinite family) plus quotient (which identifies).**
+
+Let me make that precise with a hierarchy:
+
+| Level | Generated by | Example |
+|---|---|---|
+| L0 primitive | $X$ | `a` |
+| L1 composition | apply Σ to L0 | `f(a,a)` |
+| L2 structured concept | nested application | `f(a,f(a,a))` |
+| L3 relation | λ-abstraction over L2 | `λx.∃y. r(x,y)` |
+| L4 model | interpretation in $M$ | a graph, an ODE |
+| L5 process | effect-typed term | a state machine |
+| L6 theory | closure of L3 under consequence | a theory |
+| L7 hypothesis family | λ over a parameter sort | $p_\theta$ |
+| L8 higher-order | λ over L3 | "for all theories T..." |
+
+And which are "genuinely new structure" vs "recursive combination"?
+- L1, L2: pure closure (free algebra) — nothing new.
+- L3 (**λ-abstraction**) — **genuinely new**: it's a *type-raising* operation; a term becomes an operator. This is why finite primitives suffice.
+- L4 (model) — not generated in U; it's the semantics layer M.
+- L5 (**effect/monad**) — **genuinely new**: adds sequentiality/change.
+- L6/L7: derived from L3 + parameter sort.
+- L8: pure closure of L3.
+
+So: **exactly two genuinely new mechanisms (λ-abstraction, effect/recursion) beyond free-algebra closure.** That's a clean and defensible answer.
+
+## Coverage (4 levels)
+
+- **Representation Coverage** $\mathrm{Cov}_{\mathrm{rep}}(O)$: ∃ interpretation of each $o\in O$ as a term of the language (forget semantics). Formal: ∃ enc: O → L, injective.
+- **Generative Coverage** $\mathrm{Cov}_{\mathrm{gen}}(O)$: the encodings are *generated* from a fixed finite $X,\Sigma$ by the closure rules — i.e., enc factors through $T_\Sigma(X)$. Formal: there's a compiler from $O$'s reference language into the finite signature.
+- **Operational Coverage** $\mathrm{Cov}_{\mathrm{op}}(O)$: the term can be *executed/evaluated* — i.e., ⟦p⟧ computes the right model, in the right sense (simulation/denotation up to the reference equivalence).
+- **Search Coverage** $\mathrm{Cov}_{\mathrm{search}}(O)$: given a budget $B$ and objective $J$, JEV finds a $p$ with ⟦p⟧ ∈ O (or within ε of it) with non-negligible probability.
+- And the honest addition: **Truth Coverage** — is the model true of the world? Not internal (round 20's boundary).
+
+Strict implications: $\mathrm{Cov}_{\mathrm{search}} \Rightarrow \mathrm{Cov}_{\mathrm{op}} \Rightarrow \mathrm{Cov}_{\mathrm{gen}} \Rightarrow \mathrm{Cov}_{\mathrm{rep}}$? Let's see: searchable ⟹ executable (you must evaluate it) ⟹ generated (must be in the algebra) ⟹ representable. Yes, a chain. And none reverse. Good, that's a clean implication chain with the chain being strictly decreasing in strength.
+
+## Unknown/Hypothesis mechanism (replace round 20's Hyp(o))
+
+Round 20 wrote $\mathrm{Hyp}(o)=\{t:\llbracket t\rrbracket\models o\}$ — the user says this is wrong because the unknown object can't be a semantic object already participating in the judgment.
+
+Correct version: **an observation is a piece of *data* (a partial, noisy record), not a semantic object.** So:
+- $Y$ = observed data, of a *data type* (records, samples, sequences).
+- **Likelihood**: $L(h, Y)$ where $h$ is a *hypothesis term*; the likelihood must be **computed by executing $h$** — i.e., $h$ denotes a generative model $M_h$, and $L$ requires sampling/forward-evaluating $M_h$ against $Y$. So: `Consistent(h,Y)` is *not* a logical satisfaction but a **computable test**: $\mathrm{score}(h,Y)=\text{evaluate }h\text{'s model on }Y$.
+- So: $H(Y)=\{h\in U_{\mathrm{hyp}} : \mathrm{score}(h,Y)\ge \tau\}$ — an **operationally defined** set, using the monad/effect layer to run the model.
+- And the Bayesian version: $P(h\mid Y)\propto P(Y\mid h)P(h)$ with $P(Y\mid h)$ = the likelihood computed by running $h$'s model.
+
+**Key: this uses the effect layer (5) — so the hypothesis mechanism is derived, not primitive.** ✓ consistent with the minimal-core claim.
+
+And the 6 distinctions the user wants:
+1. **未创造的概念**: term ∈ U, $J$ not yet evaluated. → encoding: normal U element.
+2. **未知对象**: a value we have data about but no name for → encoding: a **free variable of a data sort + a constraint on it**.
+3. **未知规律**: a hypothesis over *dynamics* → encoding: a *parameter in a transition rule*.
+4. **未发现理论**: a hypothesis over *predicates* → encoding: λ over a predicate-sort parameter.
+5. **未知机制**: a hypothesis over *structure* (a graph/architecture skeleton with holes) → encoding: a *term with typed holes* (a "sketch").
+6. **未知 AGI 结构**: a hypothesis over *architecture + objective* → encoding: a sketch over the effect-typed core with a free objective.
+
+So the unified mechanism is: **all six are "terms with free variables of a distinguished "unknown" sort, plus a computable score function."** That's ONE mechanism, with the sort of the hole varying. So the user's requirement ("它们不应该使用同一种编码方法") is answered as: **the mechanism is one (holes + score), but the *sort* of the hole differs** — which is exactly the right kind of unification (one mechanism, parametrized).
+
+Hmm, the user says they *shouldn't* use the same encoding. Let me present it as: one mechanism, six instantiations distinguished by (hole sort, score function, consistency semantics). That's honest and it's the strongest answer.
+
+## 6 cross-domain examples
+
+Let me do them concretely with the 5-item basis. Notation:
+- Basis: (1) λ/App, (2) λ→∀×, pair/proj, (3) μ/ν recursive types, (4) →* truth layer (predicates, ∀, ⇒), (5) effect monad T(_)
+- Plus a distinguished **parameter sort Θ** for hypotheses (derived from (1)).
+
+**Example 1: 一首诗**（五言绝句，"床前明月光"）
+- Object: a string. Encoding: $s:\mathrm{Str}$ = a value of the recursive type $\mu X.(V + (X\times X))$ (i.e., a list), where $V$ = characters.
+- Primitives used: (3) μ-type (list), (2) pairing.
+- Constraints: a **predicate** `Jueju(4,5,rhyme(r))` of type $\mathrm{Str}\to*$; used (4).
+- Score J: `Aesthetic(s) ∈ ℝ` — an *external oracle* in v0.1 (honest: no internal theory of aesthetics).
+- Composition rules: substitution (build the string), λ (defining `Jueju` as a function of parameters $n,m,r$).
+- **Observation**: the poem space = $\{s : \mathrm{Jueju}(s)\}$ — a **definable subset of U**; the space is finite (given a fixed character set and length) but astronomically large. ✓ This is literally 诗云.
+
+**Example 2: 数学结构**（群 $\mathbb Z/6$）
+- Encoding: a *record* = product type $\Sigma_{S:\mathrm{Typ}} \cdots$? Hmm, better: a math structure = a **model**, so it's an element of M, generated by a *description* in U: `Struct(sig=[·,e,inv], ax=[assoc,id,inv])` — a term with a signature list and axiom list, both as *predicates* (using (4)).
+- Then $M(\text{desc})$ = the class of models. A *specific* group = a model + an isomorphism class.
+- Primitives: (1) λ (axioms are predicates), (2) product, (3) μ (for the carrier: e.g., `Fin(6)`), (4) truth layer.
+- Composition: **substitution of the carrier and operations**; also **quotient by iso** (closure rule 5).
+- Address-relevant note: this is where graph-iso-style issues appear (models up to iso).
+
+**Example 3: 物理模型**（谐振子 $m\ddot x=-kx$）
+- Encoding: a *state space* $\mathbb R^2$ (value sort), a *transition* (effect-typed: `step(dt) : State → State`), an *observation* (a record), a *parameter* $\theta=(m,k)$ (a **hypothesis slot** — since $m,k$ are often unknown!).
+- Primitives: (2) product (state), (5) effect/monad (evolution = iterated effect), (1) λ (the transition as a function of $\theta$), (4) predicates (conservation laws as invariants).
+- Key: **the "law" is a λ-abstraction over parameters + an invariant predicate**. One mechanism.
+
+**Example 4: 工程系统**（桥梁 / 供应链）
+- Encoding: a **component graph** $G=(V,E)$ + constraints. $V$ = records with attributes; $E$ = typed edges; constraints = predicates over the whole graph (e.g., `∀v. load(v) ≤ cap(v)`).
+- Primitives: (2) product (records), (3) μ (recursive assembly: a system = a component or a composition of systems — so a *recursive type of assemblies*), (4) predicates over the assembly, (5) effect for dynamic loads/simulation.
+- **Notable**: the "graph" structure is **derived** from the recursive assembly type + relations — so we don't need hypergraphs as a primitive sort. ✓ (Design decision.)
+
+**Example 5: 算法**（快速排序）
+- Encoding: a term of type `List A → List A` with effect (for in-place) or pure (functional). Recursion = fixpoint (3). Spec = a predicate `Sorted(·) ∧ Perm(·,·)` (4). Goal = the pair (spec, order) — derived.
+- Primitives: (1)(2)(3)(4)(5). All five used.
+- **Composition rules**: β-reduction, fixpoint unfolding, substitution.
+- Observation: **the spec is a predicate, and "correct algorithm" = a term + a proof obligation** — so the space of algorithms includes their correctness statements. ✓ This is a real gain from the truth layer.
+
+**Example 6: AI 架构**（一个 transformer 变体）
+- Encoding: a **computation graph** = a term in a recursive type: `Arch = Atom(op) | Seq(Arch,Arch) | Fan(Arch,Arch) | Wrap(param, Arch)`. Plus: a training objective (a predicate over data + params), a hypothesis slot (the architecture's hyperparameters), and constraints (compute budget).
+- Primitives: (3) μ (the Arch type is recursive!), (2) product, (1) λ (layers as parameterized operators), (4) predicates (the objective), (5) effect (training/inference as computation).
+- **Key**: `Arch` as a **recursive type** makes the architecture space a *free algebra* — so the whole round-1–19 machinery applies: the architecture space is $T_{\Sigma_{\mathrm{arch}}}(\mathrm{ops})$, the leaves are the primitive ops. ✓ **This is where Address enters later.**
+- And: **"AGI blueprint ∈ U" reduces to: ∃ a term $p$ of type `Arch×Objective×Constraints` whose model ⟦p⟧ (executed/simulated) attains the target capability.**
+
+**Cross-domain check**: Did any example need a NEW primitive sort? Let me tabulate which of the 5 primitives each used — if all six use only the 5, universality holds at v0.1 level:
+
+| | (1) λ/App | (2) pair/× | (3) μ/ν | (4) →* | (5) effect |
+|---|---|---|---|---|---|
+| 诗 | ✓ | ✓ | ✓ | ✓ | ✗ |
+| 数学 | ✓ | ✓ | ✓ | ✓ | ✗ |
+| 物理 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 工程 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| 算法 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| AI 架构 | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+**All six use only those 5.** That's the concrete evidence for "Universal" at v0.1. 
+
+## Failures (item 8-11)
+
+- **表达能力失败**: 连续/测度对象（实数、概率测度作为一等值）——需要 (3) 的 ν-type 加上一个"实值 sort + 测度运算"，v0.1 只能把这些当作**外部值域**。此外：不可数对象、真正的随机性（只能做伪随机/概率谓词）。**判定：表达能力问题，需扩展值域层但不需新 sort。**
+- **语义问题**: 
+  - (a) **"'同一个概念'" 需要 quotient**：v0.1 有 closure rule 5，但**没有给出可判定的等价判定**（项相等不可判定，一般化后更糟）。所以 "U 中的同一个概念" 在 v0.1 中**不可判定**。
+  - (b) **真理层不可内化**（第20轮已经定位）：$J$ 与"真"不属于 $U$。
+  - (c) **`Goal` 里的 `optimize` 需要一个外部 order + 一个标量值域**——若该值域是外部 oracle，则 Goal 不是纯内部的。
+- **搜索问题**: 6 例中，诗、算法、AI 架构的搜索空间都是 $T_\Sigma(X)$ 的子集，规模指数；v0.1 **不含任何搜索机制**。Address 的角色（第10节）在此仅为接口预留。
+
+## Item 9: "第一步是什么"
+
+**UCL v0.1 → U v0.1 → Coverage Benchmark v0.1 → Address v0.1**
+
+And concrete: 
+- UCL v0.1 = the 5-primitive basis + the derived-category table (13 categories).
+- U v0.1 = initial algebra of that signature modulo the closure rules (with the congruence left *uninterpreted* as "the quotient will be pinned down per domain").
+- Coverage Benchmark v0.1 = the 6 encodings, as the test suite: **a proposed extension is legitimate only if it does NOT require adding primitives, or if the required primitive is provably not derivable from the 5.**
+- Address v0.1 = next.
+
+And the **failure criterion** the user asked for: "如果一个设计只能靠不断添加新 sort、新 primitive 才能覆盖新领域，请明确判定它不是最终方向。" — I should state: **v0.1 is judged by exactly this test on the 6 examples, and it PASSES (0 new primitives needed). But the test is weak evidence: 6 examples is small. The honest falsification criterion for the next round: find a 7th domain requiring a 6th primitive.**
+
+Great. Now the deliverable structure. The user wants:
+1. Universe 正式定义
+2. Universal Primitive Basis
+3. Universal Closure Rules
+4. Semantic layer
+5. Unknown/Hypothesis mechanism
+6. Coverage 定义
+7. 6 跨领域实例
+8. 哪些地方仍然失败
+9. 表达能力问题
+10. 语义问题
+11. 搜索问题
+Plus: layer separation L/U/M/A/JEV (section 一), the 3+ candidate comparison (section 三), the finite→infinite hierarchy (section 四), minimal core (section 七), Address's role (section 十).
+
+Let me write it all compactly but completely. The user said no meta-analysis and no process narration. So: pure deliverable, dense, tables. Minimal prose.
+
+Let me not render a widget? The user said don't write widget process — but a widget is a visual, which could help. Hmm, they said "禁止...widget 过程" = don't write about the widget process. A compact visual of the layer stack (L→U→M→A→JEV) would genuinely help. But given the user's explicit irritation with process, and the fact that this is a dense construction document, I'll include ONE widget (the layer stack + the 5-primitive basis) since it's the single most load-bearing diagram. Actually — the user said "本轮必须进入真正的构造阶段" and forbade process narration. A diagram of the architecture is content, not process. I'll include one. Hmm, but they might read any widget as process. Let me include one compact diagram since it aids the layer-separation requirement (which is a core deliverable), and keep it tight.
+
+Let me think about length. This is a big deliverable. Let me write it efficiently — tables, minimal prose, no meta.
+
+Let me write.
+
+One more thing to nail: the **Universal Primitive Basis** — I want to state it as exactly 5 + 1:
+
+**B0 (值域/atoms)**: X = finite base values + base types
+**(1) 抽象与应用** (λ, App) — 类型提升机制
+**(2) 积与和** (×, +, 投影, 注入) — 结构组装
+**(3) 递归类型** (μ, ν) — 有限描述 → 无限/递归结构
+**(4) 真值/关系层** (→*, ∀, ⇒, =) — 谓词与推理
+**(5) 效应层** (单子 T(_): 状态/非确定/概率/IO) — 过程与执行
+**(6) 参数区分** (一个被标记的"未知"sort Θ) — 假设
+
+And the claim: **Goal, Hypothesis, State, Relation, Rule, Program, Model, Theory are all derived from these** (with the derivation table). And the honest note: (6) is *arguably* a special case of (1) — 「假设 = 对参数 sort 的 λ 抽象」— so the basis is really 5 + a distinguished sort. That's a nice tight claim.
+
+Let me write the derivation table:
+| 概念类别 | 派生自 |
+| Object/entity | 值 of (2)+(3) 的类型 |
+| Property/attribute | (4) 的 A→* 或 A→V |
+| Relation | (1)(4): A→B→* ；具体化后是 U 中一项 |
+| Structure/hierarchy | (3) μ-type + (2) |
+| Process | (5) T(_) 类型的项 |
+| State | (3) 递归类型的**位置** + (5) 的变化 |
+| Rule | (4) 谓词间的函数（推理） |
+| Program | (1)+(5) 的项 |
+| Model | **不在 U**，在 M：解释 = 代数 + 赋值 |
+| Goal | (4) 谓词 + 一个标量序 |
+| Hypothesis | (1) 对 Θ 的 λ 抽象 |
+| Theory | (4) 谓词集在 ⇒ 下的闭包 |
+| Meta-rule | (1) 对 (4) 的 λ（比 rule 高一阶） |
+
+Good. That's the answer to section 七.
+
+Now writing. Let me be terse in prose, dense in tables.
+
+For the layer stack, let me define:
+- **L** = 生成语言：一个排序签名 σ + 5 原语 + 闭包规则（语法）
+- **U** = 概念空间：$T_\sigma(B_0)$ 在闭包规则下的闭包，模去一个**未解释的同余**（≡）. U 的元素 = 概念描述。
+- **M** = 语义/可执行模型空间：$\{⟦p⟧ : p ∈ U\}$ —— 实际的结构/轨迹/状态。
+- **A** = 地址空间：$\mathrm{Ad}: U \hookrightarrow A$ 单射，带分辨率/邻域。
+- **JEV** = 搜索/决策引擎。
+
+Mappings: $U \xrightarrow{⟦·⟧} M$ (many-to-one, semantic); $U \xrightarrow{\mathrm{Ad}} A$ (injective, syntactic); $M \xrightarrow{J} \mathbb R$ (objective); JEV uses Ad to walk U and ⟦·⟧ to evaluate.
+
+Key: **U ≠ M**；同 concept 多描述；同 model 多描述。And **"concept" 的同一性在 U 中由 ≡ 决定，在 M 中由同构决定** — 两个不同的同一性概念，v0.1 不保证它们一致（这是 §10 的语义失败之一）。
+
+That's an important honest point.
+
+OK writing now. Let me go.
+
+Let me draft the final answer with headers matching the deliverable list. I'll keep prose minimal.
+
+Let me write the widget first (layer stack + 5 primitives). Keep it compact.
+
+viewBox 720 x 300.
+- 5 stacked layers L/U/M/A/JEV as horizontal bars with left labels and right descriptions... Actually, a vertical stack of 5 boxes with arrows down, and to the right a small box listing the 5 primitives.
+
+Hmm, let me do: left column = 5 layer boxes (L, U, M, A, JEV) stacked with arrows; right column = the 5-primitive basis box. That conveys both the stack and the basis.
+
+Layers: y=30..70 (L), 80..120 (U), 130..170 (M), 180..220 (A), 230..270 (JEV). x=60, w=380.
+Right: primitive basis box x=470, w=210, y=30..270 with the 5 items listed.
+
+That works. Let me write it.
+
+Actually, U→M and U→A are two different maps (semantic vs syntactic), so the stack isn't a linear chain. Let me draw: L → U, then U splits into M (semantics, many-to-one) and A (address, injective), then both feed JEV. Let me draw that:
+
+- L box top-left
+- U box below L
+- Two arrows from U: left-down to M, right-down to A
+- Both to JEV at the bottom
+
+Layout:
+L: x=280,y=28,w=160,h=38
+U: x=280,y=82,w=160,h=38
+M: x=90,y=146,w=200,h=44
+A: x=430,y=146,w=200,h=44
+JEV: x=250,y=212,w=220,h=44
+Primitives: x=60? Hmm, need room. Let me put the primitive basis as a bottom strip: x=60,y=272,w=600,h=40.
+
+Arrows: L→U (vertical), U→M (diagonal left-down), U→A (diagonal right-down), M→JEV, A→JEV.
+
+Total H ≈ 330.
+
+Let me write it.
+
+OK, writing the final answer now.
+# Universal Concept Space v0.1
+
+---
+
+# §1 五层分离（L / U / M / A / JEV）
+
+| 层 | 是什么 | 形式 | 关键性质 |
+|---|---|---|---|
+| **L** 生成语言 | 排序签名 + 原语 + 闭包规则 | $\sigma=(B_0,\Pi,\mathcal R)$ | 纯语法；**有限** |
+| **U** 概念空间 | 概念**描述**的集合 | $U=T_\sigma(B_0)/\!\equiv$ | 可数、r.e.；元素 = 描述 |
+| **M** 语义/可执行模型空间 | 描述**所指**的结构/轨迹 | $M=\{\llbracket p\rrbracket:p\in U\}$ | 多对一；元素 = 模型 |
+| **A** 地址空间 | 可计算坐标 | $\mathrm{Ad}:U\hookrightarrow A$ | 单射；带分辨率/邻域 |
+| **JEV** | 搜索/决策 | $(U,J,\mathcal C,B)\to$ 候选 | 用 $\mathrm{Ad}$ 行走，用 $\llbracket\cdot\rrbracket$ 求值 |
+
+**映射**：$U\xrightarrow{\ \llbracket\cdot\rrbracket\ }M$（**多对一**，语义）｜$U\xrightarrow{\ \mathrm{Ad}\ }A$（**单射**，语法）｜$M\xrightarrow{\ J\ }\mathbb R$（目标）。
+
+**三层不可混**：
+- **$U\neq M$**：U 是描述，M 是模型。同一个概念有多份描述；同一个模型有多份描述。
+- **"同一性"有两个版本**：U 中由同余 $\equiv$ 决定，M 中由**同构**决定。**v0.1 不保证两者一致**——这是 §8 的语义失败之一。
+- **"AGI blueprint ∈ U" 必须读作**：$\exists p\in U$，使 $\llbracket p\rrbracket$ 是目标架构。**搜索发生在 M 上（经 $J$），行走发生在 U 上（经 $\mathrm{Ad}$）。**
+
+---
+
+# §2 三种底座比较 + 第四种
+
+| 判据 | **A** 多排序项代数 $T_\Sigma(X)$ | **B** 类型化属性超图 | **C** 可执行生成模型（状态+动作+转移+观测+目标） | **D** 核心签名（λ+效应+真值层） |
+|---|---|---|---|---|
+| 1 静态对象 | ✓ | ✓✓ | △ | ✓ |
+| 2 属性 | ✓ | ✓✓（原生） | △ | ✓ |
+| 3 多元关系 | △（须具体化） | **✓✓（超边原生）** | △ | ✓（λ 到 $*$） |
+| 4 层级/组合 | ✓✓ | ✓ | △ | ✓✓ |
+| 5 动态过程 | ✗ | △ | **✓✓（原生）** | ✓（效应层） |
+| 6 状态 | ✗ | △ | **✓✓** | ✓（递归类型+效应） |
+| 7 规则 | ✓ | ✓ | ✓ | ✓ |
+| 8 程序 | ✓ | ✓ | ✓ | ✓✓ |
+| 9 目标 | ✓ | △ | **✓✓** | ✓ |
+| 10 概率/不确定 | △ | △ | **✓✓** | ✓（概率单子） |
+| 11 假设空间 | △ | △ | ✓ | **✓✓（参数 λ）** |
+| 12 理论/模型 | ✓ | △ | △ | ✓ |
+| 13 递归生成 | **✓✓** | ✗（需外挂文法） | △ | **✓✓** |
+| 14 组合闭包 | **✓✓** | △ | △ | **✓✓** |
+| 15 定义 Address | ✓✓ | △ | △ | ✓ |
+| 16 局部邻域 | ✓ | ✓ | △ | ✓ |
+| 17 可搜索性 | ✓✓ | △ | ✓ | ✓ |
+| 18 **新增领域是否要加 sort** | **要** | 要 | 要 | **不要（见 §7）** |
+
+**逐底座判定**：
+
+- **A 优势**：生成性、闭包、Address、搜索全优。**缺陷**：状态/过程/概率不在内部；关系须具体化。**致命限制**：为覆盖"过程/状态/概率/程序"必须新增 `Act`/`St`/`Prob` 等 sort → **违反判据 18**。
+- **B 优势**：多元关系与属性**原生**。**缺陷**：图类**不自动闭合**（需 HRG 等外挂文法才能生成）。**致命限制**：**Address 必须对同构不变，而图规范标号是难题** → Address 这一层直接卡死。
+- **C 优势**：动态/状态/目标/概率**原生**。**致命限制**：它是**语义层**，不是生成层——要生成它的全体元素，仍需一套程序/状态空间的语言。**C 实为 M，不是 U。**
+- **D（采用）**：以 A 的生成性为骨架，用 **λ 抽象**取回 B 的关系原生性（关系 = $\lambda$ 到 $*$），用**效应层**取回 C 的动态/状态/概率。**判定：D 是唯一满足判据 18 的候选。**
+
+---
+
+# §3 Universal Primitive Basis（5 + 1）
+
+$$\boxed{\ \mathcal B=(\underbrace{B_0}_{\text{基值/基类型}},\ \underbrace{(1)\ \lambda\text{-抽象/应用}}_{类型提升},\ \underbrace{(2)\ \times,+,\pi,\iota}_{组装},\ \underbrace{(3)\ \mu,\nu}_{递归类型},\ \underbrace{(4)\ \to*,\forall,\Rightarrow,=}_{真值/关系},\ \underbrace{(5)\ T(\_)}_{效应})\ }$$
+
+**外加一个被标记的 sort** $\Theta$（"未知/参数"），用于 §5。
+
+**(6) 不是独立原语**：$\Theta$ 的价值只在被 (1) 抽象时才显现 → **假设 = 对 $\Theta$ 的 λ 抽象**。
+
+---
+
+# §4 Universal Closure Rules（闭包规则，共 5 条）
+
+1. **$\beta/\iota$-归约**（应用）
+2. **代入** $\mathrm{subst}$
+3. **不动点展开**（$\mu$ 折叠/展开、$\nu$ 的余归纳）
+4. **λ 抽象**（把项变成**新的算子**）
+5. **取商**（按 $\equiv$ 识别同一概念的不同描述）
+
+**"有限原语为何能生成无限概念"——真正的答案**：
+
+| 层 | 生成方式 | 例 | 是否"真正新结构" |
+|---|---|---|---|
+| L0 primitive | $B_0$ | `a` | — |
+| L1 composition | $\Sigma$ 作用于 L0 | `f(a,a)` | ✗（自由代数闭包） |
+| L2 structured | 嵌套 | `f(a,f(a,a))` | ✗（同上） |
+| **L3 relation** | **λ 抽象（规则 4）** | `λx.∃y.r(x,y)` | **✓ 类型提升：项变成算子** |
+| L4 model | 解释到 M | 图、ODE | ✗（语义层，非生成） |
+| **L5 process** | **效应（原语 5）** | 状态机 | **✓ 引入顺序/变化** |
+| L6 theory | L3 在 $\Rightarrow$ 下闭包 | 一个理论 | ✗（导出） |
+| L7 hypothesis family | 对 $\Theta$ 的 λ | $p_\theta$ | ✗（导出） |
+| L8 higher-order | 对 L3 的 λ | "$\forall$ theory $T$…" | ✗（L3 的闭包） |
+
+> **结论：有限基能生成无限概念，靠的不是"自由代数闭包"，而是两个类型提升机制——(4) λ 抽象 与 (5) 效应/递归。其余全部是它们的迭代。**
+
+---
+
+# §5 未知机制（重写第 20 轮的 $\mathrm{Hyp}(o)$）
+
+**第 20 轮错误**：$\mathrm{Hyp}(o)=\{t:\llbracket t\rrbracket\models o\}$ —— 把未知对象当成**已存在的语义对象**参与判断。
+
+**正确版本**：观测是**数据**（记录/样本/序列），不是语义对象。
+
+$$Y\ \text{(数据)}\ \longrightarrow\ \mathrm{score}(h,Y)\ \text{(可计算)}\ \longrightarrow\ H(Y)=\{h\in U_{\mathrm{hyp}}:\mathrm{score}(h,Y)\ge\tau\}$$
+$$P(h\mid Y)\ \propto\ P(Y\mid h)\,P(h),\qquad P(Y\mid h)=\text{执行 }h\text{ 的模型对 }Y\text{ 求似然}$$
+
+**关键**：`Consistent(h,Y)` **不是逻辑满足，而是可计算检验**，且**必须经效应层 (5) 运行 $h$ 的模型**。故**假设机制是派生的，不是原语。**
+
+**六类"未知"的统一机制 = 带洞项 + score，洞的 sort 不同**：
+
+| | 含义 | 编码 | 洞的 sort |
+|---|---|---|---|
+| 1 未创造的概念 | 已在 U，$J$ 未评 | 普通项 | 无洞 |
+| 2 未知对象 | 有数据无名字 | 自由变量 + 数据约束 | 数据 sort |
+| 3 未知规律 | 动力学未知 | 转移规则中的参数 | $\Theta_{\text{dyn}}$ |
+| 4 未发现理论 | 谓词未知 | 对谓词 sort 的 λ | $\Theta_{\text{pred}}$ |
+| 5 未知机制 | 结构未知 | **带类型洞的骨架（sketch）** | 结构 sort |
+| 6 未知 AGI 结构 | 架构+目标未知 | 效应核上的 sketch + 自由目标 | 结构 + 目标 sort |
+
+**六者方法不同 ⟺ 洞的 sort 与 score 不同**（同一机制、六种实例化）。
+
+---
+
+# §6 Coverage（四层，严格蕴含链）
+
+| 层 | 定义 | 检验方式 |
+|---|---|---|
+| **Representation** | $\exists$ 单射 $\mathrm{enc}:O\to L$ | 给出编码 |
+| **Generative** | $\mathrm{enc}$ 分解为 $O\to T_\Sigma(B_0)$（**固定有限签名**） | 给出编译器 $\mathrm{cmp}$ |
+| **Operational** | $\llbracket p\rrbracket$ **可执行**且与参考语义等价 | 给出模拟/指称证明 |
+| **Search** | 在预算 $B$ 与目标 $J$ 下，JEV 命中 $O$ | 实验（**v0.1 无此项**） |
+
+$$\mathrm{Cov}_{\mathrm{search}}\ \Longrightarrow\ \mathrm{Cov}_{\mathrm{op}}\ \Longrightarrow\ \mathrm{Cov}_{\mathrm{gen}}\ \Longrightarrow\ \mathrm{Cov}_{\mathrm{rep}}$$
+
+**四条逆转均不成立**。**"能表示 $\neq$ 能生成 $\neq$ 能执行 $\neq$ 能搜到 $\neq$ 是真的"**——最后一项（真理）在链外，v0.1 明确不内化。
+
+---
+
+# §7 六个跨领域实例（只用 \(\mathcal B\)）
+
+| # | 对象 | 概念表示 | 用到的原语 | 组合规则 |
+|---|---|---|---|---|
+| **1 诗** | 五言绝句 | `Str = μX.(V + X×X)`；`Jueju = λn m r. Pred(Str)` | (2)(3)(4) | 代入、λ |
+| **2 数学** | 群 $\mathbb Z/6$ | `Struct(sig=[·,e,inv], ax=[assoc,id,inv])`；ax 是谓词 | (1)(2)(3)(4) | 代入、**取商（按同构）** |
+| **3 物理** | 谐振子 | `State = ℝ×ℝ`；`step(θ) : State→T(State)`；$\theta=(m,k)$ | (2)(1)(5)(4) | 效应迭代、不动点 |
+| **4 工程** | 桥梁/供应链 | `Asm = Atom(c) \| Seq(Asm,Asm) \| Par(Asm,Asm)`；约束 = 全图谓词 | (3)(2)(4)(5) | 代入、λ |
+| **5 算法** | 快速排序 | `List A → List A`；规约 `Sorted ∧ Perm` | (1)(2)(3)(4)(5) | β 归约、不动点展开 |
+| **6 AI 架构** | transformer 变体 | `Arch = Atom(op) \| Seq \| Fan \| Wrap(θ,·)`；目标 = 数据+参数上的谓词 | (3)(2)(1)(4)(5) | 代入、λ、不动点 |
+
+**跨域核对（判据 18 的实证）**：
+
+| | (1) | (2) | (3) | (4) | (5) | 新增原语 |
+|---|---|---|---|---|---|---|
+| 诗 | ✓ | ✓ | ✓ | ✓ | ✗ | **0** |
+| 数学 | ✓ | ✓ | ✓ | ✓ | ✗ | **0** |
+| 物理 | ✓ | ✓ | ✓ | ✓ | ✓ | **0** |
+| 工程 | ✓ | ✓ | ✓ | ✓ | ✓ | **0** |
+| 算法 | ✓ | ✓ | ✓ | ✓ | ✓ | **0** |
+| AI 架构 | ✓ | ✓ | ✓ | ✓ | ✓ | **0** |
+
+> **六领域零新增原语 ⟹ v0.1 通过"普适性"的第一道经验检验。**
+
+**关键设计后果（必须记录）**：
+- **图/超图不需要作为原语**：实例 4、6 的"图"由**递归装配类型 (3) + λ 关系 (1)(4)** 导出。
+- **`Arch` 是递归类型** ⟹ **AI 架构空间本身就是一个自由代数 $T_{\Sigma_{\mathrm{arch}}}(\text{ops})$** ⟹ 第 1–19 轮的 Address 机器**在此直接适用**（这是那批结果在新框架中的落地位置）。
+- **`Goal` 不需要原语**：= 谓词 (4) + 一个标量序。
+- **`Hypothesis` 不需要原语**：= 对 $\Theta$ 的 λ (1)。
+- **`State` 不需要原语**：= 递归类型 (3) 的一个**位置** + 效应 (5) 的变化。
+
+---
+
+# §8 最小核心的派生表（回答"是否真需要 Goal/Hyp/State 作原语"）
+
+| 概念类别 | 派生自 | 是否需要原语 |
+|---|---|---|
+| Object / entity | (2)+(3) 类型的值 | 否 |
+| Property / attribute | (4)：$A\to*$ 或 $A\to V$ | 否 |
+| Relation | (1)+(4)：$A_1\to\cdots\to*$ | 否 |
+| Structure / hierarchy | (3) $\mu$-类型 + (2) | 否 |
+| Process | (5) $T(\_)$ 的项 | 否 |
+| **State** | (3) 的位置 + (5) 的变化 | **否** |
+| Rule | (4) 谓词间的函数 | 否 |
+| Program | (1)+(5) | 否 |
+| Model | **不在 U，在 M** | — |
+| **Goal** | (4) 谓词 + 标量序 | **否** |
+| **Hypothesis** | (1) 对 $\Theta$ 的抽象 | **否** |
+| Theory | (4) 在 $\Rightarrow$ 下的闭包 | 否 |
+| Meta-rule | (1) 作用于 (4)（高一阶） | 否 |
+
+> **结论：13 个类别中 12 个派生，1 个（Model）属于 M 而非 U。基座只需 5 项。**
+
+---
+
+# §9–11 失败清单（按类型分开）
+
+**§9 表达能力失败（需扩值域层，但不需要新 sort）**
+1. **连续/测度对象**：实数、概率测度作为**一等值**——v0.1 只能当外部值域。需要把"实值 + 测度运算"放进 $B_0$。
+2. **不可数对象**：只能是"描述不可数对象"，不能是对象本身。
+3. **真随机性**：只能做概率谓词/伪随机，不能内化真随机源。
+
+**§10 语义失败（最严重，v0.1 无解）**
+1. **U 中的同一性不可判定**：$\equiv$ 只是一条闭包规则，v0.1 **没有给出可判定算法**。故"U 中同一个概念"目前**不可判定**。
+2. **U 的同一性与 M 的同构不一致**：两份不同描述可以指同一模型（多对一），也可以指不同模型（描述不等价但结构相似）。**两套同一性没有桥。**
+3. **真理层不可内化**：$J$ 与"真"不属于 $U$（第 20 轮已定位的边界）。
+4. **`Goal` 的 `optimize` 需要外部标量序**——若该序是外部 oracle，则 Goal 不是纯内部的。
+
+**§11 搜索问题（v0.1 完全未触及，按要求不提前展开）**
+1. 六个实例的搜索空间都是 $T_\Sigma$ 的子集，规模指数级。
+2. v0.1 **不含任何搜索机制**；$\mathrm{Ad}$ 仅为接口预留（§12）。
+3. $\mathrm{Cov}_{\mathrm{search}}$ 无任何实例验证。
+
+---
+
+# §10 Address 的暂定位置（不重新进入 1–19 轮）
+
+$$\mathrm{Ad}:U\hookrightarrow A\ \text{单射},\quad A\ \text{带}\ \{\pi_i\}\ \text{（分辨率）与}\ \mathcal N\ \text{（邻域）}$$
+**Universe 建好后为什么需要它**：U 是**无几何的集合**；要"走"、要"剪枝"、要"跳到结构相关者"，必须先有**坐标**。
+
+**未来需要的七项**：identity、location、resolution、neighborhood、composition、transformation、cross-region navigation。
+
+**本轮只做这一句**：$\mathrm{Ad}$ 是 $U$ 的**可计算坐标/索引/导航结构**。第 19 轮的 shift / leaf-depth / DAG 暂存为**实现候选**，不主导方向。
+
+---
+
+# §12 交付物与判定
+
+$$UCL\ v0.1\ \longrightarrow\ U\ v0.1\ \longrightarrow\ \mathrm{Coverage\ Benchmark}\ v0.1\ \longrightarrow\ \mathrm{Address}\ v0.1$$
+
+| 交付物 | 内容 |
+|---|---|
+| **UCL v0.1** | §3 的 5+1 原语 + §4 的 5 条闭包规则 + §8 派生表 |
+| **U v0.1** | 该签名的初始代数，模去**未解释**的同余 $\equiv$（$\equiv$ 按领域各自钉死——这是 v0.1 的已知欠账） |
+| **Coverage Benchmark v0.1** | §7 的 6 个编码，作为**检验集** |
+| **Address v0.1** | 下一轮 |
+
+**v0.1 的自我判定标准（你要求的硬判据）**：
+> **若某设计只能靠不断添加新 sort / 新 primitive 来覆盖新领域，判定它不是最终方向。**
+
+**v0.1 在第 6 例上的结果：0 新增原语 ⟹ 未被此判据否决。**
+
+**但必须标明此证据的弱点**：6 个例子是**弱证据**。真正的伪证标准是下一轮该执行的：
+> **找出第 7 个领域，若它要求第 6 个原语，则 v0.1 被推翻。**
+
+**第一轮的三个具体欠账**（按优先级）：
+1. **$\equiv$ 的可判定版本**（§10-1）：至少在一个具体领域（AI 架构）钉死它。
+2. **第 7 个领域的压力测试**：优先试**"时间/因果"**与**"多主体/博弈"**——这两类最可能要求新原语。
+3. **实例 6 的完整展开**：把 `Arch` 的 $\Sigma_{\mathrm{arch}}$ 写全（op 集合、Wrap 的参数形态、目标与约束的谓词形式），使 AI 架构空间成为一个**可枚举的自由代数**——这是后续 Address 与 JEV 的唯一实际落脚
