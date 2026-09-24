@@ -1,0 +1,574 @@
+This is round 24. The user wants Semantic Closure. Let me think carefully about the math.
+
+Key questions:
+1. C vs M formal definitions; Description/Model/Truth boundary
+2. Weak/Structural/Semantic Universality
+3. Semantic Closure candidate definitions
+4. Domain interpreter vs universal interpreter
+5. Unknown unified partial order
+6. Concept = structure + interpretation
+7. Semantic fibers
+8. 10-domain semantic stress test
+9. COV-1..COV-5
+10. provable vs unprovable
+11. which form is closest to 诗云
+12. next stage
+
+And prefer CASE-3.
+
+Let me think hard about the core mathematical content I can actually establish.
+
+**The central insight I should develop:**
+
+The key question is: what makes a description *meaningful*? 
+
+Let me think about it via the "semantic closure" idea. Here's a thought:
+
+A description $c \in C$ is a structure. An interpretation $\llbracket\cdot\rrbracket$ must be *defined by recursion on the structure of $c$*. That's forced: since $c$ is built by a finite signature, any function on $C$ defined "compositionally" is a homomorphism from the free algebra. **So any interpretation is determined by (i) the values on atoms, and (ii) the values on constructors.** That's the universal property of the free algebra!
+
+**This is the key theorem-level fact**: 
+$$\llbracket\cdot\rrbracket \text{ is compositional} \iff \llbracket\cdot\rrbracket \in \mathrm{Hom}(T_\Sigma(\mathbb A), M) \cong M^{\mathbb A}\text{-indexed assignment}$$
+i.e., **an interpretation is exactly a choice of (a) a target algebra $M$ of the same signature, and (b) an assignment of atoms.** 
+
+**Corollary**: **"Universal interpreter architecture" is automatic** — because ANY compositional interpretation is a homomorphism, and all homomorphisms have the same *architecture* (recursion over the term structure). What differs between domains is only **(a) the target algebra $M_d$ and (b) the atom assignment**.
+
+**THIS IS THE ANSWER to §3's question.** So:
+- **The *interpreter architecture* is universal (one scheme: homomorphism from the free algebra).**
+- **The *semantics* is not: it lives in the choice of target algebra $M_d$.**
+
+So: Semantic Closure holds **at the level of the mechanism** but not **at the level of the content**. And this is *provable*, not hand-waving. Let me formalize:
+
+**Theorem (Semantic Factorization)**: Let $C = T_\Sigma(\mathbb A)$ be a free algebra, $M$ any $\Sigma$-algebra, and $\llbracket\cdot\rrbracket: C \to M$ compositional (i.e., $\llbracket f(c_1,\dots,c_n)\rrbracket = f^M(\llbracket c_1\rrbracket,\dots,\llbracket c_n\rrbracket)$). Then $\llbracket\cdot\rrbracket$ is uniquely determined by $\llbracket\cdot\rrbracket|_{\mathbb A}$. Conversely any $\alpha: \mathbb A \to M$ extends uniquely to a homomorphism. 
+**Proof**: freeness/initiality of $T_\Sigma(\mathbb A)$. $\blacksquare$
+
+**Corollary**: 所有 compositional 解释共享同一"架构"（唯一同态延拓），差异仅在 $(\Sigma, M, \alpha)$。
+
+So: **C 与 M 的分离 + 解释的范畴身份 = "同态"。** That's clean.
+
+Then: **what is NOT determined?** The target algebra $M$. And $M$ is *not* in $C$ (unless we play the reflection game). So:
+
+**The gap between C and M is exactly the gap between "signature" and "target algebra".** And the crucial question: **can the target algebra be *chosen canonically*?** 
+
+- For poetry: $M$ = ? (aesthetic response) — deeply unclear.
+- For mathematics: $M$ = the intended mathematical structure — canonical (the "standard model").
+- For physics: $M$ = the dynamical system — canonical.
+- For engineering: $M$ = the physical artefact — canonical but non-mathematical!
+
+**Key observation**: for mathematizable domains, the target algebra is determined (up to isomorphism) by *naming the structure*; for non-mathematizable domains (poetry), the target is not determined. **So the semantic-universality question reduces to: how many domains have a determinate target?** And this connects to **Model Theory**: a description is a *theory*, its models are the target algebras, and "truth" = ⊨. So:
+$$c \mapsto \mathrm{Mod}(c) = \{M : M \models c\}$$
+This is the *right* generalization: **a concept's meaning is its model class, not a single model.** And then:
+- **Truth** = "the intended model is in Mod(c)" — external (which model is *the real world*).
+- **Description ≠ Model ≠ Truth** ✓ formally separated.
+
+And here's the crucial structural result: 
+
+**Theorem (semantic fibers are model classes)**: $c \mapsto \mathrm{Mod}(c)$ is a *contravariant* map: $c \Rightarrow c'$ (logical consequence) $\iff \mathrm{Mod}(c) \supseteq \mathrm{Mod}(c')$. So the semantics is a **Galois connection** between descriptions and model classes. Standard (institution theory / model theory). 
+
+So: **the honest formalization of "semantic fibers" ($\S8$) is: the fiber over a domain $d$ is a class of models $M_d$, and $C_d$ is the preimage of $M_d$ under Mod.** And $\llbracket\cdot\rrbracket_d$ is the *restriction* of Mod to $C_d$. So:
+
+$$M = \bigsqcup_d M_d,\quad C_d = \{c : \mathrm{Mod}(c)\subseteq M_d\},\quad C = \bigcup_d C_d$$
+
+But: is $C = \bigcup C_d$? The fibers *overlap* (a description's model class can contain models from different domains). So it's not a disjoint union — it's a **sheaf-like / covering structure**. Hmm. That's an important honest correction to §8's proposed form.
+
+**So: the correct form is NOT a disjoint union of fibers, but a *covering*: a single $C$ with overlapping semantic regions.** And that's an *institution* (Goguen–Burstall). So §8's answer: **the right structure is an institution: a category of signatures, a functor Mod, and a satisfaction relation — and the "universal concept space" is the *syntactic category* of an institution.** That's STANDARD (institution theory).
+
+Hmm, that's a nice identification. Let me check: an institution = (Sign, Sen, Mod, ⊨) with signature morphisms, sentence translation, model reduct, and the satisfaction condition. Our setup: one fixed signature (or a category of signatures indexed by domain), Sen = descriptions, Mod = model classes, ⊨ = satisfaction. **Yes — this is an institution.** ✓ And "universal concept space" = the union of all Sen(Σ) over the signature category = the "institution's syntax". 
+
+So: **the honest answer to §12 ("U = C or U = (C,I)?") is: U should be an *institution*, i.e., a triple (C, Mod, ⊨) with C the descriptions, Mod the model classes, ⊨ the satisfaction.** And the "interpretation" I is *not a separate object* — it's the pair (Mod, ⊨). So:
+$$U = (C,\ \mathrm{Mod},\ \models)$$
+And this is exactly the structure that makes "concept" well-defined: **a concept is a description *together with* its model class and satisfaction.** And this is STANDARD (institution theory / the "semantic view of theories" in philosophy of science).
+
+Good. That's a strong, clean, honest identification.
+
+**Now: the fundamental limitation theorem.** Let me formulate what CAN'T be achieved:
+
+**Theorem (Truth is not internal)**: For any institution $(C, \mathrm{Mod}, \models)$ with $C$ a free algebra over a finite signature and $\mathrm{Mod}$ non-trivial, there is no $c \in C$ such that $\llbracket c\rrbracket$ determines "whether the intended model is in Mod(c)". 
+Reason: "the intended model" is not part of the institution — the institution gives Mod(c) as a *class*, and the selection of *the real* model is *external* (an assignment/model-of-the-world). This is Tarski's undefinability in spirit / the standard fact that truth-in-the-intended-model is not definable from syntax alone.
+
+Hmm, I should be careful to make this a clean, defensible statement rather than a vague appeal. Let me state it as:
+**Theorem**: Let $\mathrm{Int}: C \to \mathbf{Mod}$ be a *choice function* selecting one model per description ("the intended model"). Then Int is not definable in the language of the institution (i.e., not a morphism of the institution) unless it is given as external data. 
+Reason: there is no constraint in the institution linking a description to a *particular* model; the institution only knows the *class*. So Int is extra data. Formal: the institution's data is invariant under model automorphisms within Mod(c), while Int picks a specific element — so Int cannot be a natural transformation / cannot be definable from the signature. ✓ That's a reasonable formulation (an equivariance argument!). 
+
+Actually, let me make it sharper with an equivariance argument:
+**Proposition**: If $M, M' \in \mathrm{Mod}(c)$ are isomorphic, then no institution-internal construction can distinguish them. Hence any "truth" judgment that distinguishes them requires external data. 
+Proof: by definition of Mod as a class up to the institution's equivalence; and isomorphic models satisfy the same sentences (Isomorphism Lemma). ✓ 
+**That's clean and provable**, and it's the formal content of "Truth ≠ Description".
+
+So: **"Truth" requires an *external* choice of the intended model (the world).** That's a theorem-shape statement, and it directly answers §2's boundary.
+
+**Now the Unknown partial order (§6).** The user proposes:
+fully specified ↓ partially specified ↓ hypothesis family ↓ unconstrained candidate space
+
+Let me formalize. A description with holes: $c[t_1,\dots,t_k]$ with $k$ holes. Then:
+$$\mathrm{Spec}(c) := k \quad\text{(number of free holes)}$$
+And the candidate family = $\{c[\bar a] : \bar a \in \mathbb A^k\}$. And:
+- fully specified: $k=0$
+- partially specified: $k>0$, finite, with constraints
+- hypothesis family: $k>0$ + a constraint predicate (narrows the family)
+- unconstrained: $k>0$, no constraint
+
+So the partial order is by **"size of the candidate family"** — reversed: 
+$$c \preceq c' \iff \mathrm{Fam}(c) \supseteq \mathrm{Fam}(c')$$
+i.e., **more specified = smaller family**. That's a clean order! And:
+- 未创造概念: $\mathrm{Fam} = \{c\}$ (singleton), but $c$ is not *evaluated/known*
+- 未知对象: $\mathrm{Fam}$ = a value domain
+- 未知规律: $\mathrm{Fam}$ = a parameterized transformation family
+- etc.
+
+**Key: "unknown" is not about the family — it's about the *state of knowledge*, which is external.** So: **"Unknown" cannot be defined inside C.** That's an important honest point: $C$ contains *descriptions with holes*; whether a description is "known" or "unknown" is a fact about the *knower*, not about $C$. 
+
+Hmm, but the user wants a unified basis for "unknown". The honest answer: **the unified basis is the *hole* (incompleteness), not "unknownness".** So:
+$$\text{Unknown}\ \longrightarrow\ \text{Incompletely specified} \longrightarrow\ \text{number \& position of holes}$$
+And the *epistemic* status (created/uncreated/unknown) is **external metadata**, not part of $U$. 
+
+Hmm — and that's actually connected to §12: if we define $U = (C, \mathrm{Mod}, \models)$, then "unknown" is not in $U$; we'd need $U' = (C, \mathrm{Mod}, \models, \mathrm{Ep})$ with Ep = epistemic state. But then Ep is external data (like the intended model). **So: the epistemic layer is a third external component, alongside the intended model.**
+
+So: $U$ has **two external components**: (i) the intended model (for truth), (ii) the epistemic state (for known/unknown). Both are external for the same reason: **they are not invariants of $C$.** ✓ That's a clean unification: **both are "external selection/orientation data".**
+
+**Now COV-1..COV-5 (§10).** The user wants me to check whether the chain COV-1 < COV-2 < COV-3 < COV-4 < COV-5 actually holds.
+
+Let me test with counterexamples:
+- COV-1 (Representation) vs COV-2 (Generative): a class $O$ that can be represented but not generated from a fixed signature. E.g., $O$ = "all subsets of ℕ" (uncountable) — representable? no (uncountable can't inject into countable C). Hmm. Let me find: $O$ = a class requiring an *infinite* signature (e.g., "all abelian groups" with a symbol per generator?). Hmm. Simpler: $O$ = "the class of all languages over an infinite alphabet" — needs infinitely many atoms, but atoms can be a countable set ✓ generative. Hmm.
+  Let me use: COV-2 ⊊ COV-1 via: $O$ = {the ℕ-indexed family of all finite graphs} — generative ✓. Hmm.
+  Actually the clean separation: **COV-2 ⊊ COV-1** because a *single* description can be given for each $o$ using a *new atom per $o$* — i.e., an infinite atom set with no finite signature. If we require finitely many atoms, then ✗. So: **COV-1 ⊋ COV-2** ✓ with the counterexample: $O$ = an arbitrary countable class, encoded by injecting each element as a fresh atom. **Yes, that's the "Gödel/atom-per-object" trick — it satisfies COV-1 but not COV-2 (no finite signature).** ✓ 
+- COV-2 vs COV-3 (structural composition): $O$ generated but with domain-specific composition rules. E.g., $O$ = strings with a *per-domain* signature. Hmm. Or: COV-2 holds but COV-3 fails if the composition rule differs per domain — but COV-3 requires *shared* rules. So: COV-3 ⊊ COV-2 via: $O = O_1 \cup O_2$ where $O_1$ needs rule $r_1$ and $O_2$ needs $r_2$, and no single finite signature covers both. Hmm — but with a *tag*, one signature can cover both (sum type). So COV-3 might = COV-2 in practice. **Important: the tag trick makes COV-3 = COV-2.** Hmm! So the chain may collapse at COV-3.
+  Let me think: COV-3 = "different domains share the same structural composition rules". With tags, any collection of signatures merges into one (take the disjoint union of signatures + a tag). So **COV-3 = COV-2 always** (up to the tag trick). ⟹ **the chain is NOT strict at COV-2→COV-3.** ✓ That's a real finding: **Structural Universality is trivially achievable and therefore empty.** Which connects to round 23's finding.
+- COV-3 vs COV-4 (semantic interpretability): here's the real jump. COV-3 ✓ but COV-4 ✗ whenever the domain's target algebra is not determined. E.g., poetry: generated ✓, interpreted ✗ (no determinate target). **So COV-4 ⊊ COV-3 strictly** ✓ with the poetry witness.
+- COV-4 vs COV-5 (operational): interpretable but not executable? E.g., a description whose model exists but is not computable (a non-computable real, a non-recursive function). **COV-5 ⊊ COV-4** ✓ with witness: "let f be an uncomputable function" — interpretable (a model exists), not executable. Hmm, better: **the halting-problem description**: a program with an undecidable property — interpretable ✓, operationally decidable ✗.
+
+So the chain: COV-1 ⊋ COV-2 = COV-3 ⊋ COV-4 ⊋ COV-5. **The collapse at COV-2 = COV-3 is a real finding.** ✓ 
+
+**§4 three universality notions**: 
+- Weak = COV-1 (trivial)
+- Structural = COV-2 = COV-3 (achievable, and empty by the tag trick)
+- Semantic = COV-4 (achievable only in the weak "one mechanism" reading; the strong reading fails)
+So: the honest positioning: **Weak ✓ trivial; Structural ✓ but vacuous; Semantic: only the mechanism-reading holds (by the Semantic Factorization theorem), the content-reading fails.** 
+
+And this gives a **provable "Semantic Closure" statement**:
+> **Semantic Closure (mechanism reading) [THEOREM]**: 所有 compositional 解释都是 $\Sigma$-同态，故共享同一架构（唯一延拓），差异仅在目标代数与原子指派。**因此"统一解释框架"存在且唯一——它就是自由代数的万有性质。**
+> **Semantic Closure (content reading) [FALSE]**: 不存在把不同领域的目标代数统一起来的机制，因为目标代数是外部数据（§2 的等变论证）。
+
+That's a precise, provable pair of statements. 
+
+**§7 Concept = (c, I), 方案 1 vs 方案 2**: 方案 2 says $i \in C$. Is that possible? "Interpretation as a structure in C" — an interpretation is a homomorphism $T_\Sigma(\mathbb A)\to M$. As a *structure*, a homomorphism can be represented as a *set of pairs* (the graph of the map) — which is a structure in $C$ ✓! So: **方案 2 is feasible in the sense that a particular homomorphism's graph is a $C$-structure.** BUT: the *target algebra* $M$ must be given — and $M$ need not be in $C$ (e.g., $M$ = the physical world, or $M$ = a non-recursive structure). So:
+- If $M$ is finite/recursive: $M \in C$ and the homomorphism's graph $\in C$ ⟹ $U = (c,i)$ with $i \in C$ ✓ **and then "theories of theories" stay in $C$** ✓ **This is the honest replacement for Type Reflection!**
+- If $M$ is not recursive (the physical world): $i \notin C$ ⟹ external.
+
+**So the answer to §7: 方案 2 works exactly when the semantic targets are themselves recursively generable.** And that's a *clean criterion*: 
+$$U = \{(c,i) : c, i \in C\} \text{ is closed} \iff \text{all relevant target algebras are in } C$$
+And the failure case is **exactly the non-recursive/non-mathematical targets** (the world, aesthetic response). **So: "关于理论的理论" 可以留在 $C$ 内（因为理论是结构）；"关于世界的理论" 不行（因为世界不是结构）。**
+
+That's a sharp and satisfying answer. 
+
+**Which is closest to 诗云 (§13)?** 
+诗云's proposition: "the peak poem is already in the space" — the space is the *string space*, and the poem is a *string*. So 诗云's space = **candidate space (syntactic closed under generation) + an evaluation oracle (the poet's taste)**. Crucially, 诗云's evaluation is *external and inaccessible* (the poet's judgment can't be automated — it's a *person*). So:
+> **诗云 的真正抽象是: $U = (C, \mathrm{Mod}, \models)$ 加上一个 *外部不可内化* 的评价函数 $J$。** And 诗云's "space contains the answer" is exactly **COV-2 (generative coverage)**, which is trivially achievable. The *hard* part in 诗云 (and in the project) is the *retrieval*: 诗 cloud has the poems but can't find them. So 诗云's real content = **COV-5 (search coverage)**, which requires structure on $J$.
+
+**So: 诗云 的真正抽象 = (generative candidate space) + (external oracle for value) + (search), and its mathematical content is 100% in the search — exactly what round 20's NFL said.** Hmm — but the user said don't redo NFL this round. OK, I'll state it as a one-line positioning, not a section.
+
+So: **the form closest to 诗云 is $U = (C, \mathrm{Mod}, \models)$ + external $J$** — i.e., a *candidate space with an external evaluator*. NOT $C$ alone, and not $(c,I)$ with $I$ internal (because the evaluator is external).
+
+Hmm, wait: 诗云's evaluation IS external (human taste). So $(c, I)$ with $I$ external = 方案 1. So: **诗云 ⟹ 方案 1 (interpretation external), NOT 方案 2.** And the reason: the evaluator is not recursively generable. ✓ Consistent with §7's criterion.
+
+**§3 Semantic Closure candidates A–E:**
+- A domain-specific interpreter: always works, but no universality.
+- B universal interpreter architecture: **exists and is unique** (the homomorphism architecture) — provable, but vacuous (it doesn't determine the target).
+- C metamodel + adapters: = B + a registry of targets; the "adapter" is the atom assignment $\alpha$. Achievable ✓, and the adapters are *external data*.
+- D model-generating semantics: the semantics is itself generated in $C$ (方案 2). Works iff targets are recursive.
+- E (my addition): **institution + intention** = (C, Mod, ⊨) + external intended-model + external J.
+
+Let me compare them on the 6 axes the user lists (普适性/表达能力/可组合性/可执行性/可验证性/扩展方式).
+
+**§11 10-domain stress test** — table: C-description / Interpretation / Model / Observable consequence / 领域专用语义在哪里.
+
+Let me do it:
+1. 诗: C-desc = 串结构 + 格律约束树; Interp = 语言模型 + 美学模型(外部); Model = 语言意义 + 审美反应; Consequence = 人工评价; **专用语义 = 美学评价（外部不可内化）**
+2. 数学: desc = 签名 + 公理树; Interp = 到集合范畴的同态; Model = 具体代数; Consequence = 定理可判; 专用 = 无（标准模型）
+3. 物理: desc = 状态空间 + 方程; Interp = 到微分方程/数值流; Model = 动力系统; Consequence = 数值轨迹; **专用 = 数值分析（外部求解器）**
+4. 工程: desc = 装配树 + 约束; Interp = 到力学/材料模型; Model = 构件受力; Consequence = 有限元结果; **专用 = 材料本构（外部数据）**
+5. 算法: desc = 控制流图 + 规约; Interp = 到图灵机/抽象机; Model = 计算过程; Consequence = 运行/验证; 专用 = 机器模型（可内化）
+6. AI: desc = 计算图 + 目标; Interp = 到张量计算; Model = 训练后参数; Consequence = 基准得分; **专用 = 硬件数值语义（外部）**
+7. 因果: desc = DAG + 结构方程; Interp = 到 SCM 语义（do-算子）; Model = 干预分布; Consequence = 可识别性; 专用 = 干预语义（可内化但需专门定义）
+8. 博弈: desc = 参与者/策略/收益表; Interp = 到标准形式博弈; Model = 均衡; Consequence = 均衡解; 专用 = 均衡概念（可内化）
+9. 生物: desc = 反应网络/调控图 + 方程; Interp = 到生化动力学; Model = 浓度轨迹; Consequence = 表型预测; **专用 = 生化参数（外部数据）**
+10. 未知科学理论: desc = 签名 + 洞 + 公理模式; Interp = 到模型类; Model = 候选模型族; Consequence = 可检验预言; 专用 = 观测映射（外部）
+
+**结论：3/10 无需领域专用语义（数学、算法、博弈），7/10 需要外部语义（其中 4 个是"外部数据/求解器"，3 个是"外部评价/观测"）。**
+
+So: **领域专用语义不可消除** ⟹ §8's question answered: **yes, domain-specific interpreters are necessary**, and the right structure is **institution with a signature category + overlapping model classes**, NOT a disjoint union of fibers.
+
+Let me formalize §8's correction: 
+$$U = \left(\mathrm{Sign},\ \mathrm{Sen},\ \mathrm{Mod},\ \models\right)$$
+with the satisfaction condition (institution). And: $C = \bigsqcup_{\Sigma\in\mathrm{Sign}}\mathrm{Sen}(\Sigma)$ is a *disjoint* union **over signatures** (that's fine!), while the *semantic fibers* $M_d$ **overlap** (a model can serve several domains). So:
+- syntax fibers: disjoint ✓ (per signature)
+- semantic fibers: overlapping ⟹ not a disjoint union ⟹ needs the institution's functorial structure.
+
+**That's the precise correction to §8.** ✓
+
+Now let me also give the "Semantic Closure" candidate definition (§3 item 4):
+**Definition (Semantic Closure)**: A triple $(C, \mathrm{Mod}, \models)$ is *semantically closed* iff
+(SC1) every $c\in C$ has a non-empty model class, or a designated "ill-formed" status;
+(SC2) $\mathrm{Mod}$ is defined by structural recursion (hence compositional) — automatic by freeness;
+(SC3) $\models$ is decidable on $C\times\{\text{finite models}\}$;
+(SC4) the *signature category* is closed under the operations needed to express cross-domain relations (morphisms, colimits) — this is the real content;
+(SC5) there is a *single* satisfaction relation (not per-domain).
+And I can prove SC2 ✓ automatic, SC5 ✓ possible, SC3 ✗ (in general, undecidable — FO validity), SC1 ✗ (no finite signature can guarantee non-empty model classes — e.g., inconsistent axiom sets), SC4 ✓ possible (institution theory gives this).
+
+So: **Semantic Closure holds in the mechanism sense (SC2, SC5, SC4) and fails in the content sense (SC1 is impossible: some descriptions have no model; SC3 undecidable).** And this gives the honest verdict: **CASE-2** (found a candidate semantic closure — the institution-based one — but there are unproven/refuted parts). Hmm, or CASE-3? The user says prefer CASE-3.
+
+Let me think: do I have "enough evidence to *define* Universal Semantic Closure"? I have a *definition* (institution-based) and I have proofs about parts of it. What I *don't* have: a proof that this captures "understanding" in any strong sense, and the content-reading is refuted. So: the *definition* exists but its *sufficiency* is unproven ⟹ **CASE-2** (candidate found, not proven). But the user says prefer CASE-3 if evidence is insufficient to *define* it. I *can* define it (as an institution + 2 external components). So CASE-2 is right, and I should note the content-reading is CASE-3/FALSE.
+
+Hmm, let me be careful and honest: I'll give **CASE-2**, with explicit marking that (a) the mechanism-reading is [THEOREM], (b) the content-reading is [REFUTED by the equivariance argument], (c) whether the institution-based definition is *sufficient* for "Concept" is CASE-3.
+
+OK. Now let me write. The user gave a 14-item deliverable list. Let me hit all 14, tight, in tables, no flowery prose.
+
+Let me call the advisor first (mandatory — the user is redirecting/refining again, and there's implicit criticism of continuing the primitive-reduction direction; trigger before_approach_change applies). Actually the message opens with "第23轮已经完成了一个重要发现... 因此从本轮开始，禁止继续进行 4→3→2 的无限压缩" — that's a directive, and there is mild criticism ("禁止继续重复证明"). Trigger 4 (user_frustration) or 2 (before_approach_change). The user's project has moved to a new layer — before_approach_change fits best.
+
+Let me call it.
+
+Then write the deliverable.
+
+Let me make the answer well-organized with the 14 items.
+
+Let me draft key content once more to make sure it's tight:
+
+**§1 C 与 M**:
+- $C := T_\Sigma(\mathbb A)$，$\Sigma$ 有限签名（名/组装/洞/闭包），$\mathbb A$ 可数原子集。**C = 描述空间**：语法对象。
+- $M$: **$\Sigma$-代数范畴**。$M_d$ = 领域 $d$ 的目标代数的类。
+- $\llbracket\cdot\rrbracket: C\to M$ 必须是**同态**（否则非组合性）。
+- **定理（语义分解）**：$\llbracket\cdot\rrbracket\in\mathrm{Hom}(C,M)\cong\{\alpha:\mathbb A\to M\}$——由 $\mathbb A$ 上的取值唯一决定。
+- **推论**：解释的**架构唯一**；差异只在 $(\Sigma, M, \alpha)$。
+
+**§2 Description/Model/Truth**:
+- Description: $c\in C$
+- Model: $M\in\mathrm{Mod}(c)$ — $c$ 的模型类
+- Truth: "the intended model $\mathfrak W$ satisfies $c$" — 需要外部指定 $\mathfrak W$
+- **命题（等变）**：同构模型不可区分（Isomorphism Lemma）⟹ $\mathrm{Mod}(c)$ 内部无任何构造能挑出"真模型" ⟹ Truth 需要外部数据。✓
+
+**§3 Semantic Closure**:
+- 定义 + SC1–SC5 + 逐条判定。
+
+**§4 三种 Universality**:
+- Weak = COV-1（平凡）
+- Structural = COV-2 = COV-3（因 tag 技巧而**空洞**）
+- Semantic = COV-4，两种读法：机制读法 [THEOREM 成立]，内容读法 [REFUTED]
+
+**§5 诗云**:
+- 抽象 = Primitive → Generative Closure → Candidate Space → Evaluation → Search
+- "巅峰诗在空间里" 的对应物 = **COV-2 成立（平凡）**；真正命题是 **COV-5**。
+- candidate 的统一表示 = **模型类 + 目标函数**，不是"普通对象"：算法/证明/理论/架构都是 $c\in C$ 且 $\mathrm{Mod}(c)$ 是模型类。
+
+**§6 Unknown 偏序**: 用"洞的数目与位置"定义；Spec 偏序 = 候选族包含；**epistemic 状态不在 C 内**。
+
+**§7 Concept=(c,I)**: 方案 1 vs 方案 2 的判定条件 = "目标代数是否可递归生成"。
+
+**§8 fibers**: 语法纤维互斥（按签名），语义纤维**重叠** ⟹ 不是 disjoint union ⟹ institution。$U=(\mathrm{Sign},\mathrm{Sen},\mathrm{Mod},\models)$。
+
+**§9 禁止偷换**: generic interpretation mechanism ≠ arbitrary interpreter。判据：解释必须由**同态**给出（结构递归），不能任意。
+
+**§10 COV-1..5**: 链的真实形态 COV-1 ⊋ COV-2 = COV-3 ⊋ COV-4 ⊋ COV-5。
+
+**§11 10 领域**: 表格。
+
+**§12 U 是什么**: $U=(C,\mathrm{Mod},\models, \mathfrak W, \mathrm{Ep})$? Hmm — let me settle: $U=(C,\mathrm{Mod},\models)$ 是**机构**；外加两个外部件 $\mathfrak W$（意图模型）与 $J$（评价）。未知理论/机制/架构属于 $C$（带洞）+ 其模型类；故属于 $U$，**不需要 $(C,I)$ 形式**。
+
+**§13 最接近诗云的**: $U$ + 外部 $J$；**方案 1（解释外部）**。
+
+**§14 下一阶段**: 三件事。
+
+OK let me write. Also §11's table with "哪些步骤必须使用领域专用语义".
+
+Let me write it now, tight.
+
+One more: §11 asks for "C-description → Interpretation → Model → Observable/executable consequence". Let me do that in a table with 5 columns.
+
+Let me write the final answer.
+# Universal Concept Space v0.4 — Semantic Closure
+
+---
+
+# §1 C 与 M 的正式定义
+
+$$C:=T_\Sigma(\mathbb A)\ \ (\text{描述空间}),\qquad \Sigma=\{\text{名},\text{组装},\text{洞},\text{闭包}\}\ \text{有限},\ \ |\mathbb A|\le\aleph_0$$
+
+$$M:=\Sigma\text{-}\mathbf{Alg}\ \ (\text{模型空间}),\qquad \llbracket\cdot\rrbracket:C\to M$$
+
+**解释必须是同态**——否则不是组合性的（对"部分结构"无定义）：
+
+$$\llbracket f(c_1..c_n)\rrbracket=f^M(\llbracket c_1\rrbracket..\llbracket c_n\rrbracket)$$
+
+**定理（语义分解）[PROOF]** $\mathrm{Hom}(C,M)\cong\{\alpha:\mathbb A\to M\}$。即：**任何组合性解释由 $\mathbb A$ 上的取值唯一决定。**
+[证] $C=T_\Sigma(\mathbb A)$ 是初始代数；同态由生成元上的值唯一决定（自由代数万有性质）。$\blacksquare$
+
+> **推论（本轮第一个关键结论）**：**解释的"架构"是唯一的**——所有组合性解释共用同一个机制（沿结构递归的唯一延拓）。**差异只在三元组 $(\Sigma,\ M,\ \alpha)$，其中 $M$ 与 $\alpha$ 是外部数据。**
+> 因此"是否存在统一解释框架"这个问题**已经有确定答案且可证**——但答案只在**机制层**成立，不在**内容层**。
+
+---
+
+# §2 Description / Model / Truth 的边界
+
+| 层 | 是什么 | 归属 |
+|---|---|---|
+| **Description** | $c\in C$，一个有限结构 | **内部**（Core-D 生成） |
+| **Model** | $\mathrm{Mod}(c)=\{M\in M: M\models c\}$，一个**模型类** | 内部可定义（作为 $C$ 的子集，若模型可码） |
+| **Truth** | "意图模型 $\mathfrak W$ 满足 $c$" | **外部**（$\mathfrak W$ 必须被指定） |
+
+**命题（等变）[PROOF]** 若 $M\cong M'$，则 $M,M'$ 满足同一批句子（同构引理）。故 $\mathrm{Mod}(c)$ 内不存在任何**从 $c$ 可定义**的构造能挑出"那个真模型"。
+$\blacksquare$
+
+> **即：Truth 不是 $C$ 的不变量。它需要第三份外部数据——世界（$\mathfrak W$）。**
+> **Description ≠ Model ≠ Truth 由此被严格钉住**：三者分别对应"$\Sigma$"、"$M$"、"$\mathfrak W$"。
+
+---
+
+# §3 Semantic Closure 的候选定义
+
+**定义（Semantic Closure）** 三元组 $(C,\mathrm{Mod},\models)$ 语义闭合，若：
+
+| | 条件 | 判定 |
+|---|---|---|
+| **SC1** | 每个 $c$ 的模型类非空，或带"不良构"标记 | **不可保证**（矛盾公理集的模型类为空） |
+| **SC2** | $\mathrm{Mod}$ 由结构递归定义（组合性） | **自动成立**（§1 定理） |
+| **SC3** | $\models$ 在 $C\times\{\text{有限模型}\}$ 上可判定 | **不可判定**（一阶有效性） |
+| **SC4** | 签名族在必要的跨域构造下闭合（同态、余极限） | **可成立**（机构理论提供） |
+| **SC5** | 存在**单一**满足关系，而非每领域一个 | **可成立** |
+
+**五条路线比较**：
+
+| 路线 | 普适性 | 表达力 | 可组合 | 可执行 | 可验证 | 扩展方式 |
+|---|---|---|---|---|---|---|
+| **A** 领域专用解释器 | 无 | 强 | 无 | 强 | 强 | 加解释器 |
+| **B** 通用解释器架构 | **强（唯一）** | **弱**（不决定目标） | 强 | 弱 | 弱 | **无（已定）** |
+| **C** 元模型 + 领域适配器 | 强 | 强 | 强 | 强 | 中 | **加适配器（外部数据）** |
+| **D** 模型生成式语义 | 取决于目标可递归性 | 强 | 强 | 中 | 中 | 加 $\Sigma$-态射 |
+| **E（采用）** 机构 + 意图 | 强 | 强 | 强 | 中 | 中 | 加签名 + 加意图 |
+
+**结论**：**B 可证但空洞**（架构唯一却不含内容）；**C/D/E 是把内容放在"外部数据"处**。**故 Semantic Closure 的机制部分是定理，内容部分是外部数据。**
+
+---
+
+# §4 三种 Universality（严禁混用）
+
+| | 定义 | 状态 |
+|---|---|---|
+| **Weak**（Weak Universality） | $\forall x\in O\ \exists c\in C:\llbracket c\rrbracket\approx x$ | **平凡成立**（= 至多可数即有编码） |
+| **Structural** | 不同领域共享**同一套结构组合规则** | **成立但空洞**——见下方命题 |
+| **Semantic** | 不同领域共享**同一解释机制** | **机制读法 ✓（定理）；内容读法 ✗（反证）** |
+
+**命题（Structural Universality 空洞）[PROOF]** 任意有限多个签名 $\Sigma_1..\Sigma_k$ 都可合并为单一签名 $\Sigma_1+\cdots+\Sigma_k$（带一个 tag 记号），且组合规则同一。故"共享组合规则"**总能被满足**，不构成限制。$\blacksquare$
+
+> **即：第 23 轮的 COV-2→COV-3 之间存在塌缩（见 §10）。Structural Universality 不是一个有内容的层级。**
+
+**语义普适的强弱两读法**：
+- **机制读法 [THEOREM]**：存在唯一解释机制（沿结构递归的唯一同态延拓）→ ✓ §1
+- **内容读法 [REFUTED]**：不存在把各领域目标代数统一起来的机制 → 由 §2 的等变命题，目标代数不受 $C$ 约束，故无法由 $C$ 生成。
+
+---
+
+# §5 《诗云》的真正抽象
+
+$$\text{Primitive}\to\text{Generative Closure}\to\boxed{\text{Candidate Space}}\to\boxed{\text{Evaluation}}\to\boxed{\text{Search}}$$
+
+**"巅峰诗已在空间中"的对应物**：
+$$\text{该命题}\ =\ \text{COV-2（生成覆盖）成立}\ =\ \textbf{平凡}$$
+**诗云的真正难点不在"空间里有"，而在最后两个框**。诗云里那条不可自动化的界线，恰好是：**评估者是"人"，故 $J$ 不可内化。**
+
+**candidates 的统一表示**（算法 / 证明 / 理论 / 架构 — 它们都不是"普通对象"）：
+
+$$\text{candidate}\ =\ (c\in C,\ \mathrm{Mod}(c)\subseteq M,\ \text{可观测量}\ \mathrm{Obs}_c\in C)$$
+
+即：**候选是"描述 + 它的模型类 + 可观测后果"三元组**。三者在 $U$ 内（§12），而"该候选有多好"在 $U$ 外。
+
+---
+
+# §6 Unknown 的统一偏序
+
+**定义（洞度）** 对带洞 $c[t_1..t_k]\in C$：
+$$\mathrm{Fam}(c)=\{c[\bar a]:\bar a\in\mathbb A^k\}\subseteq C$$
+
+**偏序（按候选族大小反向）**：
+$$c\preceq c'\iff \mathrm{Fam}(c)\supseteq \mathrm{Fam}(c')$$
+
+| 层 | 洞数 | $\mathrm{Fam}$ | 约束 |
+|---|---|---|---|
+| fully specified | 0 | 单点 | — |
+| partially specified | $k>0$ | 有限族 | — |
+| hypothesis family | $k>0$ | 族 | 有约束断言 |
+| unconstrained | $k>0$ | 全族 | 无 |
+
+**七类未知在此偏序中的位置**：未创造（$k{=}0$，**但未被评估**）｜未知对象（洞在值位）｜未知关系（洞在断言位）｜未知规律（洞在变换位）｜未发现理论（洞在公理集位）｜未知机制（洞在骨架位）｜未知 AGI（洞在骨架 $+$ 目标位）。
+
+> **关键修正**：**"未知"本身不在 $C$ 内。** $C$ 只知道"洞"（不完备度）；"已知/未知/未创造"是**认识状态**，是第四个外部件。**故统一基础是"洞"，不是"未知"。**
+
+---
+
+# §7 Concept = (c, I)：两种方案的判定
+
+| 方案 | 形式 | 成立条件 |
+|---|---|---|
+| **方案 1** | $I:C\to M$ 外部 | **永远可用**（§1 定理保证存在） |
+| **方案 2** | $i\in C$，即解释本身是结构 | **当且仅当目标代数可递归生成** |
+
+**方案 2 的可行性论证**：一个同态 $h:C\to M$ 的**图** $\{(c,h(c))\}$ 是一组对——**若 $M\in C$，则图 $\in C$**。故 $i\in C$ ✓。
+
+**判定**：
+- 数学 / 算法 / 博弈：目标可递归生成 ⟹ **方案 2 ✓** ⟹ "关于理论的理论" **留在 $C$ 内** ✓
+- 诗 / 物理 / 生物 / 世界：目标**不可递归生成**（审美反应、真实世界） ⟹ **方案 2 ✗** ⟹ **必须方案 1**
+
+> **这比 Type Reflection 更接近真正的问题**：不是"类型能不能反射进类型系统"，而是**"语义目标本身是不是可递归生成的结构"**。前者是工程问题，后者是本体问题。
+
+---
+
+# §8 Semantic Fibers 的正确形式（修正）
+
+**用户提出的形式** $M=\bigsqcup_d M_d$ **不成立**，原因是两类纤维的拓扑不同：
+
+| | 是否互斥 |
+|---|---|
+| **语法纤维** $\mathrm{Sen}(\Sigma_d)$ | **互斥** ✓（按签名分） |
+| **语义纤维** $M_d$ | **重叠** ✗（一个模型可同时服务多个领域） |
+
+**正确形式 = 机构（institution）**：
+$$U=\big(\mathrm{Sign},\ \mathrm{Sen},\ \mathrm{Mod},\ \models\big)$$
+- $\mathrm{Sign}$：签名范畴（领域 $=$ 签名 $+$ 态射）
+- $\mathrm{Sen}:\mathrm{Sign}\to\mathbf{Set}$：描述
+- $\mathrm{Mod}:\mathrm{Sign}^{\mathrm{op}}\to\mathbf{Cat}$：模型类
+- $\models$：满足关系，满足**满足条件**（satisfaction condition：翻译后仍满足）
+
+**则**：$C=\bigsqcup_{\Sigma\in\mathrm{Sign}}\mathrm{Sen}(\Sigma)$（**语法上是无交并** ✓），**语义上由 $\mathrm{Mod}$ 的函子性给出重叠与迁移** ✓。**这比"无交并纤维"更正确。**
+
+> **回答 §8 的问题**：**"Universal Space + 多个 semantic fibers" 是迂回说法；正确说法是"一个机构"。** 领域专用解释器**不可消除**（§11 给出 7/10 的实证），但这**不**使普适性失败——因为**语法只有一个，语义由函子组织**。
+
+---
+
+# §9 禁止的偷换（判据）
+
+$$\textbf{generic interpretation mechanism}\ \neq\ \textbf{arbitrary interpreter}$$
+
+**判据（可检验）**：
+- **合法**：解释由**结构递归**给出（即 $\in\mathrm{Hom}(C,M)$）——§1 定理保证其存在与唯一。
+- **非法**：解释是任意函数（允许 oracle、允许读外部状态而不经 $\Sigma$-运算）。
+
+**理由**：若允许任意解释器，则 $U$ 退化为"$C$ + 外部 oracle"，即 §5 的 Universal Encoding 陷阱；此时 **COV-4 变成同义反复**。**§1 的定理正好把"任意解释器"排除掉**——**它只承认由原子指派唯一延拓的那类解释**。
+
+---
+
+# §10 COV-1 ~ COV-5：链条的真实形态
+
+| | 定义 |
+|---|---|
+| **COV-1** Representation | $\exists$ 单射 $\mathrm{enc}:O\to C$ |
+| **COV-2** Generative | $\mathrm{enc}$ 分解为固定签名的生成序列 |
+| **COV-3** Structural Compositional | 组合规则**跨领域同一** |
+| **COV-4** Semantic Interpretability | 存在 $\mathrm{Mod},\models$ 使解释为同态 |
+| **COV-5** Operational | $\models$ 与可观测后果可计算 |
+
+**是否严格蕴含？逐边检查（不默认成立）**：
+
+| 边 | 成立？ | 见证 |
+|---|---|---|
+| COV-1 $\Rightarrow$ COV-2 | **✗** | $O$ 用"每对象一个新原子"编码：COV-1 ✓，**无有限签名** ✗ |
+| COV-2 $\Rightarrow$ COV-3 | **✗（塌缩）** | tag 技巧使任意多签名合成一个 ⟹ **COV-2 = COV-3** |
+| COV-3 $\Rightarrow$ COV-4 | **✗** | **诗**：可生成 ✓，但无可确定目标代数 ⟹ 解释 ✗ |
+| COV-4 $\Rightarrow$ COV-5 | **✗** | **不可计算模型**（不可计算实数、停机性质）：有模型 ✓，不可执行 ✗ |
+
+$$\boxed{\ \text{COV-1}\ \supsetneq\ \text{COV-2}\ =\ \text{COV-3}\ \supsetneq\ \text{COV-4}\ \supsetneq\ \text{COV-5}\ }$$
+
+> **两处必须报告**：**(a) COV-2 与 COV-3 塌缩**——"结构组合普适性"是空的；**(b) 真正的台阶是 COV-3→COV-4**（语义），这与 §4 的结论一致。
+
+---
+
+# §11 十个领域 Semantic Stress Test
+
+| 领域 | C-description | Interpretation | Model | 可观测后果 | 领域专用语义 |
+|---|---|---|---|---|---|
+| 1 诗 | 串结构 $+$ 格律约束树 | 语言模型（可内化）$+$ **审美模型（外部）** | 意义 $+$ 审美反应 | 人工评分 | **外部不可内化** |
+| 2 数学 | 签名 $+$ 公理树 | 到集合范畴的同态 | 具体代数 | 定理可判 | **无** |
+| 3 物理 | 状态空间 $+$ 方程 | 到动力系统 | 轨迹 | 数值积分 | **外部求解器** |
+| 4 工程 | 装配树 $+$ 约束 | 到力学模型 | 受力/变形 | 有限元结果 | **外部材料本构** |
+| 5 算法 | 控制流图 $+$ 规约 | 到抽象机 | 计算过程 | 运行 $+$ 验证 | 无（可内化） |
+| 6 AI 架构 | 计算图 $+$ 目标 | 到张量计算 | 训练后参数 | 基准得分 | **外部数值/硬件语义** |
+| 7 因果模型 | DAG $+$ 结构方程 | 到 SCM 语义（do-算子） | 干预分布 | 可识别性 | 需专门定义（可内化） |
+| 8 博弈 | 参与者/策略/收益表 | 到标准形式博弈 | 均衡 | 均衡解 | 无（可内化） |
+| 9 生物机制 | 反应网络 $+$ 方程 | 到生化动力学 | 浓度轨迹 | 表型预测 | **外部生化参数** |
+| 10 未知科学理论 | 签名 $+$ 洞 $+$ 公理模式 | 到模型类 | 候选模型族 | 可检验预言 | **外部观测映射** |
+
+**统计**：**无需领域专用语义：3/10**（数学、算法、博弈）；**必需外部语义：7/10**，其中 **4 个是"外部数据/求解器"**，**3 个是"外部评价/观测"**。
+
+---
+
+# §12 U 究竟该是 $C$ 还是 $(C,I)$？
+
+**结论：都不是。** 正确的形式是**机构 + 两份外部数据**：
+
+$$\boxed{\ U\ =\ \big(C,\ \mathrm{Mod},\ \models\big)\ \text{（机构）}\quad +\quad \underbrace{\mathfrak W}_{\text{意图模型}}\quad +\quad \underbrace{J,\ \mathrm{Ep}}_{\text{评价与认识状态}}\ }$$
+
+**$C$ 是 $U$ 的语法层，不是 $U$ 本身。** $(C,I)$ 也不够——因为 $I$ 由 $(\mathrm{Mod},\models)$ 完全决定（§1 定理），故 $I$ 不是独立成分。
+
+**未知理论 / 未知机制 / 未知 AGI 架构归属测试**：
+
+| | 属于 $C$？ | 属于 $U$？ | 需要 $(C,I)$？ |
+|---|---|---|---|
+| 未知理论 | ✓（带洞的公理模式） | ✓ | **否** |
+| 未知机制 | ✓（带洞骨架） | ✓ | **否** |
+| 未知 AGI 架构 | ✓（带洞骨架 $+$ 目标位） | ✓ | **否** |
+
+> **它们全都留在 $U$ 内**——因为 $U$ 已含 $\mathrm{Mod}$。**只有"哪个候选真的成立"（$\mathfrak W$）与"它有多好"（$J$）在 $U$ 外。**
+
+---
+
+# §13 哪一种形式最接近《诗云》的真正抽象
+
+**判定：$U=(\mathrm{Mod},\models)$ 机构 $+$ 外部 $J$，且取方案 1（解释外部）。**
+
+**依据（诗云的内在结构）**：
+1. 诗云的空间 = **生成候选集** ⟹ 对应 COV-2（**平凡**）；
+2. 诗的排序 = **人的审美** ⟹ $J$ **外部且不可内化**；
+3. 诗云的悲剧 = **找不到** ⟹ 对应 **COV-5（搜索）**，即项目的真正前沿；
+4. 诗云里没有"关于诗的理论"的工具 ⟹ 与 §7 方案 2 无关。
+
+**因此《诗云》最接近的形式是：**
+$$\text{(生成候选空间)}\ +\ \text{(外部评价)}\ +\ \text{(搜索)}\ =\ \text{COV-2}\ +\ \text{外部 }J\ +\ \text{COV-5}$$
+**而不是** $(c,I)$ 或"囊括一切的空间"。**诗云内容 100% 落在最后一项。**
+
+---
+
+# §14 下一阶段究竟应该研究什么
+
+**三件事，按优先级**：
+
+1. **COV-3 → COV-4 的台阶**（本轮定位的唯一真实台阶）：**给定领域 $d$，其目标代数 $M_d$ 是否可递归生成？** 可生成者（数学/算法/博弈）可走方案 2，不可生成者（诗/物理/生物）必须方案 1。**判定 $M_d$ 可生成性的实用判据是下一步的核心技术问题。**
+2. **$J$ 的结构**：评价函数是唯一不可内化的东西。$J$ 若可分解（$J(x\circ y)\approx\Phi(Jx,Jy)$）则搜索可行；否则诗云式的悲剧是必然。**这是把"诗云困境"变成数学问题的唯一入口。**
+3. **认识状态 $\mathrm{Ep}$ 的形式化**：若 $\mathrm{Ep}$ 与 $J$ 都是外部件，则**能否把两者合并为一个"外部取向（orientation）"概念**？此题若解，$U$ 的外部件可从三降为二。
+
+---
+
+# 结论
+
+## CASE-2：找到候选 Semantic Closure，但未证明（且其内容读法已被反证）。
+
+**逐项证明状态**：
+
+| 命题 | 状态 |
+|---|---|
+| 组合性解释 = $\Sigma$-同态；架构唯一 | **[THEOREM]**（§1） |
+| Truth 不是 $C$ 的不变量，需外部 $\mathfrak W$ | **[THEOREM]**（§2 等变论证） |
+| Structural Universality 成立但**空洞** | **[THEOREM]**（§4 tag 命题） |
+| 语义普适的**机制读法**成立 | **[THEOREM]** |
+| 语义普适的**内容读法**不成立 | **[REFUTED]**（§2 + §4） |
+| COV-2 = COV-3（链条塌缩） | **[THEOREM]**（§10） |
+| 领域专用解释器不可消除（7/10） | **[EVIDENCE]**（§11 小样本） |
+| 正确结构是机构而非无交并纤维 | **[PROPOSED]**（§8，未证充分） |
+| $U$ 的外部件恰为 $\mathfrak W,J,\mathrm{Ep}$ | **[PROPOSED]** |
+| 机构形式足以刻画"被理解的概念" | **[CASE-3 — 无证据]** |
+
+**为什么不是 CASE-1**：机构形式给出了**机制**，但"真正成为可理解、可比较、可推演、可验证的 Concept"这一强要求**未获证据**；且其内容读法已被 §2 反证。
+
+**为什么不是纯 CASE-3**：机制层的几条已可证（§1、§2、§4、§10），**故存在候选定义**。
+
+**本轮最重要那句话的回答**：
+
+> **一个由有限规则生成的结构，在什么条件下才真正成为一个 Concept？**
+> **答：当且仅当它被置于一个机构 $(C,\mathrm{Mod},\models)$ 中——即它拥有一个模型类、一个单一满足关系、以及一份外部指定的意图模型。**
+> **其中前两项可由 $C$ 的万有性质**自动**得到；第三项**永远不能**由 $C$ 生成。**
+> **⟹ "成为概念" = "获得模型类"（内部可得） $+$ "被指向"（外部不可得）。
