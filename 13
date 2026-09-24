@@ -1,0 +1,548 @@
+This round asks for a "structural novelty vs computational novelty separation audit". The user has identified that my N1∧N2 criterion conflates two different things. Let me work through the 10 tasks carefully.
+
+**Task 1: Retract "Novelty ⟺ N1∧N2" as a theorem.**
+
+Why can it only be a "strong novelty candidate definition", not a naturally-derived iff condition:
+
+1. Novelty could come from new laws/constraints rather than primitives — the criterion's N2 does cover laws (ICC is a law), but the point is deeper: the criterion was DEFINED (stipulated), not derived. D := N1∧N2 was a definition, and then I claimed each conjunct "necessary" — but N2's necessity was stipulative ("novelty = has computational yield" is my definition of what novelty means, not a theorem). So the biconditional is circular: it's true by fiat of my definitions, not derived from the mathematical objects.
+
+2. Non-definability does not prove computational significance — the S counterexample (round 12 already established).
+
+3. **Isomorphic structures with different computational complexity**: YES, this exists — this is the key new point. Two isomorphic structures can have different computational costs under different representations. Classic example: a finite group given by Cayley table vs given by generators+relations (word problem: table O(1) lookup vs undecidable in general); a graph given as adjacency matrix vs adjacency list (edge query O(1) vs O(deg)); sorted array vs balanced BST (same set, same order structure, different insertion/query costs); ℕ with successor vs ℕ with addition/multiplication as oracles... The cleanest abstract example: **the same Σ-algebra (ℕ, +, ×) with elements represented in unary vs binary**: the structures are isomorphic (literally the same algebra, different presentations of elements), but addition is linear-time in unary length vs... well addition is linear in both; multiplication is O(n²) or better in binary vs O(n·m) in unary — exponential gap. Or: a free magma T given as (i) pointer trees vs (ii) Gödel integers: equality check O(1) (pointer) vs O(size) (integer compare). The STRUCTURE (T, f) is identical up to isomorphism; the COMPUTATION differs by the access model. So: **algebraic isomorphism does NOT entail computational equivalence** — computation is representation-sensitive. This directly shows the N1∧N2 criterion (purely FO-theoretic) cannot capture computational novelty.
+
+So Task 1's conclusion: N1∧N2 is a candidate DEFINITION for structural novelty only (and even that is stipulative), and it's blind to computational novelty entirely because FO interpretation doesn't see cost.
+
+**Task 2: Strictly define Structural Novelty (A) vs Computational Novelty (B).**
+
+A. **Structural Novelty**: A structure M (in signature σ) is structurally novel relative to base O=(T,f) iff M's theory is not interpretable in the baseline closure B(O) (N1 as before). Pure model theory: isomorphism, FO interpretation, definable expansion, canonical completion, universal constructions. This is well-defined (given the baseline).
+
+B. **Computational Novelty**: requires a computational model. Define: a **computational instance** = (structure presentation, access model, operation set, cost measure). Formally:
+
+- A **representation** of a σ-algebra A is a surjective/partial encoding enc: D → A from a concrete data domain D (e.g., bit strings, pointer graphs);
+- An **access model** AM = (primitive reads on D, e.g., "read bit i", "follow pointer", "read field j"; each with unit cost);
+- An **operation set** Op = {o_1, ..., o_k} (e.g., {compose, project_n, equality});
+- A **cost measure**: time/query count as function of input sizes;
+- A task T is **computable with cost c in (rep, AM)** if there's an algorithm using AM-primitives computing T's answer graph with cost c;
+- **Simulation relation**: representation R₁ simulates R₂ w.r.t. task class Q if there's a translation (encoding of R₂-data into R₁-data, computable with cost t) such that every task in Q computable in R₂ with cost c is computable in R₁ with cost c·poly(t) (or c + overhead).
+
+**B. Computational Novelty**: The Address representation R_A is computationally novel relative to R_C (concept representation) iff there exists a task q ∈ Q such that q is computable in (R_A, AM, cost) with strictly better cost than ANY simulation of R_C under the same AM — i.e., a separation in the fixed access model with fixed observer vocabulary (no adding observers allowed — from round 9's discipline).
+
+Key: B cannot be defined by FO theory alone — it needs the access/cost apparatus. State explicitly.
+
+**Task 3: Computation not derivable from algebraic isomorphism.**
+
+Fact: A ≅ B does NOT imply computation on A and B are complexity-equivalent.
+
+Abstract counterexample: **unary vs binary naturals**. Structure: (ℕ, +, ×, 0, 1). Representation R_u: n as a string of n ones (length n). Representation R_b: n in base 2 (length log n). The representations encode the SAME algebra (identity map is the isomorphism). Task: compute n₁ × n₂. Cost in R_u: O(n₁·n₂) (or O(n₁ n₂) schoolbook); cost in R_b: O(log n₁ · log n₂) · M(log) — exponentially faster. Same structure, same task, different access model cost (reading a unary number requires Ω(n) just to read it; reading binary requires Ω(log n)). The difference: **input access cost** — the size of the encoding vs the size of the element.
+
+Even simpler: equality of two elements: O(1) if elements are pointers/handles; O(min(|x|,|y|)) if bit strings.
+
+Conclusion: **computation is representation-sensitive; algebraic isomorphism is too coarse to transfer computational properties.** Therefore the original Address question — "does the Address give a better way to COMPUTE composition" — is not an algebra question at all; it belongs to **representation-sensitive computation**. The algebra audit (rounds 11-12) could only ever answer the structural half; the computational half requires the access/cost apparatus and was never addressed by the N1∧N2 criterion.
+
+**Task 4: Redefine "no-decode computation" formally.**
+
+The property F((u_n),(v_n)) = (F_n(u_n,v_n)) is the transport of the constructor (proven). The sharper question: is there a model M where:
+1. Address inputs allow accessing only FINITE resolutions (e.g., you hold only levels ≤ N of x and y);
+2. Output resolution n ≤ N... or output resolution n is locally computable from the accessed finite resolutions;
+3. Whereas the same task on the original concept representation requires strictly higher access cost.
+
+Formal model construction (no claim of existence):
+
+- **Access model AM_A (Address side)**: the Address of x is the sequence (π_k(x))_k; a query "read level n of x" costs 1 (returns π_n(x) ∈ B_n, a finite object); queries are independent (can read any level without reading others). Additionally the transition maps p are available for free.
+- **Access model AM_C (Concept side)**: the concept x is a finite tree; queries: "read the root's constructor", "read the left/right child pointer", "test is-leaf" — each cost 1; there is no "level-n summary" query: to know π_n(x) you must traverse all nodes up to depth n, costing Ω(2ⁿ) or Ω(|x|_n) (number of nodes at depth ≤ n).
+- **Task class Q**: "output level n of F(x,y)" for given n; "decide equality at level n"; "output the number of leaves of level-n truncation" etc.
+- **Cost measure**: number of primitive queries.
+- **Simulation**: AM_C simulates AM_A if... to answer "read level n" on the concept side costs Ω(nodes up to depth n) ≈ Ω(2ⁿ); on the address side it costs 1 IF the address is stored resolution-wise (i.e., the address representation makes each level an addressable field).
+
+Then the comparison statement to prove/disprove: level-n of F(x,y) is computable from (levels ≤ n of x, levels ≤ n of y) with O(1) additional queries in AM_A (since F_n only reads level n... wait: F_n(u_n, v_n) = f(trunc_{n-1}u_n, trunc_{n-1}v_n) — F_n reads only level n! and trunc_{n-1} of u_n is computable from u_n via p for free). So: output level n of the composition is computable from EXACTLY {level n of x, level n of y} — no other levels needed. In AM_C, to compute the same output (the depth-n truncation of the composed tree) you need the subtrees of x,y up to depth n−1: Ω(2ⁿ) node reads. **This is the candidate separation** — but the round says: don't assume it exists, just build the model and say what should be compared. The catch (which I must state honestly): the Address representation PAYS for this by storing all levels separately — the address of x has size Σ|π_k(x)| ≈ Σ 2^k = Θ(2^{|x|})... no wait: π_k(x) is the depth-k truncation which has O(2^k) nodes; the full address (all levels) has size Σ_{k≤depth} O(2^k) = O(2^{depth}) = O(|x|). Same total size. But the ACCESS is different: random access to level n in O(1) vs needing traversal. So the real comparison is: **random access to resolution-n data: O(1) vs O(2ⁿ) traversal — given the same total storage.** This is exactly the "indexing" question: the Address representation is an INDEX over the tree levels. And indexing is a known computational phenomenon (data structures: O(1) random access to level summaries vs traversal). So the formal model will likely yield: the separation exists in the query-complexity sense BUT it's the standard "preprocessing/index vs query time" tradeoff — representation-sensitive computation, known theory (succinct data structures again, but now properly framed). I should present the model and what to compare, NOT claim the separation — per the round's instruction.
+
+What should be compared: (i) query complexity of task q in AM_A vs AM_C with the SAME total storage budget; (ii) update cost (recomposition when x changes); (iii) the translation cost between representations (if translating C→A costs Θ(|x|), the simulation comparison must charge it).
+
+**Task 5: Representation-Induced Computational Structure (RICS).**
+
+Definition: Given O = (T, f) and an Address representation R_A (mathematically isomorphic: there's a Σ-iso Ψ: (Â, F) → (νG, f) with Ψ∘ι = embedding — conditions 1&2 of the user), R_A induces a **RICS** iff in a FIXED access/cost model AM:
+3. there exists a task q with cost_A(q) strictly less than cost_C(q) — where cost_C is the infimum over all simulations of the concept representation in AM (no oracle: the simulation must be an actual algorithm using AM_C primitives — condition 4 excludes oracles by requiring the simulation to be genuine code in the model);
+AND the separation is not an artifact of storage blowup (charge translation).
+
+And the key distinction: **mathematical structure = the isomorphism class (what FO sees); computational interface = (representation, access model, cost) — the pair (structure, interface) is what computation lives on.** The Address's mathematical structure may collapse (round 11-12); its computational INTERFACE may still differ. RICS is a property of the interface, not the structure.
+
+**Task 6: Re-examine "non-definable primitive".**
+
+Why non-FO-definable S doesn't prove computational novelty: S supports no computation — no operation accesses it, no task's cost changes. Non-definability is a model-theoretic fact; computational novelty is a cost fact; neither implies the other.
+
+Then: is "non-interpretable + computable + coherent" enough? Still NO: a new primitive P that is computable and coherent but is just an EXPENSIVE ORACLE (e.g., P(x) = the answer to some undecidable-or-expensive precomputed table lookup) — coherent laws can hold, but P doesn't add computational capability; it's a lookup, possibly slowing things down. The missing ingredient: the primitive must be implementable WITHIN the system at low cost — i.e., **locality/finite-resolution computability**: P(x) should be computable from FINITE resolution data of x (e.g., from π_N(x) for bounded N, or from O(1) fields).
+
+Two candidate formalizations (compare, don't pick arbitrarily — the user says compare at least two):
+
+**Candidate 1: Finite-Resolution Computability (FRC)**: primitive P: Â → V is FRC_k if ∃N and a function g with P(x) = g(π_{≤N}(x)) — i.e., P depends only on finitely many resolution levels. [This captures "locality of the primitive in the resolution structure".] Consequence: P is automatically definable?? Hmm — if P = g(π_{≤N}) with g arbitrary on finite levels... π_{≤N}(x) is a finite object; g is a function on a finite set ⟹ P is definable?? P(x) = g(π_{≤N}(x)): the set {x : P(x) = v} = π_{≤N}^{-1}(g^{-1}(v)) — is π_{≤N}^{-1}(finite set) FO-definable in (νG, f)? π_{≤N} ≡_N is FO-definable (shown, qr O(N)); g^{-1}(v) ⊆ finite set of level-N partial terms — each singleton {"u"} for u ∈ Â_N: definable? "cut_N(x) = u" — the relation cut_N(x)=u for FIXED u: definable by the φ_N-formula with u as... u is a parameter! Parameter-free: u is a fixed finite tree — expressible as a term: cut_N(x) = u ⟺ x = u or (x has u as cut)... "cut_n(x) = u" for ground u: is this FO-definable without parameters? u is a ground term of the algebra — constants: the language has f and atoms X as... atoms are elements, not named constants unless we add them. With atoms as parameters (allowed: parameters from X, and finite terms built from X are parameter-terms)... "cut_N(x) = u" ⟺ x ∈ {t : cut_N(t) = u} — this is: x = u (if δ(u) ≤ N), or x = f(s,t)-ish with cut_{N-1} children matching... recursively definable with u's structure as a term — yes: the class {t : cut_N(t) = u} is FO-definable using u as a ground term (built from atom-constants). So P = g∘π_{≤N} IS FO-definable (finitely many level-N patterns)! **So FRC ⟹ definable ⟹ in baseline ⟹ N1 fails!** Interesting: finite-resolution computability forces interpretability. That's a real theorem-shaped observation: **any FRC primitive is baseline-reducible.** So FRC as a condition on novel primitives would make N1∧FRC impossible — meaning: genuine computational novelty via new primitives must be NON-FRC (global-resolution-dependent)... or the novelty comes from the ACCESS MODEL (indexing), not from new primitives!
+
+That's a very important structural insight for Task 10: **primitive-level computational novelty (with finite-resolution implementability) is baseline-reducible; the only remaining source of computational novelty is the ACCESS/INTERFACE layer (random access to resolutions, indexing) — which is representation-sensitive, orthogonal to algebra.**
+
+**Candidate 2: Uniform Effective Computability (UEC)**: P is UEC if there's a single algorithm (Turing machine with access to the representation's encoding) computing P(x) from the encoding of x with cost poly(|enc(x)|). [This is ordinary computability+complexity on the representation.] UEC does NOT imply definable (e.g., a poly-time-computable but non-FO-definable predicate on νG — exists: poly-time computable subsets are countable... hmm, are there non-FO-definable poly-time computable predicates? FO-definable sets are countable; poly-time computable sets: also countable (Turing machines countable) — cardinality doesn't separate. Explicit example needed: a computable non-definable predicate: e.g., "leafcount of x is even" — computable, and (round 12 noted) probably NOT FO-definable in (T,f). So UEC ⊄ definable ✓.) So UEC allows non-interpretable + computable + coherent — and yet can still be mere metadata (a computable but useless label: e.g., "leafcount parity" is computable, coherent-with-nothing, adds nothing). So UEC alone insufficient — needs the coherent-law + core-yield parts (round 12's ICC machinery), and even ICC with UEC... the question remains open.
+
+Comparison: FRC is a STRONGER structural locality condition that forces baseline-reducibility (theorem!); UEC is weaker (ordinary computability) and does not force reducibility but also doesn't confer significance. So: under FRC, primitive-novelty is impossible (all FRC primitives are baseline); under UEC, primitive-novelty is not excluded but not guaranteed either — the criterion remains open. This cleanly shows: **the computational-novelty question does not live at the primitive level at all (FRC kills it, UEC doesn't deliver it) — it lives at the interface/access level.** That's the task-10 fork answer forming.
+
+**Task 7: Fix N1's quantifier.**
+
+Round 12's N1: "完整理论不可解释入基线的任何单一成员" — that's "not interpretable in ANY baseline structure" = ∀B-member: not interpretable. The weaker statement: "S not definable in (νG,f)" = non-definability in ONE structure — which is much weaker: S might be definable in ANOTHER baseline structure! E.g., is leafcount-parity definable in some baseline structure? The baseline contains (T,f,L)-structures... no wait, baseline structures are built FROM (T,f) by the closure; (T,f,parity) itself: is it in B? By B2 it's in B iff parity is FO-definable in some B-member — circular-ish. Hmm. The point stands formally: "not definable in (νG,f)" (one structure) ≠ "not interpretable in any B ∈ B(O)" (quantified over all). N1 must use the latter. Example of the difference: a predicate P definable in (νG, f, cut-maps-expanded)... e.g., "depth of x is even": definable using the cut family? In (νG,f) alone probably not; but in the expansion (νG, f, (cut_n)_n) — is that expansion a baseline member? The cut_n are definable in (νG,f) individually ⟹ the expansion is definable ⟹ in B by B2 (expansion by definable symbols). So "depth even" IS interpretable-baseline (definable in a definable expansion) despite maybe not being definable in (νG,f) bare. Wait — if each cut_n is parameter-free definable in (νG,f), then "depth even" = "∃n: cut_n(x)=x ∧ cut_{n-1}(x)≠x"... n ranges over ℕ — infinite disjunction, not FO. Hmm. "δ(x) even": FO-definable in (νG,f)? Unknown; but the point: definability in ONE structure vs interpretability in the closure differ. Cleanest formulation: **N1 := ¬∃B ∈ B(O): the full Address theory interprets in B.** The one-structure non-definability is only evidence, not the condition. Redefine accordingly.
+
+**Task 8: Th_B ⊢ P definition problem.**
+
+Th_B = ⋂_{B∈Baseline} Th(B) is a semantic theory set — not recursively enumerable (probably not; the baseline contains weird structures). So "Th_B ⊢ P" is ill-typed: ⊢ is syntactic. The correct comparisons:
+- **Semantic**: Th_B ⊨ P (every B-member satisfies P) — well-defined semantically, not effectively checkable;
+- **Syntactic**: T_B ⊢ P where T_B is a CHOSEN axiomatization — but which one? Different T_B give different ⊢. The honest resolution: for the negative test (e) "Φ is non-trivial": use the SEMANTIC version: ∃B-member ⊨ ¬Φ — decidable-in-principle per instance (exhibit a countermodel), no r.e. needed. For the yield test (c): the statement "Th_B + Φ ⊢ P" should also be semantic: every B-member satisfying Φ satisfies P — i.e., P holds in the subclass of B-models where Φ holds. So replace all ⊢ with ⊨ over the class, and when a concrete proof is needed, fix an explicit axiomatization T_B (e.g., the universal algebra axioms of the relevant variety + the coherence scheme) and note the choice. State: semantic (⊨) is the definition; syntactic (⊢) is a proof method requiring a chosen T_B whose soundness w.r.t. Th_B must be verified. Round 12's "Th_B ⊬ P but Th_B+Φ ⊢ P" must be rewritten as "∃B-member with ¬P... hmm careful: Th_B ⊬ P semantically = not all B-members satisfy P. And "Th_B + Φ ⊨ P" = all B-members satisfying Φ satisfy P. These are clean.
+
+**Task 9: re-examine semantic anchoring / unification with the six-way split.**
+
+A. semantic label (L: X → Λ as bare data): syntax/metadata.
+B. semantic interpretation function (an assignment  Den: T → Semantics, e.g., a homomorphism to a semantic algebra): structure IF it's a homomorphism (coherence with f) — then it's a character/quotient: baseline-reducible if definable; the semantic algebra itself is extra structure (not in baseline unless definable).
+C. semantic composition law (λ on the semantic side with Den(f(x,y)) = λ(Den x, Den y)): this MAKES Den a homomorphism — the pair (B, law) turns labels into structure; but note: this is exactly "transport of composition to the semantic side" — the semantic algebra is a homomorphic image; baseline if definable.
+D. matching relation (ground): degenerates to subtree-matching — decidable, definable (subtree relation is FO-definable? "s is a subtree of t": ∃w... addresses are second-order-ish; subtree relation in (T,f): "∃ context"... FO-definability of subtree relation in the pure signature: probably NOT directly (needs address quantification), but it's algorithmically easy. Definability status: technical question. Careful — don't claim.)
+E. unification algorithm: an ALGORITHM — computational object; has meaning only in an access/cost model; without a model it's just a procedure description.
+F. mgu relation: a RELATION with functionality law (∀∃!-ish: existence and uniqueness up to renaming) — this is exactly an ICC-shaped law (unique existence!) — but on WHICH structure? On T_Σ(X∪V) (terms with variables) — which is the initial algebra of the extended generator set — baseline (B4: initial algebra construction on more generators — hmm, round 12 said this; the user now says RETRACT "有 initial algebra ⇒ unification 自动属于 baseline，需要单独证明"). Right: the retraction: T_Σ(X∪V) is the free algebra on more generators — in baseline as an OBJECT; but the mgu RELATION/ALGORITHM on it is additional structure whose baseline membership is NOT automatic — it needs its own interpretability check (is the mgu graph definable in (T_Σ(X∪V), f)? unknown; the unification ALGORITHM exists but algorithms don't confer baseline membership — that was the conflation!). So: retract; the correct statement: the CARRIER is baseline; the mgu relation's membership is open; its computational meaning exists only in an access/cost model (E).
+
+So the six-way: A = syntax/data; B = structure-if-homomorphic (else data); C = structure (the law that upgrades B); D = relation — data unless functionality laws; E = algorithm — meaningless without cost model; F = relation with ∀∃! law — ICC-shaped, baseline status open. And only in an access/cost model do E (and D/F as computed objects) acquire computational meaning.
+
+**Task 10: the fork.**
+
+Where does depth-Address fall?
+
+- **Structurally**: rounds 11-12: carrier+operation ≅ νG ∈ baseline; projections/uniformity definable; N1 fails ⟹ structurally NOT novel. "代数上坍缩" — YES, this is proven.
+- **Computationally**: has the question even been properly posed? Round 4-5 (access model rounds) showed: composition-layer O(1) is impossible in materialized models (output cost); query-layer locality = succinct data structures (known); pointer model = structure externalized. With the round-11 corrections: the Address-as-index (random access to levels) is a data-structural question. Is depth-Address computationally collapsed too (III)? The honest answer: **computationally NOT yet decidable — but the correct formulation is now available**: the candidate separation (O(1) level-n access vs Ω(2ⁿ) traversal at equal storage) is a representation-sensitive question whose answer requires the access/cost model of Task 4 — NOT YET ANALYZED in this conversation at the level of rigor now required (rounds 4-5's analysis was pre-correction: it used the ⊥-tower and mixed towers; the corrected quotient-tower B_n is a different object: B_n has ⊥ only at depth exactly n — the level-n object is the "total cut" — storage of all levels: Σ|B_n|-ish... the indexing question for the CORRECTED tower hasn't been done).
+
+So the verdict: **IV → splitting into III (structural, proven) + II-candidate (computational, open)**. I.e., the answer to "是不是已经可以判为 III？" is: **代数上：是，III 的代数半边已证（坍缩）。计算上：不能判 III——因为计算新颖性的问题在修正后的对象上从未被正式提出和分析；它现在是开放的 II-候选。** The fork: the original research should look for **a new representation-sensitive computational model / interface**, not a new algebraic structure — because (i) the algebra is closed (rounds 11-12), (ii) primitive-level computational novelty is baseline-reducible under FRC (Task 6 theorem), (iii) the remaining space is the interface: access model + cost + indexing.
+
+Hmm wait — let me double check the FRC-implies-definable claim once more, since it's the load-bearing observation for Task 6/10.
+
+Claim: P: Â → V with P(x) = g(π_{≤N}(x)) for fixed N and arbitrary g: P is FO-definable in (νG, f) (with atom-parameters / ground terms). 
+
+Proof sketch: P(x) = v ⟺ π_{≤N}(x) ∈ g^{-1}(v) ⟺ ⋁_{u ∈ g^{-1}(v)} (cut_N-pattern of x equals u's pattern). The set {x : cut_N(x) = u} for fixed ground u ∈ Â_N: definable by a formula: recursively, "cut_N(x) = u": if u = ⊥: x is a non-atom (depth ≥ 1)... wait for the quotient tower B_n: cut_N(x) has no ⊥ except at depth exactly N. "cut_N(x) = u": for u total of depth ≤ N: x = u or x extends u deeper: "x agrees with u up to depth N" — definable by the φ_N-formula relativized... the φ_n(x,y) formula defines "cut_n(x) = cut_n(y)" for two VARIABLES; with y instantiated to the ground term u (a variable-free term — in FO, u is a closed term, expressible): "φ_N(x, u)" ✓ definable with u as a closed sub-term (built from atom constants — parameters from X allowed, and ground terms are parameter-terms ✓). So P is a finite disjunction of definable sets ⟹ definable ✓ (using ground-term parameters; if atoms aren't named constants in the language, add them as parameters — finite many since u is finite ✓). So yes: **FRC_N ⟹ definable (with ground-term parameters) ⟹ interpretable ⟹ baseline.** The theorem holds. And note: this is exactly why the cut-based predicates like "root kind", "level-n shape" are all baseline — any finite-resolution observation is baseline. Genuine computational novelty cannot live in finite-resolution primitives. 
+
+(For the ⊥-tower version: same argument with the four-valued kinds.)
+
+This is the round's key positive finding: **FRC ⟹ baseline (theorem)**. Hence: if we require implementability-as-locality (FRC) for new primitives, primitive-novelty is impossible; computational novelty must come from the interface (access model) — or from non-FRC (global) primitives, which are oracles unless given implementability by other means. Clean dichotomy.
+
+Now the output format: the user gave tasks 1-10 and asks for a final fork (I/II/III/IV) with the sub-question about depth-Address and the distinction "代数上坍缩 vs 计算模型上也坍缩". No explicit lettered output format this time — the tasks are numbered 1-10 and the final fork is Task 10. I'll follow the task numbering, then Task 10's fork. 
+
+Should I call AdvisorTool? The user's message is a correction-continuation ("第 12 轮的 N1∧N2 判据本身需要先降级") — contains criticism/correction of my previous round. Per policy, correction = mandatory trigger. Call once with the load-bearing new claims: (i) FRC⟹definable theorem (the round's key finding); (ii) the unary/binary isomorphism-counterexample for Task 3; (iii) the fork verdict (III structural proven / II computational open). Let me do that, then write.
+
+Actually, let me double-check the unary/binary example details for Task 3: Structure: (ℕ, +, ×). R_u: unary strings; R_b: binary strings. Same algebra — the identity on ℕ is the isomorphism (representations of the same structure). Task: multiplication. Unary cost: the OUTPUT alone has length n₁·n₂ (n·m product in unary has length n₁·n₂) — so output cost Ω(n₁n₂) = Ω(2^{log n₁ + log n₂}) — exponential in the binary output length. So even just WRITING the answer differs exponentially. Access cost: reading n in unary = Θ(n) vs Θ(log n). Clean: same structure, same task, exponential cost gap. The gap is entirely representational. ✓ This is airtight.
+
+Also Task 3's conclusion: "这是否意味着你的原始 Address 问题实际上属于 representation-sensitive computation 而不仅是 algebra" — YES: because the Address program's value proposition was always about computation on concepts (composition as computation), and computation is representation-sensitive, the question "is the Address representation computationally better" cannot be answered by algebra alone. The algebra audit bounds the structural side; the computational side needs its own models.
+
+For Task 4, let me make the two access models precise:
+
+AM_A (Address interface): 
+- data: for each concept x, the sequence (π_k(x))_{k≤K} stored resolution-wise (each level a separately addressable record);
+- primitives: read-level(x, n) → π_n(x), cost 1; apply-p_{n+1,n} cost 0 (precomputed); compose-levels(u_n, v_n) → F_n(u_n,v_n), cost 1 (one F_n evaluation — itself a finite computation on level-n objects: cost = |level-n object| bounded... hmm, F_n(u,v) = f(trunc_{n-1}u, trunc_{n-1}v): computing it costs O(1) if we just cons the two level-objects — as a symbolic operation cost O(1) with the truncations free (p maps precomputed). OK cost 1.
+- AM_C (Concept interface):
+- data: x as a pointer tree;
+- primitives: root-kind(x) cost 1; child(x, i) cost 1 (pointer deref); is-leaf cost 1; no level-summary primitive;
+- to materialize π_n(x): traverse all nodes of depth ≤ n: cost Θ(|x|_≤n) = Θ(2ⁿ) (for a balanced/full region; for combs Θ(n)) — worst case per level Θ(min(|x|, 2ⁿ)).
+
+Task q_n: "output π_n(F(x,y))". AM_A: read-level(x,n), read-level(y,n), compose-levels: cost 3. AM_C: must build the depth-n truncation of f(x,y) = f(cut_{n-1}x, cut_{n-1}y): materialize cut_{n-1}x and cut_{n-1}y: Θ(2^{n-1}) each worst case. Separation: O(1) vs Θ(2ⁿ) — at the price of AM_A requiring the levels to be STORED (storage: maintaining all levels up-to-date). The honest framing: **AM_A has preprocessing/update cost** — when x is created or updated, all levels must be (re)computed: Θ(Σ_k |level k|) = Θ(|x|) per concept-build — same order as just storing the tree. So: equal storage, equal build cost, O(1) vs Θ(2ⁿ) QUERY for level-n of a composition. This is precisely an INDEX. And the known-theory location: this is the "summary/aggregate indexing" tradeoff — e.g., interval trees, prefix sums (prefix sums: O(n) build, O(1) range-sum query vs O(n) query without — EXACTLY the same pattern!). So the depth-Address interface is an instance of prefix-sum-style indexing over the tree-depth decomposition. I can note this as the likely classification (representation-sensitive computation, known pattern) — but per the round's instruction, Task 4 only builds the model and says what to compare; the comparison itself is Task 10's fork (II-candidate, and the likely answer is "known indexing pattern" — but I shouldn't fully adjudicate; I'll note the prefix-sum analogy as the hypothesis to verify next round).
+
+Hmm, but actually the user's Task 10 asks me to judge whether depth-Address can NOW be judged III. My answer: structurally III (proven); computationally: the interface question is now well-posed for the first time and the preliminary analysis (Task 4's model) suggests the separation exists in query complexity but is the classic index tradeoff — so the likely endpoint is "II in a weak sense (representation-sensitive, but known pattern), i.e., computationally it collapses to known data-structure theory" — but that adjudication requires next round's work. So: **IV → with III proven on the structural half and II open on the computational half; the research fork: pursue the computational interface (representation-sensitive model), not new algebra.** That's the answer to the final question: 原始研究应该寻找的是新的 representation-sensitive computational model（计算接口），而不是新代数结构。
+
+Wait — but I should be careful: the user asks "是不是已经可以判为 III？如果是，必须区分'代数上坍缩'与'计算模型上也坍缩'。" My answer: 不能整体判 III；可以判"代数半边 III 已证"；计算半边未判（模型刚建立，分离候选存在但属经典索引模式的假设待验）。So the current state: III-structural proven; computational: IV (underdetermined until Task-4 model analysis completes) — with the preliminary hypothesis that it will land in "known indexing pattern" (which would be computational-III in the data-structure sense). Honest.
+
+Let me now also prepare Task 2's precise definitions:
+
+**A. Structural Novelty**: M (σ-structure) is structurally novel w.r.t. O iff ¬∃B ∈ B(O): Th(M) interprets in B. (Pure model theory: isomorphism, FO-interpretation, definable expansion, canonical completion, universal construction — all subsumed by B's closure operations.)
+
+**B. Computational Novelty**: A computational instance is a tuple 𝕂 = (σ-structure A, representation ρ: D ↠ A, access model AM, operation set Op, cost c). Two instances 𝕂₁, 𝕂₂ over the SAME structure are comparison-eligible iff AM and Op are shared (fixed interface discipline, round 9) and a translation τ between the data domains is fixed with its cost. 𝕂₁ is computationally novel relative to 𝕂₂ w.r.t. task class Q iff ∃q ∈ Q: c₁(q) = o(c₂(q)) — where c₂(q) is the min cost over all AM-programs (simulations) using the ρ₂-representation, c₁ likewise, under the shared AM. Crucially: novelty is a property of the PAIR (structure, representation+interface), never of the structure alone. FO theory cannot express c₁, c₂ (they quantify over algorithms) ⟹ B needs the full apparatus. ✓
+
+Task 3's theorem statement: **[PROPOSITION] Algebraic isomorphism does not transfer computational cost.** Proof: unary/binary example. Corollary: structural novelty (A) and computational novelty (B) are independent: (same structure, different interface) gives ¬A-novel ∧ possibly B-novel; (different structure, same interface cost profile) gives A-novel ∧ ¬B-novel (e.g., (νG,f,S) — structurally non-interpretable, computationally identical to (νG,f) since S is never accessed). Both directions of independence exhibited. 
+
+Now, AdvisorTool call (mandatory per correction-trigger). Then final answer.
+
+Length control: 10 tasks + fork. I'll be disciplined — each task gets a compact but rigorous treatment. A widget: the two-layer separation map (structure layer vs interface layer). Maybe skip the widget to save space? The rounds have used widgets consistently and the separation map is genuinely clarifying (showing: algebra layer collapsed; interface layer open). I'll include one compact widget.
+
+Let me write the advisor call now.
+
+# 对抗性复核结果
+
+**(a) FRC⟹可定义：思路正确，三处需修补**
+1. 隐式有限性确认：证明真正用到的是 ∀v, |g⁻¹(v)|<∞（析取有限），非"定义域有限"本身。X 有限⟹Â_N 有限✓；但 X 无限时定理仍真、假设应弱化为“g 纤维有限”——这是你隐式使用且须写明的点。∀N 逐个处理即可，无一致性负担。
+2. "cut_N(x)=u" 不是结构内等式：cut_N(x) 含 ⊥，∉Â。仅当 u 无 ⊥ 且语言含 X 常元时才是参数自由闭项等式；一般情形 φ_N 须写成递归匹配公式（⊥ 位撤除约束/断言位置存在性），并固定 ⊥ 约定。结论：不需额外参数机制，但“等式”只是缩写，须给出递归定义。
+3. 结论只能陈述为**逐点可定义**（各纤维谓词可定义）；V 无限时“图可定义”需先把 V 编码入结构，当前证明不提供。
+
+**(b) 确认，并定性分层**：unary/binary 是字符串编码类内的最小反例，且指数差在输出长度层面、**模型无关**——这是其最强形态，应作主反例。equality O(1) 更尖锐但换了模型类：需 hash-cons/地址唯一性（恰是地址系统构造性质），O(1) 是模型相对、成本前置的——它实为**接口层**例子，与任务4同构。两者并用：前者证表示敏感，后者证接口敏感。
+
+**(c) 四处隐藏假设**
+① 最大者：read-level 成本 1 只在“返回句柄”语义下成立；若输出要求物化，AM_A 同样 Θ(2ⁿ) 流式。分离真实但语义是“引用 vs 值”，必须声明输出约定。
+② 分离仅对 FRC/层局部 F 成立；任意 F 的截断可依赖任意深层，AM_A 也要全量数据。任务族须限定为 FRC F。
+③ “F_n 只读第 n 层”索引错位：π_n(f(x,y)) 由输入的 π_{n−1} 决定（读相邻层、写第 n 层）。成本仍 O(1)，核算需改。
+④ “建/更新 Θ(|x|)”是约定产物：层对象若存为共享 DAG 句柄（π_k(F(x,y)) 是引用输入 k−1 层的 O(1) 新节点），每积构建仅 O(depth)，索引代价消失。分离与索引代价**两端**均被 handle-vs-materialize 约定支配，需显式约定表重算。p 免费=地址编码内嵌层号，属 AM_A 定义公理，可接受但须声明。
+
+**(d) 维持 III(结构，已证)+II(计算，开放)**。计算半边现在既不能判 III 也不能判 I：(i) (c) 约定未定⟹被审判对象未固定；(ii) 判“已知模式”须实际展出基线成员 B+解释（候选：Fenwick/前缀和、hash-consing、level-linked——很可能成立但 ∃B⊨ 未证）；(iii) 非 I：AM 公理本身未被证明在基线内。预期约定固定后落 II。分叉方向正确，正向内容应改述为“地址结构参数化的经典索引权衡之查询复杂度”，非“新计算模型”。
+
+**(e) 需连带撤回/改写**
+1. 凡以 ¬Def₍νG,f₎(P) 为新颖性证据的第12轮结论全部撤回，降级为“¬∃B 可解释：未验证”。
+2. 撤回 N2 及其下游使用（“有计算产出⟹新颖”）。
+3. **保留并加强**：代数坍缩——它在新 N1 下从结论变证据，恰是结构半边的见证 B₀；FRC⟹可定义亦存活：因 (νG,f)≅B₀∈𝔅，可定义 expansion 可解释入 B₀，推论在新量词下仍成立（按 (a) 修补后）。
+4. 所有 Th_B⊢P 型表述改语义版；依赖语法产出的结论降级为“语义蕴涵成立、未给 r.e. 公理化”。
+5. “非 FRC 分支=oracle 故死”须软化：仅相对当前原语集是 oracle；新 N1 下非 FRC 泛函仍可能因可解释入某计算型基线而属旧——该验证从未做过。
+
+**补 (1)**：确认。FO 零成本鉴别力对裸代数成立；若基线成员自带成本注记关系则可部分鉴别——这正是量词修正后 N1 的管辖范围，不构成反例。
+Let me carefully analyze this. The user is in a pure mathematics research conversation about a "Concept Address System" with a free magma T = T_{f/2}(X), having completed an algebraic audit showing depth-Address's carrier + operations ≅ νY.(X+Y²) ∈ baseline, meaning the algebraic layer collapses (to baseline).
+
+The user asks me to adversarially review four load-bearing conclusions. Actually they list 7 items but the final review request has 5 parts (a)-(e). They want ≤500 words, in Chinese, direct error identification or item-by-item confirmation.
+
+Let me think through each carefully.
+
+**Context reconstruction:**
+- νY.(X+Y²) is the final coalgebra of binary trees / free magma. The depth-Address structure is isomorphic to this baseline structure, so algebraically it's collapsible (nothing new).
+- N1∧N2 was proposed as a novelty criterion; user pointed out it conflates structural novelty with computational novelty. Now separation audit.
+- FRC_k = finite resolution computability: P: Â→V with P(x) = g(π_{≤N}(x)) for fixed N. Claim: FRC ⟹ P is FO-definable in (νG, f) using ground-term parameters.
+- Task 4: access models AM_A (address interface, layered storage) vs AM_C (concept interface, pointer tree). Query separation O(1) vs Θ(2ⁿ), but AM_A pays Θ(|x|) build cost — classic prefix-sum indexing pattern.
+- Task 10: verdict split III (structural, proven) + II-candidate (computational, open).
+- Task 7: N1 quantifier fix: N1 = ¬∃B∈𝔅(O): theory interprets into B.
+- Task 8: ⊢/⊨ type error fix; use semantic version.
+
+**(a) FRC⟹definable proof rigor.**
+
+FRC_k: P(x) = g(π_{≤N}(x)) for fixed N, g arbitrary function on finite set Â_N (the truncation at depth N is a finite set since alphabet X finite and branching f/2 fixed — yes, Â_N is finite: number of ground terms of depth ≤ N is finite when X is finite). So g: Â_N → V has finite domain; g⁻¹(v) is a finite set of "fingerprints" u.
+
+Claim: P(x) = v ⟺ ⋁_{u ∈ g⁻¹(v)} cut_N(x) = u, and "cut_N(x) = u" is FO-definable for fixed ground u ∈ Â_N.
+
+Key question: is "cut_N(x) = u" definable without extra parameter mechanisms? In the coalgebra νY.(X+Y²), we have the final coalgebra of the functor Y ↦ X + Y². Its theory: bisimilarity. For a fixed ground term u of depth ≤ N, the relation cut_N(x) = u means: the depth-N truncation of x equals u. This is definable by a bounded-depth formula: recursively, φ_0(x, u) says (root label matches) — actually at depth N we need: x's node at depth ≤ N matches u's structure. Since u is a fixed closed term (built from constants — X-symbols as constants? X are atoms/leaves, f binary), we can write a formula φ_N(x) that unfolds x to depth N and checks equality with u. Each step: x = f(x₁, x₂) → existential decomposition. In FO over the coalgebra with observation functions (root label, left child, right child) — if the signature has these observation functions (π_k projections or root/child operations), then depth-N equality with a fixed ground term is a fixed FO formula. Yes: φ_{k+1}(x, u) := ∃x₁∃x₂ (x = f(x₁,x₂) ∧ ... ) — wait, in coalgebraic setting with final coalgebra, term equality is bisimilarity; the formula "x matches u up to depth N" is a finite conjunction. But subtlety: cut_N(x) = u requires equality of the truncation, which includes behavior below depth N being irrelevant — but truncation means we replace everything below depth N by a canonical "hole"/⊥. So cut_N(x) = u ⟺ for every node position p with |p| ≤ N... actually ⟺ x and u agree on all positions of depth ≤ N-1 and have same structure down to depth N with leaves/hole patterns matching. In the term algebra with ⊥ (partial terms), this is: the partial term obtained by cutting x at depth N equals u (u has depth ≤ N). This is FO-definable by a formula that quantifies existentially over children up to depth N: a finite formula of size O(|u| · something), specifically size exponential? No — size O(number of nodes in u up to depth N) which is O(2^N) — but N is fixed, so it's a fixed finite formula. Fine.
+
+Subtlety 1: Does the FO language of (νG, f) have the right primitives? If the signature is just {f} (binary operation) plus constants for X-elements, then "x = f(x₁, x₂)" — in the magma, every non-leaf element decomposes uniquely as f(x₁,x₂) (by finality/coinduction the decomposition is unique). The formula φ_N(x) := ∃x₁...∃x_{2^N} (x = f(x₁,x₁') ∧ x₁ = f(...) ∧ ... ∧ leaf-checks). Hmm, leaves: x is a leaf (an element of X) vs internal node. Definable? "x is a leaf" ⟺ ¬∃a∃b x = f(a,b). In the free magma, yes that works (every element is either a leaf or uniquely f(a,b)). So yes, definable.
+
+Subtlety 2: The disjunction ⋁_{u ∈ g⁻¹(v)} — is g⁻¹(v) finite? g has domain Â_N which is finite iff X is finite. If X is infinite, Â_N is infinite and g⁻¹(v) may be infinite — then the disjunction is infinitary and the proof fails. Did the user implicitly assume X finite? The user says "g 定义在 Â_N 上有限集 ✓" — they acknowledge g's domain is finite. But wait — is that enough? The question asked: "∀N 量化下 'g 的定义域有限' 是否被我隐式使用". Yes: the proof needs g⁻¹(v) finite for each v; if X finite then Â_N finite, fine. But there's a deeper issue: **the formula depends on N and on v (and on g)**. For P to be FO-definable, we need a single formula ψ_v(x) such that P(x)=v ⟺ ψ_v(x). For each fixed v, the formula ⋁_{u∈g⁻¹(v)} φ_N(x,u) is finite (finite disjunction) — OK. So each fiber is definable. But is P itself "definable" — i.e., is the relation P(x)=v definable for each v, or do we need P definable as a function? Standard: P is FO-definable if its graph is definable, i.e., the relation {x : P(x)=v} is definable uniformly... with v as parameter? If V is finite, we can write a disjunction over v. If V infinite, graph definability means the formula with free variable y representing v... but then we'd need y to range over V, which may not be part of the structure. Hmm. Actually the honest statement: for each v ∈ V, the predicate P_v(x) := (P(x)=v) is FO-definable. That's "pointwise definability". The proof gives that. The user should state the conclusion as pointwise definability, not graph definability, unless V ⊆ structure or V finite. This is a real gap worth flagging — a modest one.
+
+Subtlety 3: The parameters. "u 作为闭项由原子常元构造" — u ∈ Â_N is a ground term; as a closed term it's fine, no parameter mechanism needed. But wait: is u an element of the structure Â (the final coalgebra)? Ground terms of depth ≤ N embed into Â. But careful: u is a *truncated* term — cut_N produces terms with holes/⊥ at depth N. If u ∈ Â_N includes ⊥-leaves (i.e., u is a partial term of depth ≤ N), then u may not be an element of Â = νY.(X+Y²) (which contains only total terms of possibly infinite depth — well, in the free magma every element is a finite... no wait. Free magma T_{f/2}(X): all finite binary trees with X-leaves. The final coalgebra νY.(X+Y²) contains also infinite trees. If Â = T_{f/2}(X) is the free magma (finite trees), then cut_N(x) has ⊥-leaves where the subtree was cut. So cut_N(x) ∈ partial terms, not ∈ Â. Then "cut_N(x) = u" with u a partial term — the formula must express "x agrees with u down to depth N", where u's leaves may be ⊥ (meaning "anything below"). That's fine: for ⊥-leaf of u at position p, no constraint at p (just require the position exists? no — if cut is at depth N, position p at depth N exists iff... in a finite-tree magma, x may have depth < N, then cut_N(x) has ⊥ where x ended? Depends on definition. Two conventions: (i) cut_N pads with ⊥ (total truncation, domain = all terms of depth exactly N with ⊥), (ii) cut_N gives partial term = prefix of x. The formula definability works either way, but the user should fix the convention; under (i), φ_N must also assert "x has depth ≥ N" for positions where u ≠ ⊥... Actually if u has ⊥ at all depth-N positions beyond x's extent... Under convention (i), cut_N(x) = u iff x and u agree on positions < N and at each depth-(N-1) node, either both have children matching or... hmm this is getting into the weeds. The core point: definability holds, but the formula φ_N needs care about the ⊥ convention and about "position exists" vs "position doesn't exist". In the pure magma without a ⊥ constant in the language, expressing "cut_N(x) = u" where u has ⊥ requires the formula to directly encode the truncation comparison rather than literally equating terms. It's still definable by a bounded recursive formula, but the user's proof sketch "cut_N(x)=u 可定义" glosses over that cut_N(x) is not a term of the structure — you can't write cut_N(x) = u as an atomic formula; you need the recursive φ_N. The user seems aware ("φ_N(x,u) 公式"). So: verdict — proof idea correct, needs (i) fix V-infinite issue (pointwise definability), (ii) X-finiteness is essential for the finite disjunction (explicitly note it; if X infinite, FRC may still be definable if g⁻¹(v) is finite for each v — i.e., need g fiber-finite, not domain-finite; actually even with X infinite, if g⁻¹(v) is finite for each v, pointwise definability holds. So the correct hypothesis is "g has finite fibers", which is implied by domain-finite. Good sharpening.), (iii) ⊥-convention.
+
+Also another subtlety: "∀N 量化下" — the user asks whether under ∀N quantification, g's domain being finite is implicitly used. The theorem is: for each fixed k (fixed N), FRC_k ⟹ definable. Uniform in N? The formula size grows like |g⁻¹(v)| · 2^N — no uniformity claim needed. Fine.
+
+One more: FO-definability *with ground-term parameters* — the user says "用 ground-term 参数". Actually if u is a closed term built from atomic constants, no parameters needed at all — the formula is parameter-free (it just mentions the constants). If X elements are not named by constants in the language (e.g., the structure's language doesn't have a constant for each x ∈ X), then φ_N(x,u) needs u's leaves as *parameters* — that's where "ground-term 参数" comes in. So the user's parenthetical is right: no extra parameter *mechanism* beyond allowing elements as parameters; but if the language lacks constants for X, parameters are needed, and definability-with-parameters is weaker than parameter-free. Should flag: state which. If X-finite and language has constants for each element of X (the natural term-model language), then parameter-free. OK.
+
+So (a): essentially correct, three fixes: finite-fiber (not just finite domain) if X infinite; pointwise vs graph definability; ⊥ convention / cut_N not an internal term.
+
+**(b) unary/binary counterexample — minimal? sharper?**
+
+The claim: same algebra (ℕ,+,×), unary vs binary representation, identity map is an isomorphism, same task (multiplication), cost differs exponentially. Therefore computation is representation-sensitive; algebraic isomorphism doesn't transfer computational properties.
+
+Is identity map an isomorphism? Between (ℕ with unary numerals, operations as algorithms on unary strings) and (ℕ with binary numerals...) — careful: the *structures* are both isomorphic to (ℕ,+,×); the representations are just encodings of the same abstract algebra. The isomorphism between the two "represented structures" is identity on ℕ (or the code translation). Yes. And multiplication costs: unary × unary — output length n₁n₂ (product), so Θ(n₁·n₂) just to write output; binary multiplication is O(M(log n₁, log n₂)) = quasi-linear in bit-length. Exponential gap in input/output length. Correct.
+
+Is it minimal? A minimal counterexample needs: same algebra, same task, different cost. Unary vs binary for addition: gap is Θ(n) vs Θ(log n) reading + output — already linear vs log, i.e., polynomial gap, enough to show non-transfer? To show "isomorphism doesn't preserve cost up to any reasonable class", exponential gap is more dramatic. Minimal in machinery: even the identity function on codes — consider task "output the numeral for the successor" or just "copy the input": unary copy Θ(n) vs binary copy Θ(log n). Even simpler: the task "decide whether the number is zero"? Unary: check empty string O(1); binary: check "0" O(1). Not a gap. Task "compare x to y"? Unary: O(min) or O(1) with length check... Unary equality: if inputs are given as strings on separate tapes, equality is O(n) (must scan both, unless you can compare length first O(1) and then scan O(n)). Binary equality: O(log n) = O(bit-length) — still must read all bits, so gap is only Θ(n) vs Θ(log n), polynomial. The user's suggested sharper example: "equality O(1) vs O(size)". When is equality O(1)? If representation allows hashing/pointer equality — e.g., in the concept-address setting, if numbers are represented as *nodes in a shared DAG/hash-consed structure*, equality is pointer comparison O(1) regardless of magnitude, while binary equality is Θ(log n). Hash-consing: equality O(1). That's a sharper example and directly relevant to their setting (hash-consed ground terms — the address system is essentially hash-consing!). Indeed in the concept-address system, if addresses are unique pointers (hash-consing), equality of addresses is O(1) — that's the computational payoff of the representation that no algebraic property captures. So yes: the sharper minimal example is hash-consed/pointer equality vs binary equality vs unary equality: same (ℕ,+,×)... wait, is hash-consing a representation of (ℕ,+,×)? Integers as interned objects with pointer equality — yes, operations must maintain interning (build cost), but equality query is O(1). That's exactly the AM_A vs AM_C pattern: pay at build, win at query. So the sharper example coincides with the indexing tradeoff of task 4 — good, it reinforces (d).
+
+Also possible sharper: **modular exponentiation** or **comparison**: unary comparison O(1)? No. Actually there's a classic: unary vs binary — the task "is x even?" unary O(1) (last char), binary O(1) (last bit). No gap. "x + y" output length differs inherently — output-sensitive. The cleanest sharp statements:
+- Equality: pointer/hash-cons O(1) vs unary O(n) vs binary O(log n) — all same algebra. This is the sharpest for "equality" specifically and O(1) vs O(size) needs hash-consing (not just unary/binary).
+So answer: unary/binary is a valid minimal pair within *string encodings*; O(1) equality requires leaving string encodings for pointer/DAG encodings — which is a different access model, precisely the interface layer. So the user's proposed sharper example is sharper but changes the model class — it's the bridge to task 4.
+
+One caveat: "同一任务（乘法）" — but is cost well-defined without fixing the machine model? Under any reasonable model (TM, RAM with unit-cost word ops... careful: RAM with unit-cost arithmetic on O(log n)-bit words makes binary multiplication "O(1)" per word op but the gap persists at the level of I/O length; unary still has n₁n₂ output). The exponential output-length gap is model-robust since it's about output size (information-theoretic). The equality O(1) example is *not* model-robust (pointer equality O(1) assumes the pointer fits in a word and interning is free at query time). Should flag: unary/binary gap is output-length-based, hence model-independent — actually its strongest form. Equality O(1) is model-dependent (relies on AM). So the unary/binary example is arguably the *right* minimal one; the equality example is sharper but requires fixing AM, making it a *different* claim (interface-sensitivity, not representation-sensitivity within fixed model). Good distinction to draw.
+
+**(c) Task 4 AM_A/AM_C accounting — hidden assumptions?**
+
+AM_A: data = layered storage (π_k(x))_k; primitives read-level(x,n) cost 1, p-mapping free, compose-levels cost 1. Task q_n = output π_n(F(x,y)): AM_A cost 3 (F_n reads only level n).
+
+Hidden assumptions:
+1. **AM_A requires maintaining all levels at build/update**: user acknowledges Θ(|x|). But also: is π_n(F(x,y)) computable from π_n(x), π_n(y) alone at cost 1? F_n is the depth-n truncation of F — F_n(π_n x, π_n y) — this requires that F is itself FRC/level-local. If F is an arbitrary operation on Â, its depth-n truncation may depend on deeper levels of x,y! The cost-3 claim implicitly assumes F is FRC (finite-resolution). For general F, AM_A also needs full x,y. So the "O(1) vs Θ(2ⁿ)" separation holds only for FRC operations F. That's consistent with (3)'s corollary (only FRC primitives get the baseline reduction), but must be stated: the separated task family is indexed by FRC F.
+2. **read-level cost 1 assumes level objects are stored contiguously / directly addressable**: the user asks this. π_n(x) as a stored object — if levels are stored as separate arrays, read-level is O(1) pointer deref. But *size* of π_n(x) is Θ(2ⁿ); "cost 1" means returning a *handle*, not materializing the content. If the task q_n = "output π_n(...)" requires *writing out* the level (2ⁿ symbols), then AM_A cost is also Θ(2ⁿ) for materialization! The separation only holds if "output" = return handle/reference. This is a real hidden assumption: **the output convention**. In AM_C, "output π_n" = materialize the subtree Θ(2ⁿ); in AM_A, output = handle O(1). If both must materialize, gap collapses to constant factor. So the honest separation is about *what counts as output* — handle vs content. Must flag this prominently. Hmm, but the user says "物化 π_n(x) 需遍历深度≤n 全部节点 Θ(2ⁿ)" for AM_C — so they're aware the AM_C cost is materialization. And AM_A "read-level cost 1" — is that returning a handle or the materialized level object? If the level object is stored, reading it = reading a pointer; if the task demands the *content* (e.g., to a printer), AM_A must also stream Θ(2ⁿ) from its stored level. So: the separation exists at the level of "produce a reference to the level" vs "produce the level's content". Both models pay Θ(2ⁿ) for content; AM_A wins on reference-production. The prefix-sum analogy is exactly right: query = "give me the answer as an object" O(1); but printing the object still costs its size. So the separation is real but its meaning is "reference vs value" semantics — flag it.
+3. **p-mapping free**: mapping address↔level-slot index. If addresses are exactly (level, index) pairs, p is arithmetic — free-ish. If addresses are pointers into a tree, computing the level of an address costs depth. So AM_A's "p free" presupposes the address encoding already contains the level info — again a representation choice baked into the model. Legit as a model definition, but should be declared as part of what AM_A *is* (the address system's whole point). OK.
+4. compose-levels cost 1: gluing level n of F(x,y) from levels of x,y — assumes F_n is a function on level-objects computable in O(1)? F_n is a fixed function on finite sets — as a "table lookup" O(1)? Domain size |Â_N| = 2^{Θ(2ⁿ)}... wait |Â_n| (terms of depth exactly n over X) is |X|^{2ⁿ}-ish — huge. A lookup table indexed by the whole level object costs reading the object Θ(2ⁿ). Cost 1 for compose-levels is only coherent if F_n is a *local* rule (each depth-n node computed from its parents' depth-n-... hmm, F_n(x,y) level-n nodes depend on level-(n-1)?? No — F_n: Â_n × Â_n → Â_n; if F is a "pointwise" operation like f(x,y)=f(x,y) structural, then π_n(F(x,y)) = f applied... For F = magma product, π_n(f(x,y)) = node with children π_{n-1}(x), π_{n-1}(y) — depends on level n-1, not n! So "F_n only reads level n" is wrong for the magma product — the depth-n truncation of f(x,y) is the depth-(n-1) truncations of x,y grafted. Hmm, so compose-levels isn't even the right primitive; the natural primitive is "π_n(f(x,y)) = graft(π_{n-1}(x), π_{n-1}(y))" — cost O(1) given handles to level n-1. Fine — cost still O(1) but the accounting "F_n 只读第 n 层" is off by one: it reads level n-1 of the inputs (and produces level n). Actually depends on indexing convention (π_0 = leaves or π_0 = root). If π_k = depth-≤k truncation with π_0 = leaves... whatever — the substantive point: for product-like F, the level rule references adjacent levels; the claim "cost 3" survives (constant), but "F_n 只读第 n 层" needs correction to "reads O(1) many adjacent levels". Also for general FRC F with cut-depth N, π_n(F(x,y)) depends on levels n-N..n+? — still O(1)-many levels for fixed N. So the separation claim survives with corrected accounting; but for *arbitrary* FRC operations with large N... N fixed per F, fine.
+
+So (c): three flags — (i) output-as-handle vs output-as-content (the Θ(2ⁿ) materialization applies to AM_A too if content required) — the biggest one; (ii) separation restricted to FRC/level-local F (otherwise AM_A also pays); (iii) level-index off-by-one/adjacency for concrete F like product; p-free is a definitional choice, acceptable if declared.
+
+Also: "AM_A 代价 Θ(|x|) 与直接存树同阶" — maintaining all levels: total size Σ_k |level_k| = Θ(|x|)? Σ 2^k for k≤depth = Θ(2^depth) = Θ(|x|). Yes for trees. OK. But *update* (rebuild levels under F application) — each product application updates O(1) levels if F is level-local? Creating F(x,y): levels 0..n of F(x,y) each need computing — total Θ(|F(x,y)|) = Θ(2ⁿ)?? Wait — if you build ALL levels of the new term, that's Θ(2ⁿ) per application, not Θ(|x|)-amortized across the whole computation... The user says build/update Θ(|x|) — for the whole data structure. But each magma product creates a new term of size |x|+|y|+1, and materializing all its levels costs Θ(|x|+|y|). In AM_C, building the pointer tree costs O(1) per product (just a new node pointing to children — DAG sharing!). Oh — this is important: in AM_C with DAG/hash-consing sharing, f(x,y) is a single new node, O(1), children shared. The tree is virtual. Then AM_C build is O(1) per op and AM_A build is Θ(size of result) per op! So the *build* comparison is reversed: AM_C-with-sharing builds in O(1), AM_A pays Θ(|result|) per product. The user's claim "AM_A 的代价是建/更新时维护全部层（Θ(|x|)，与直接存树同阶）" — "与直接存树同阶" — but with DAG sharing, "直接存树" is O(1) per op (pointer tree with sharing = DAG, materialization is lazy). So the amortization claim needs care: it's Θ(|x|) total *if* levels of x are already there and you merge — building π_k(F(x,y)) for all k: level k of F(x,y) = graft of level k-1 of x,y — can share with x's levels! Levels of F(x,y) = [x's levels 0..n-1 reindexed, ...] — actually π_k(f(x,y)) for k≥1 = node(π_{k-1}x, π_{k-1}y) — these are new objects but each is O(1) to create as a DAG node referencing x's level k-1 and y's level k-1. So building all n+1 levels costs O(n) new nodes = O(depth) = O(log |x|)?? Each level object is a DAG node referencing children levels — total build cost O(depth) per product, not Θ(|result|)! If levels are stored as DAGs with sharing, AM_A build is O(depth) per product and read-level O(1) — then AM_A dominates AM_C everywhere?? Hmm wait, then what's the catch: the level objects π_k(x) are *sets/sequences* of nodes? If π_k(x) as an object is "the truncation term" — as a DAG node it's fine. Then the "indexing cost Θ(|x|)" the user worries about dissolves — it's O(depth) per product with sharing. That makes AM_A even more clearly "just an index" (like prefix sums: build O(n)... or here even O(log n) per op amortized?). Hmm, careful: π_k(x) for k up to depth(x) — depth(x) can be n (number of products applied), so building all levels costs O(depth) = O(n) per product — comparable to prefix-sum rebuild... prefix sums O(n) build for n elements; here O(depth)=O(n) per product if depth grows by 1 each product. OK so Θ(|x|) claim: |x| = 2^depth for full binary magma terms! Building all levels: Σ_k (cost of level-k object). If each level-k object is a shared DAG node O(1), total O(depth) = O(log |x|). If each level-k object must materialize 2^k nodes, total Θ(|x|). So whether "AM_A build = Θ(|x|)" is *itself* a representation choice (levels materialized vs levels-as-handles)! The user's worry "Θ(|x|) 与直接存树同阶" assumes materialized levels; with lazy/handle levels, build is cheap. This is a fourth hidden assumption. So the honest summary: both the separation and the "cost of indexing" depend on handle-vs-materialize conventions at *both* ends; the invariant that survives is the classic index tradeoff shape (pay at build/level-maintenance, win at level-queries), and the model comparison should be redone with explicit convention table. Good — that's the adversarial finding for (c).
+
+**(d) Is "III(structural, proven) + II-candidate(computational, open)" right, or should computational half be III (index = known pattern) or I?**
+
+Recall (presumably) the verdict scale: I = trivial/collapse into baseline entirely; II = reducible to known pattern (excluded middle: known technique suffices); III = irreducible/new; IV = undetermined/ill-posed. From the conversation: "当前状态 IV→分裂：III(结构,已证) + II-候选(计算,开放)". So the question: can the computational half be settled now?
+
+Given (c)'s findings: the AM_A/AM_C separation, once conventions are fixed, is the prefix-sum/indexing pattern — i.e., "query-time speedup via precomputation at build time" is a textbook known pattern (also: hash-consing for O(1) equality, level summaries = segments trees/fenwick). The claim "计算新颖性只能住在接口层" + the interface phenomenon = indexing → then by the user's own N1 (quantified over baseline: does any baseline member explain it?), indexing patterns ARE in the baseline literature (prefix sums, hash consing, finger trees, level structures — e.g., "level-wise" representations are exactly binomial heaps / log-structured merge trees / Fenwick). So if N1(计算) is the corrected quantified version, the answer is likely "∃B: 解释入 B" → fails N1 → verdict II (known pattern), not II-candidate/open. But — honest caution: to *conclude* II needs actually exhibiting the B and the interpretation (which known structure explains "read-level O(1) with O(depth) build under sharing"? candidates: Fenwick/prefix structure on tree positions, or "level-linked" data structures, or top-down CA...). Without the exhibited B, it stays open-leaning-II. So my answer: the split III(structural, proven — the algebra collapses into baseline, meaning... wait.
+
+Hmm, careful about what III means for the structural half. "III 已证（代数坍缩）" — the structural verdict is "collapse to baseline" which should be verdict I (trivial/reducible), not III (novel)! Let me re-read: "III(结构,已证)" — user says III is proven for the structural half. But the algebra layer collapsed (= isomorphic to baseline νY.(X+Y²)) — that's the *opposite* of structural novelty; it means structural novelty is refuted → verdict for structural half should be "I/collapse" (no structural novelty). Unless III in their scale means something like "definitively decided" (III = closed?). From round context I can't fully reconstruct the scale. The user's phrasing in (5): "当前状态 IV→分裂：III(结构,已证) + II-候选(计算,开放)". And (d) asks: "还是计算半边其实也能判 III（索引=已知模式）或 I". Hmm — they gloss "III" with "索引=已知模式"?? That reads odd: judging III (irreducible) because index=known pattern? No wait — maybe their scale is: I = collapse-to-baseline; II = reducible-to-known-pattern (excluded middle: known technique suffices); III = ... hmm if III were "novel", then "判 III（索引=已知模式）" makes no sense. Perhaps their verdict scale is: I = trivial/collapse; II = "new but only recombination of known"; III = "genuinely new"; IV = undetermined. Then structural half: algebra collapsed to baseline → should be I, not III! Unless "III(结构,已证)" means the *verdict* is III-shaped: the structural question is settled (closed) with answer "collapse". Ambiguity in scale semantics. Actually re-reading (5): "III 已证（代数坍缩）" — "III proven (algebra collapse)". So III is the *proposition* "algebra collapses (structurally nothing new)". So their numeral system: III = "structure collapses / no structural novelty"? And II = "computational novelty exists as known-index pattern"? Then "II-候选(计算,开放)" = "the computational half is: it's a known pattern — candidate, still open". And (d) asks whether computational half can also be judged III (= collapse: nothing computationally new either, since index = known pattern means computational novelty also collapses?) or I. The user's glosses: "判 III（索引=已知模式）" — judge III because index=known pattern; "或 I" — or I. So the scale is likely: I = fully trivial/already-in-baseline-as-stated; II = reducible to known pattern via interpretation (excluded middle); III = collapse proven at the theory level?? I genuinely can't pin the numerals, but the *substance* I can judge:
+
+The substantive question: is the computational half now closable? My assessment: Not yet closable as "proven", because (i) the task-4 accounting has unresolved convention issues (handle vs materialize) that change the cost model, so the object whose novelty we'd judge isn't yet fixed; (ii) to rule "known pattern" requires exhibiting the baseline member B and an interpretation — plausible candidates exist (prefix-sum/Fenwick, hash-consing, level-linked structures), so it leans II, but a proof of "∃B⊨" is still missing; (iii) it cannot be I because the claim isn't trivially in baseline without the index analysis. So: "III(structural collapse, proven) + II-candidate(computational, open, leaning II)" is the correct current status — I endorse the split, with the refinement that the computational half's resolution is blocked precisely by the convention issues in (c); fix conventions first, then the index-pattern identification likely lands II. Also the FRC theorem (if the (a) fixes hold) closes the primitive-level route, further supporting that whatever remains is interface-level and thus index-pattern territory.
+
+Also worth noting for (d): a subtle point — "representation-sensitive computational model" as the research fork conclusion: the unary/binary example shows sensitivity exists in principle; but the FRC theorem shows the *primitive* layer can't host it; task 4 shows the interface layer's phenomenon is indexing. So the fork conclusion "find representation-sensitive computational model, not new algebra" is sound in direction but its positive content is currently "a known indexing tradeoff parameterized by address structure" — i.e., the novelty must be sought in *which* access models are natural/definable for the address system, not in the separation's existence.
+
+**(e) After N1 quantifier fix, which round-12 conclusions must be retracted?**
+
+N1 fix: N1 = ¬∃B ∈ 𝔅(O): theory interprets into B (quantify over all baseline members), rather than "not definable in the single structure (νG,f)". Consequences for round-12 conclusions:
+- Any round-12 conclusion of the form "P is not FO-definable in (νG,f), hence novel" must be retracted/downgraded: non-definability in one structure is far too weak (definability is not preserved under... rather: the concept might be definable in an expansion or in another baseline structure B; also with parameters, with extra predicates, etc.). Concretely: any claim "X is novel because not definable in (νG,f)" — retract; replace by "X not interpretable into any B ∈ 𝔅 — unverified".
+- The collapse verdict itself (algebra ≅ νY.(X+Y²) ∈ baseline) survives — it's an isomorphism statement, quantifier-free w.r.t. N1. Actually it *is* the exhibition of a B for the structural half: the structural half is thereby *closed* as "∃B (namely νY.(X+Y²)) with interpretation = isomorphism" → structural N1 fails → structural novelty refuted. So round-12's structural collapse conclusion is *strengthened/confirmed* under the new N1 (it becomes exactly the witnessing B).
+- The FRC⟹definable theorem: unaffected by the quantifier fix in its statement, but its *role* changes: previously "not definable in (νG,f)" was the novelty test; now the test is interpretability into all of 𝔅 — FRC-definability in (νG,f) no longer suffices to *refute* novelty; you need "interpretable into every/some B". Hmm wait — direction: N1(new) = ¬∃B: interprets into B. To *refute* novelty (show old), need ∃B + interpretation. The FRC theorem shows definability *in (νG,f) itself* — but (νG,f) is isomorphic to B₀ = νY.(X+Y²) ∈ 𝔅! So FRC-definable ⟹ definable in B₀ ⟹ ... does "definable in a baseline member" mean "interpretable into B"? If "理论可解释入 B" means the concept/theorem translates into B's language — definability in B₀ with ground parameters is a strong candidate for interpretability into B₀. So FRC theorem + algebra collapse together *do* refute novelty for FRC primitives even under the new N1: the witnessing B is B₀ and the interpretation is the isomorphism + the defining formulas. Nice — so the "FRC ⟹ baseline-reducible" corollary survives the quantifier fix, *because* the collapse supplies the witness B. This is worth stating: the quantifier fix would have killed round-12 conclusions that used single-structure non-definability as novelty evidence, but the collapse isomorphism converts the FRC theorem into an existential witness, so primitive-level conclusions survive; what must be retracted is anything that claimed novelty via ¬Def_(νG,f) for *non-FRC* objects (oracle-level/global primitives) — those now need an ∃B search over all of 𝔅, which was never done.
+- Also task 8's ⊢/⊨ fix: retract any round-12 conclusion that was stated as "Th_B ⊢ P" — restate semantically; and note (c) of task 8: "产出 = 所有满足 Φ 的 B 成员 ⊨ P" — this is a semantic entailment claim; without an r.e. axiomatization it's not decidable but it's still a well-defined statement; fine.
+- Round-12 conclusions needing连带撤回, concretely (I have to guess round-12 content from context): presumably round 12 contained (i) the algebra collapse (11-12轮封代数) — survives; (ii) N1∧N2 criterion statement — already retracted (item 1); (iii) any "novelty" claims about specific primitives via non-definability — retract; (iv) the "N2: novelty = has computational output" — retracted as stipulative.
+
+Let me now also double check (a)'s "∀N" question once more: the user asks specifically whether "g 的定义域有限" is implicitly used under ∀N quantification. Under the theorem stated per-fixed-N: need g⁻¹(v) finite per v. If X finite: Â_N finite ✓. If X infinite: need fiber-finiteness (sharper hypothesis). Also under ∀N: for the *union* over N (P is FRC for *some* N — that's the definition: FRC = ∃N ...), fine. If instead they quantified ∀N with a *family* g_N, each handled separately. So answer: yes, finiteness is load-bearing exactly at the disjunction; correct hypothesis is "g has finite fibers" (weaker, covers infinite X); as stated (X finite) it's fine but should be explicit.
+
+And "cut_N(x)=u 对固定 ground u 可定义是否需要额外参数机制": if the language contains constants for X (term language), u is a closed term — parameter-free, no mechanism needed. If not, u's leaves are element-parameters — allowed parameters suffice; no *extra* mechanism (like a quoting/name relation) is needed because equality-to-a-named-element is expressible as x = c. One genuine gap: cut_N(x) contains ⊥-nodes not in Â; so you cannot literally write "cut_N(x) = u" as an equation between elements of Â unless u ∈ Â (i.e., u has no ⊥, i.e., depth(u) < N fully... u ∈ Â requires u a genuine finite term). If g's domain is prefixes of depth exactly N over Â—wait Â_N = {cut_N(x) : x ∈ Â} = partial terms with ⊥. To avoid ⊥: re-encode fingerprints as *total* terms: u' = u with each ⊥ replaced by a fixed fresh... no fresh constants available. Alternative: define the fingerprint as the *finite* term obtained by cutting — the relation "x's depth-N prefix = u" where u ranges over partial terms is directly definable by the recursive formula (each ⊥ position imposes no constraint beyond "position exists/doesn't exist per convention"). So: definable, yes, but the proof must not pretend cut_N(x) is an element of the structure; the equation is shorthand for the recursive matching formula. That's the honest answer to "是否真的不需要额外参数机制": no extra mechanism needed, but also no literal equation — φ_N is a schema, and the user should present the recursive definition explicitly (base: leaf/constant match; step: f-decomposition uniqueness; ⊥-positions: drop the constraint or assert child-existence).
+
+Wait, one more check on the FRC theorem: is FRC ⟹ FO-definable actually consistent with the earlier claim "投影/一致结构 FO-可定义 ⟹ 代数层坍缩"? Yes, consistent — the FRC theorem extends collapse from projections/levels to all FRC functionals. Fine.
+
+Also should I double-check the claim in (2) about the corollary "(νG,f,S) 结构不可约但计算上与 (νG,f) 全同（S 从不被访问）" — yes: adding an unused predicate/relation S to the structure preserves all definable sets and all computational behavior if S is never read; structurally (νG,f,S) with S an arbitrary new relation is an expansion — is it "结构不可约" (structurally irreducible, i.e., not interpretable into baseline)? Hmm — an expansion by a random relation S: if S is, say, a random graph relation on Â, then (Â,f,S) may indeed not be interpretable into baseline structures (S carries extra info). But careful: with parameters, any relation on Â... interpretability of the *expansion* into the baseline: a relation S ⊆ Â^k is definable with parameters... in expansions, S is given as primitive. The expansion's theory includes full knowledge of S; interpreting (Â,f,S) into (Â,f) would require defining S — if S is undefinable, the expansion is a genuine structure-expansion. So yes, the corollary's logic holds: structural novelty (irreducibility of the expansion) and computational novelty (S never accessed ⟹ zero cost difference) are independent. But one adversarial nitpick: if S is never accessed, is (νG,f,S) with unused S really "structurally irreducible"? Its *theory* distinguishes it... The example is fine but slightly degenerate: an unused predicate is structurally novel only in a vacuous sense (a random expansion). A sharper structural-vs-computational independence would use S that *is* accessed but... no — if accessed, computation differs. The point stands: the pair of examples (unary/binary: same structure, different cost; unused-S expansion: different structure, same cost) jointly establish independence. Good — I'll confirm with the nitpick that unused-S is a degenerate/decoy structure, so the independence, while logically valid, is witnessed by a pathological case — which actually strengthens the audit's conclusion that the interesting territory is the *interface* (where structure and computation interact non-degenerately).
+
+Word budget: ≤500 words (Chinese characters count presumably; "500 词内"). I need to be concise. Let me structure: (a) confirm with 3 fixes; (b) confirm minimal-within-string-models, sharper = hash-cons equality but model-dependent; (c) 3-4 hidden assumptions, biggest = handle vs materialize; (d) endorse split with refinement; (e) list retractions.
+
+Let me now also reconsider (b) "更尖锐" once more: the user proposes "equality O(1) vs O(size)". In unary, equality is O(n) not O(size)... size = n. Binary O(log n). Hash-cons/pointer: O(1) — but that requires interning at build. Also in the address system, addresses are unique ⟹ equality O(1) *by construction*. So the sharpest example lives *inside their own system*: address equality is O(1) regardless of term size — versus binary/unary — same algebra of terms... wait, is the term algebra (νG,f) together with equality the same "algebra" as (ℕ,+,×)? The analogy: same abstract structure, different address/numeral systems. Address equality O(1) vs binary-string equality Θ(log|term|): same magma, different representation, exponential-ish gap. And this O(1)-equality is precisely what no algebraic invariant records. So yes — endorse the user's sharper example, noting it's exactly hash-consing and that its O(1) is model-relative (requires the AM guaranteeing unique addresses; and it's a *query*-time win paid at build/intern time — again the indexing shape).
+
+One more check on (c): "read-level 是否要求层对象连续存储" — answered above: cost-1 read-level = handle-return; requires levels be first-class addressable objects; that's a definitional commitment, not derived. And p free: requires address encoding to embed level index — again definitional. Both legitimate as model *definitions* but must be listed as axioms of AM_A; the separation is then "by construction" for these axioms — meaning the interesting question shifts to whether such an AM is *implementable* with what build cost — which is exactly where Θ(|x|) (materialized) vs O(depth) (shared-DAG levels) ambiguity lives.
+
+Now, is there any *error* to flag in (4) as stated? "AM_A 成本 3（F_n 只读第 n 层）" — off-by-one/adjacency as noted: for the magma product, π_n(f(x,y)) is determined by π_{n-1}(x), π_{n-1}(y) (root + children one level down). If π_k indexes by "depth ≤ k truncation", then π_n(f(x,y)) = f-node with children cut_{n-1}(x), cut_{n-1}(y) — reads level n-1 of inputs, writes level n of output. Cost still O(1), but the stated "只读第 n 层" is incorrect indexing (or their π_k convention is "level = nodes at depth k", then π_n(f(x,y)) = node + π_{n-1} children — still reads n-1). Unless their F_n is defined as a function on the *pair of full level-n objects* meaning something else. Flag as minor accounting error: should be "reads O(1) adjacent levels (n-1 of inputs), not level n".
+
+Also "AM_C 物化 π_n(x) 需遍历深度≤n 全部节点 Θ(2ⁿ)" — with DAG sharing, materialization could be less if subtrees repeat — in a free magma no sharing below the given pointers... a pointer tree for a magma element: children are distinct subtrees but may be structurally equal; materialization cost = number of nodes in the depth-n truncation = Θ(2ⁿ) worst case ✓ (min case less). Fine as worst case.
+
+And in (5): "第4-5轮的分析在⊥-塔/混塔错误基础上" — I can't verify without those rounds; accept user's statement.
+
+(d) verdict: endorse "III(结构,已证) + II-候选(计算,开放)" — and answer their either/or: the computational half is *not* closable to III-or-I yet, because (i) cost-model conventions unsettled ((c)) mean the object of judgment isn't fixed; (ii) ruling "known pattern" needs an exhibited baseline witness + interpretation (candidates: prefix-sum/Fenwick, hash-consing, level-linked trees) — plausible but unproven; (iii) it's not I because nothing shows the AM axioms themselves are literally baseline. So: keep II-candidate/open; expected resolution II once conventions are fixed; and note the fork conclusion stands but should be phrased as "representation-sensitive *query* complexity via index tradeoffs", not a new model claim.
+
+(e) retractions: 
+1. Retract every round-12 novelty claim whose evidence was "¬Def_{(νG,f)}(P)" — replace by "¬∃B-interpretation, unverified". 
+2. Retract "N1∧N2 as criterion" (done, item 1) — including any downstream use of N2 ("has computational output ⟹ novel") in round-12 task write-ups.
+3. Keep: algebra collapse (it becomes the witnessing B for structural closure — confirmed, even strengthened); FRC⟹definable (survives the fix because the isomorphism into B₀ = νY.(X+Y²) converts definability-in-(νG,f) into interpretability-into-B₀; state this explicitly as the corrected corollary); 
+4. Any round-12 statement of the form "Th_B ⊢ P" or "non-triviality of the theory" — restate semantically per task-8 fix; in particular any claim "(c) 产出已证" that relied on syntactic Th_B ⊢ is downgraded to "semantic entailment holds, no r.e. axiomatization given".
+5. Also: "计算新颖性只能住在接口层或非FRC全局原语" corollary — survives but re-scope: the non-FRC branch is not merely "oracle" — it's "oracle *given current primitives*"; the quantifier-fixed N1 means a non-FRC functional could still be old if interpretable into some computational baseline (e.g., a Turing-machine baseline member) — so round-12's dismissal of the non-FRC branch as "oracle, hence dead" needs softening: it's dead *as a novelty source* only relative to a baseline that includes the relevant computational model.
+
+Hmm wait — actually the FRC corollary's logic "FRC ⟹ 基线可约" via B₀: "definable in B₀ with ground parameters" — does interpretability of the *concept* into B follow from definability of P in B₀? Interpretability of a theory/concept into B typically means translating the language so that axioms become theorems-of-B. If P is definable in B₀, then the structure (Â,P) is definably interpreted into... into (νG,f), which ≅ B₀, so into B₀. Yes — a definable expansion interprets into the base. ✓. So the corollary survives, with witness B₀. Good.
+
+Also one adversarial point on (1): "FO 理论完全看不见成本——判据对计算新颖性零鉴别力" — confirm, with sharpening: FO sees definability/interpretability, i.e., *information* content, not *work*; and the unary/binary example shows work lives below the FO-granularity. But note: computational *structure* can partially surface in FO via definable complexity-carrying relations (e.g., an ordering with definable "cost tiers") — only if the structure carries them as primitives; bare (νG,f) doesn't. So "零鉴别力" holds for the bare algebra; a *richer* baseline (with cost-annotated relations) could in principle discriminate — but then it's a different B, and the quantifier-fixed N1 is the right place to handle that. Worth one line.
+
+Word count discipline: aim ~500 Chinese characters... "500 词" likely means ~500 words; Chinese — I'll aim for a compact ~600-700 characters, itemized. Actually "500 词内" — I'll be tight. Let me draft.
+
+Draft:
+
+**(a) 基本严密，需三处修补：**
+1. 有限性假设必须显式化且应削弱为"纤维有限"：证明真正用到的是 ∀v: |g⁻¹(v)|<∞（析取有限）。X 有限⟹Â_N 有限✓；X 无限时定理仍真但需纤维有限假设——这是你隐式使用且应写明的点。∀N 量化无碍（逐 N 证即可，无一致性要求）。
+2. "cut_N(x)=u" 不能写成结构内等式：cut_N(x) 含 ⊥，∉Â。u 若为无 ⊥ 闭项（depth<N 且 X 有常元）则纯参数自由✓；一般情形 φ_N 须是递归匹配公式（⊥ 位撤除约束/断言位置存在性），并固定 ⊥ 塔约定。无额外参数机制，但"等式"只是缩写。
+3. 结论应陈述为逐点可定义（每个 v 的谓词可定义），非图可定义——V 无限时后者需把 V 编码入结构。另外"ground-term 参数"仅当语言含 X 的常元时才可免参数，否则用元素参数即可（仍是弱意义可定义）。
+
+**(b) unary/binary 是"字符串编码类内"的最小反例，且其指数差是输出长度层面的，故模型无关——这恰是其最强形式。你提的 equality O(1) 更尖锐但换模型类：它需 hash-cons/指针唯一性（正是地址系统的构造性质），O(1) 是模型相对的（ intern 成本前置）——所以它其实已是"接口层"例子，与任务4同构。两个都留：前者证表示敏感性的模型无关部分，后者证接口敏感性。**
+
+**(c) 四处隐藏假设：**
+1. 最大问题：read-level 成本 1 只在"返回句柄"语义下成立；若 q_n 要求物化输出，AM_A 也要流式 Θ(2ⁿ)。分离存在但语义是"引用 vs 值"——须声明输出约定。
+2. 分离仅对 FRC/层局部 F 成立：任意 F 的截断可依赖任意深层，AM_A 同样要全量数据。须把任务族限定为 FRC F。
+3. "F_n 只读第 n 层"索引错位： magma 积的 π_n(F(x,y)) 由输入的 π_{n-1} 决定（读相邻层、写第 n 层）。成本仍 O(1)，但核算需改为"读 O(1) 个相邻层"。
+4. "建/更新 Θ(|x|) 与直接存树同阶"本身是约定产物：若层对象以共享 DAG 句柄存储（π_k(f(x,y)) 是引用 x 的 k-1 层的 O(1) 新节点），构建每积仅 O(depth)，"索引代价"消失。即：分离与索引代价两端都被 handle-vs-materialize 约定支配——需一张显式约定表重做核算。p 免费同理：要求地址编码内嵌层号，属 AM_A 定义公理，可接受但须声明。
+
+**(d) 维持"III(结构,已证)+II-候选(计算,开放)"。** 计算半边不能现在判 III 或 I：(i) (c) 的约定未定⟹被审判的对象未固定；(ii) 判"已知模式"需实际展出基线成员 B+解释（候选：前缀和/Fenwick、hash-consing、level-linked 结构——均极可能成立，但"∃B⊨"未证）；(iii) 非 I，因 AM 公理本身未被证明逐字在基线内。预期：约定固定后落 II。分叉结论方向正确，但正向内容应表述为"地址结构参数化的经典索引权衡的查询复杂度",而非"新计算模型"。
+
+**(e) 需连带撤回/改写：**
+1. 撤回所有以"¬Def₍νG,f₎(P)"为证据的新颖性主张⟹降级为"¬∃B 可解释，未验证"。
+2. 撤回 N2 及其在第12轮的下游使用（"有计算产出⟹新颖"）。
+3. 保留且加强：代数坍缩（它恰好成为结构半边的见证 B₀，在新 N1 下从"结论"变"证据"）；FRC⟹可定义（因 (νG,f)≅B₀∈𝔅，可定义 expansion 可解释入 B₀，推论在新量词下仍成立——但见 (a) 三修补）。
+4. 所有 "Th_B⊢P" 型结论改为语义陈述；依赖语法产出的"(c) 已证"降级为"语义蕴涵成立、未给 r.e. 公理化"。
+5. "非 FRC 分支=oracle 故死"需软化：仅相对"当前原语集"是 oracle；在新 N1 下，非 FRC 泛函仍可能因可解释入某个计算型基线成员而属旧——即它"死"为新颖性来源需对全体 𝔅 验证，而这一步从未做过。
+
+还有一个对 (1) 的确认：FO 看不见成本——对裸代数成立；若基线成员携带成本注记关系，FO 可部分鉴别——但这正是量词修正后 N1 该管的范围，不构成对判定的反对。
+
+That's comprehensive. Now compress to fit ~500 words. The instruction says "500 词内" — Chinese "词" is ambiguous; I'll aim for roughly 800-900 characters which is about 500-600 "words" territory... Hmm, risky. Let me count roughly: my draft is ~1400 characters. Need to cut ~40%. Prioritize: direct verdicts per item, errors flagged. Let me tighten.
+
+Tightened version:
+
+(a) 证明思路正确，三处需补：
+1. 隐式有限性：真正用到的是 ∀v |g⁻¹(v)|<∞（析取有限）。X 有限则 Â_N 有限✓；X 无限时需把假设弱化为"g 纤维有限"——应显式写出。∀N 逐个处理即可，无需一致性。
+2. "cut_N(x)=u" 不是结构内等式：cut_N(x) 含 ⊥，不属于 Â。仅当 u 无 ⊥ 且语言含 X 常元时才是纯参数自由闭项等式；一般情形 φ_N 须写成递归匹配公式（⊥ 位撤约束/断言位置存在），并固定 ⊥ 约定。不需要额外参数机制，但"等式"只是缩写，证明须给出递归定义。
+3. 结论应表述为逐点可定义（各 v 的纤维谓词可定义）；V 无限时"图可定义"需先把 V 编码进结构，当前证明不给这个。
+
+(b) unary/binary 是字符串编码类内的最小反例，且指数差在输出长度层面、模型无关——这是它的最强形态，应保留为主反例。equality O(1) 更尖锐但换了模型类：需 hash-cons/地址唯一性（恰是地址系统的构造性质），O(1) 是模型相对、成本前置（intern 在建时）——它实际已是接口层例子，与任务4同构。两者并用：前者证表示敏感，后者证接口敏感。
+
+(c) 四处隐藏假设：
+①最大者：read-level 成本 1 只在"返回句柄"语义下成立；若输出要求物化，AM_A 同样 Θ(2ⁿ) 流式。分离真实但语义是"引用 vs 值"，必须声明输出约定。
+②分离仅对 FRC/层局部 F 成立；任意 F 的截断可依赖深层，AM_A 也要全量数据。任务族须限定 FRC。
+③"F_n 只读第 n 层"索引错位：π_n(f(x,y)) 由输入 π_{n-1} 决定（读相邻层、写第 n 层）；成本仍 O(1)，核算需改。
+④"建/更新 Θ(|x|)"是约定产物：层对象若存为共享 DAG 句柄（π_k(F(x,y)) 是引用输入 k−1 层的 O(1) 新节点），每积构建仅 O(depth)，索引代价消失。分离与索引代价两端都被 handle-vs-materialize 支配——需显式约定表重算。p 免费=地址编码内嵌层号，属 AM_A 定义公理，可但须声明。
+
+(d) 维持 III(结构,已证)+II(计算,开放)。计算半边现在不能判 III 也不能判 I：(i) (c) 的约定未定，被审判对象未固定；(ii) 判"已知模式"须实际展出 B+解释（候选：Fenwick/前缀和、hash-consing、level-linked——很可能成立但 ∃B⊨ 未证）；(iii) 非 I：AM 公理本身未被证明在基线内。预期约定固定后落 II。分叉方向正确，正向内容应改述为"地址结构参数化的经典索引权衡之查询复杂度"，不是新计算模型。
+
+(e) 连带撤回：
+1. 凡以 ¬Def_(νG,f)(P) 为新颖性证据的第12轮结论全部撤回，降级为"¬∃B 可解释：未验证"。
+2. 撤回 N2 及其下游（"有计算产出⟹新颖"）。
+3. 保留并加强：代数坍缩（它在新 N1 下从结论变证据——恰是结构半边的见证 B₀）；FRC⟹可定义（因 (νG,f)≅B₀∈𝔅，可定义 expansion 可解释入 B₀，推论在新量词下仍成立，但按 (a) 修补）。
+4. 所有 Th_B⊢P 型表述改语义版；依赖语法产出的结论降级为"语义蕴涵成立，未给 r.e. 公理化"。
+5. "非 FRC 分支=oracle 故死"软化：仅相对当前原语集是 oracle；新 N1 下非 FRC 泛函仍可能因可解释入某计算型基线而属旧，此验证从未做过。
+
+补 (1)：FO 对裸代数零成本鉴别力✓；若某基线成员自带成本注记关系则可部分鉴别——这正是量词修正后 N1 的管辖范围，不构成反例。
+
+That's about 1100 characters ≈ maybe 700 words. Still over. "500 词内" — for Chinese, 词 ~ word; 1100 characters ≈ 700-750 words? Actually Chinese word ≈ 1.5-1.7 characters, so 1100 chars ≈ 650-700 词. Need to cut to ~750-850 chars. Cut further: merge points, drop elaborations. But the content is dense and each point is load-bearing. The instruction "500 词内，直接指出错误或逐项确认" — I'll compress harder, keeping every verdict but trimming justifications.
+
+Final compressed target: each item 2-4 lines.
+
+Let me finalize:
+
+(1) 确认撤回正确；补一句 FO 零鉴别力对裸代数成立，带成本注记的基线成员可部分鉴别——归修正后 N1 管。
+
+(a) 思路对，三处修补：纤维有限；⊥ 等式缩写；逐点可定义。
+
+(b) 确认+定性。
+
+(c) 四点。
+
+(d) 维持+理由三点。
+
+(e) 五条。
+
+I think I can get to ~800 chars. Go.
+
+Excellent audit. Key fixes to absorb:
+
+(a) FRC theorem: ① the finite-fiber condition on g (|g⁻¹(v)|<∞) must be stated; ② "cut_N(x)=u" is an abbreviation for a recursive matching formula (⊥-handling); ③ conclusion is pointwise definability of fibers, not graph definability for infinite V.
+
+(b) unary/binary = representation-sensitivity (model-independent, output-length level); equality O(1) = interface-sensitivity (model-relative, cost front-loaded) — use both, layered.
+
+(c) Four hidden assumptions in the access models: ① read-level cost 1 = handle semantics; materialized output costs Θ(2ⁿ) in AM_A too — must declare output convention (reference vs value); ② separation only for FRC/level-local tasks — task family must be restricted; ③ index correction: π_n(f(x,y)) is determined by input π_{n-1} (read adjacent level, write level n) — cost still O(1) but the accounting changes; ④ update cost Θ(|x|) is convention-dependent: with shared-DAG handles, each composition is O(depth) new nodes — the index cost can vanish; handle-vs-materialize convention governs BOTH ends; p-free = level number embedded in encoding, an AM_A definitional axiom, acceptable but must be declared.
+
+(d) Fork verdict maintained: III(structural, proven) + II(computational, open). Cannot judge computational half III yet: (i) output convention unfixed ⟹ the adjudicated object isn't fixed; (ii) "known pattern" requires actually exhibiting the baseline member + interpretation (Fenwick/prefix-sum, hash-consing, level-linked — plausible but ∃B⊨ unproven); (iii) not I either (AM axioms not proven in baseline). Positive content reframed: "地址结构参数化的经典索引权衡之查询复杂度", not "new computational model".
+
+(e) Retractions: 1. all round-12 conclusions using ¬Def_{(νG,f)}(P) as novelty evidence — downgraded to "¬∃B interpretable: unverified"; 2. retract N2 and downstream; 3. KEEP and STRENGTHEN algebraic collapse (it becomes evidence/witness B₀ under new N1); FRC⟹definable survives (via (νG,f)≅B₀∈𝔅, definable expansion interprets into B₀) — with (a) patches; 4. all Th_B⊢P → semantic versions; 5. soften "non-FRC = oracle = dead": only an oracle relative to current primitive set; non-FRC functionals may still be interpretable into some computational baseline member — never verified.
+
+Also: FO zero-cost blindness holds for bare algebras; cost-annotated baseline members would be partially discriminating — that's within the corrected N1's jurisdiction.
+
+Now write the final answer. Structure by tasks 1-10, then Task 10's fork with the required distinction (代数坍缩 vs 计算坍缩). One widget: the two-layer map (structure layer: collapsed/proven; interface layer: open, with the convention-dependence). Let me keep it compact.
+
+Format: numbered tasks 1-10 as sections, then the final fork statement. Language: Chinese. Rigorous, no fluff.
+
+Let me make sure I handle each task:
+
+任务1: retract N1∧N2 as theorem → candidate definition only; three reasons: stipulative necessity; non-definability ≠ significance; isomorphic structures with different complexity (forward ref to task 3).
+
+任务2: definitions A (structural) and B (computational) with the full apparatus (representation ρ: D↠A, access model AM, operation set, cost, simulation/translation). FO alone cannot define B.
+
+任务3: [PROPOSITION] unary/binary (model-independent, output-length); equality O(1) vs O(size) (interface-relative) — two-layer: representation-sensitivity + interface-sensitivity. Conclusion: the Address question belongs to representation-sensitive computation.
+
+任务4: AM_A/AM_C with the four declared conventions (handle vs materialize output; task family = level-local F; read-adjacent-level accounting; storage convention); what to compare: query complexity under fixed output convention + fixed storage budget + translation cost charged.
+
+任务5: RICS definition: conditions 1-2 (Σ-iso, transport) + 3 (task separation under fixed AM, simulation genuine — no oracle) + 4 (anti-oracle: the simulation must be actual code in the model; cost charged for translation); distinction: mathematical structure = iso class; computational interface = (ρ, AM, cost).
+
+任务6: why S proves nothing; "non-interpretable + computable + coherent" still insufficient (expensive oracle: coherent, computable, but a lookup); two candidate strengtheners compared: FRC_k (finiteness-fiber condition; THEOREM: FRC ⟹ pointwise definable ⟹ baseline-reducible ⟹ primitive-level novelty impossible under locality requirement) vs UEC (ordinary poly-time computability on the encoding; does NOT force definability — leafcount parity example — but confers no significance either). Dichotomy: locality-requirement kills primitive-novelty; without it, primitives are oracles ⟹ computational novelty cannot live at the primitive level under either horn ⟹ it lives at the interface layer (or in non-FRC primitives with independent implementation justification — unverified).
+
+任务7: N1 quantifier fix: ¬∃B∈B(O) interpretable; the two propositions distinguished; round-12 conclusions using ¬Def_{(νG,f)} downgraded to "unverified".
+
+任务8: Th_B ⊢ P ill-typed; semantic versions: (e) ∃B⊨¬Φ; (c) all Φ-B-members ⊨ P; syntactic T_B only as proof method with soundness check.
+
+任务9: six-way split: A label = syntax/data; B interpretation function = structure iff homomorphic; C composition law = the upgrading law (makes B structure; homomorphic image — baseline if definable); D matching relation = data unless functionality law; ground case degenerates; E unification algorithm = algorithm, meaningless without cost model; F mgu relation = ∀∃!-law shaped (ICC-shaped) but baseline membership NOT automatic — retract round 12's "initial algebra ⟹ unification in baseline": carrier T_Σ(X∪V) ∈ B, but the mgu relation/algorithm's membership requires separate interpretability proof (unverified). Only in access/cost model do D/E/F acquire computational meaning.
+
+任务10: fork: IV splits into III(structural, proven — 代数坍缩) + II(computational, open — 计算坍缩未证). Cannot judge III wholesale. The distinction: 代数坍缩 = proven (νG∈B, transport, definables); 计算坍缩 = NOT proven (output convention unfixed; ∃B⊨ for indexing patterns unverified — Fenwick/prefix-sum, hash-consing, level-linked candidates listed but unproven). Final answer to the research-fork question: the original research should search for a new representation-sensitive computational model (interface), not a new algebraic structure — because algebra is closed, FRC theorem closes the primitive route, and the remaining space is the interface. But with the honest caveat: the interface layer's likely outcome is "known indexing tradeoffs parameterized by the address structure" — to be verified.
+
+Also incorporate (e)5 softening: non-FRC branch = oracle only relative to current primitive set.
+
+Widget: two-layer map: 结构层 (collapsed: νG∈B, F transport, π_n/θ_n definable — III 已证) vs 接口层 (open: 输出约定未定 / 索引模式 ∃B⊨ 未验 / AM 公理未验 — II 候选). Compact.
+复核完成，五组修正全部吸收（FRC 定理的三处修补、访问模型的四个隐藏约定、判定降级）。以下按任务输出。
+
+# 任务 1：撤回 "Novelty ⟺ N1∧N2" 作为定理
+
+它目前只是**强新颖性候选定义**，不能称为从数学对象自然推出的充要条件。三个理由：
+
+1. **规定性而非推导性**：$D:=\text{N1}\wedge\text{N2}$ 是定义；N2 的“必要性”来自我把“新颖 = 有计算产出”**规定**为新颖的含义——这是定义内容的重述，不是从数学对象推出的定理。
+2. **不可定义性不证明计算意义**：$(\nu G,f,S)$ 反例（第 12 轮已立）：$S$ 不可解释但从不被任何计算访问。
+3. **同构结构可以计算复杂度不同**（任务 3 的定理）——FO 理论对成本**零鉴别力**，故任何纯 FO 判据（N1∧N2 全部由可解释性与可定义性构成）原则上无法看见计算新颖性。
+
+# 任务 2：两个概念的严格定义
+
+**A. Structural Novelty（结构新颖性）**：σ-结构 $\mathfrak A$ 相对基 $O=(T,f)$ 结构新颖 $\iff$ ¬∃$\mathcal B(O)$-成员 $B$：$\mathrm{Th}(\mathfrak A)$ 可解释入 $B$。工具箱：同构、FO-解释、可定义 expansion、典范完备化、泛构造——全部被 $\mathcal B$ 的封闭运算吸收。**纯模型论概念。**
+
+**B. Computational Novelty（计算新颖性）**：定义对象是**计算实例**
+
+$$\mathbb K=(\underbrace{\sigma\text{-代数 }A}_{\text{结构}},\ \underbrace{\rho:\mathcal D\twoheadrightarrow A}_{\text{表示}},\ \underbrace{\mathrm{AM}}_{\text{访问模型}},\ \underbrace{\mathrm{Op}}_{\text{运算集}},\ \underbrace{c}_{\text{成本}})$$
+
+- AM：原始读操作集及单位成本（如“读位 $i$”、“跟随指针”、“读层 $n$”）；
+- $c$：AM-程序的任务成本（查询数/步数，关于输入规模的函数）；
+- **模拟关系**：固定 AM 与 Op（接口纪律，第 9 轮）后，$\mathbb K_1$ 模拟 $\mathbb K_2$ = 存在平移 $\tau$（数据域间的可计算编码，成本 $t$ 计入）使 $Q$ 中每个任务的 $c_2$-成本被 $c_1$-程序以 $c\cdot\mathrm{poly}(t)$ 复现。
+
+**B 的定义**：$\mathbb K_1$ 相对 $\mathbb K_2$（同一结构、同一 AM、同一 Op、平移成本计费）计算新颖 $\iff$ ∃任务 $q$：$c_1(q)=o(c_2(q))$，其中 $c_2$ 取遍所有**真实 AM-程序**模拟的成本下确界。
+
+**禁令的落实**：$c_1,c_2$ 量化 over 算法，FO 公式无法表达 ⟹ **B 不可能由纯 FO 理论定义**。✓
+
+# 任务 3：代数同构不传递计算成本 [PROPOSITION]
+
+**反例（主·模型无关）**：结构 $(\mathbb N,+,\times)$ 的 unary 表示（$n\mapsto 1^n$）vs binary 表示（$n\mapsto$ 二进制串）。恒等映射即同构——**同一个代数**。任务：乘法。unary 的**输出本身**长 $n_1 n_2$（写答案就差指数倍，与模型无关）；读入 $\Theta(n)$ vs $\Theta(\log n)$。
+
+**反例（辅·接口相对）**：同一集合，hash-cons/句柄表示下相等判定 $O(1)$（成本前置到构造），位串表示下 $O(\min(|x|,|y|))$——它依赖“地址唯一性”这一构造性质，属**接口层**现象。
+
+**结论**：结构新颖性与计算新颖性**相互独立**，两个方向都有实例：$(\nu G,f,S)$ 结构不可约、计算上与 $(\nu G,f)$ 全同（$S$ 永不被访问）⟹ A-新颖 ∧ ¬B-新颖；$(\mathbb N,+,\times)$ 两表示结构全同、计算差指数 ⟹ ¬A-新颖 ∧ B-差异。**因此原始 Address 问题本质上属于 representation-sensitive computation，而不仅是代数**——代数审计只能封住结构半边，计算半边从未被 algebra 判据触及。
+
+# 任务 4：no-decode computation 的形式模型（不预设分离）
+
+**两个访问模型（四个隐藏约定显式声明）**：
+
+| 约定 | 选择（须钉死） |
+|---|---|
+| ① 输出语义 | **引用式**：`read-level(x,n)` 返回层 $n$ 对象的**句柄**，成本 1（物化式下 AM_A 同样 $\Theta(2^n)$ 流式，分离消失） |
+| ② 任务族 | **层局部任务**：$q_n=$“输出 $\pi_n(F(x,y))$”，其中 $F$ 的层 $n$ 截断只依赖输入的 $\pi_{n-1}$（任意 $F$ 可依赖任意深层，AM_A 也要全量） |
+| ③ 层间核算 | $\pi_n(f(x,y))$ 由输入 $\pi_{n-1}$ 决定（**读相邻层、写第 $n$ 层**），$p$ 免费成本 0——$p$ 免费 = 地址编码内嵌层号，属 AM_A 的定义公理 |
+| ④ 存储语义 | **materialize**：建/更新维护全部层，$\Theta(\text{Σ层大小})=\Theta(\lvert x\rvert)$；**handle/DAG**：$\pi_k(F(x,y))$ 是引用输入层的 $O(1)$ 新节点，每次合成仅 $O(\text{depth})$——**索引代价两端都被 handle-vs-materialize 约定支配** |
+
+**应该比较什么**（在约定表固定后）：
+1. 同一总存储预算下，$q_n$ 的查询复杂度：AM_A $O(1)$（引用式）vs AM_C $\Theta(2^n)$ 遍历；
+2. 构造/更新成本计入后的总账（materialize 下索引代价是否只是被搬到了 build 时刻）；
+3. 平移成本 $\tau$（概念表示 ↔ 地址表示）计费后的净收益；
+4. 任务族限制在层局部 $F$ 时分离是否保持，非局部 $F$ 时是否消失。
+
+# 任务 5：Representation-Induced Computational Structure
+
+**定义**：给定 $O=(T,f)$ 与 Address 表示 $R_A$，若 (1) 存在 Σ-同构 $\Psi:(\hat T,F)\to(\nu G,f)$ 且 $\Psi\circ\iota=$ 嵌入；(2) $F$ 是 $f$ 的传输；则在固定 AM 下 $R_A$ 诱导 **RICS** $\iff$
+
+3. ∃任务 $q$：$c_{R_A}(q)=o(c_{R_C}(q))$，其中 $c_{R_C}$ 取遍**真实 AM-程序**模拟的成本下确界；
+4. 反 oracle 条件：模拟必须是 AM-原语写成的实际代码，平移成本计费（不允许给任何一侧发 oracle 或免费签名）。
+
+**必须区分**：**mathematical structure** $=$ 同构类（FO 所见的一切）；**computational interface** $=$ (表示 $\rho$, 访问模型 AM, 成本 $c$) 三元组。计算住在**接口**上，不住在结构上——同一个数学结构可以承载任意不同的接口（任务 3）。RICS 是接口的性质，不是结构的性质；因此即使结构层坍缩（第 11–12 轮），RICS 仍可能成立——二者正交。
+
+# 任务 6：“不可定义 primitive”的再检查与两种加强
+
+**为什么 $S$ 证明不了计算新颖性**：不可定义是模型论事实；计算新颖性是成本事实；$S$ 不被任何运算访问，不改变任何任务的成本。
+
+**"non-interpretable + computable + coherent" 仍不够**：新原语 $P$ 可以三者兼备而只是**昂贵 oracle**（预计算表查询）——相干律可满足，但 $P$ 不增添计算能力，只是把成本藏进表里。缺的是**可实现性/局部性**。两种候选形式化（比较，不独断）：
+
+**候选 1 · FRC（有限分辨率可计算性）**：$P(x)=g(\pi_{\le N}(x))$（固定 $N$；$g$ 需**纤维有限**：$\forall v,\ |g^{-1}(v)|<\infty$——$X$ 有限时自动成立）。
+**[THEOREM] FRC ⟹ 逐点可定义**：$P(x)=v\iff\bigvee_{u\in g^{-1}(v)}\mathrm{match}_N(x,u)$，其中 $\mathrm{match}_N(x,u)$（“$\mathrm{cut}_N(x)=u$”的展开）是对固定 ground $u$ 的递归匹配公式（$\bot$ 位撤除约束/断言位置存在性；$\bot$-约定固定后是缩写）——不需额外参数机制，$u$ 作为闭项由原子常元构造。各纤维谓词可定义（$V$ 无限时图的合取可定义性另需编码，不声称）。
+**推论 [THEOREM]**：$(\nu G,f)\cong B_0\in\mathcal B$，可定义 expansion 可解释入 $B_0$ ⟹ **一切 FRC 原语基线可约**。⟹ **若要求新原语可实现为局部性，原语层面的计算新颖性被定理封死。**
+
+**候选 2 · UEC（一致有效可计算性）**：$P$ 由单个算法在表示编码上以 $\mathrm{poly}(\lvert\mathrm{enc}(x)\rvert)$ 计算。UEC **不**强制可定义（叶数奇偶：可计算、疑似非 FO-可定义——该具体例的可定义性是独立技术问题）——故 UEC 不排除原语新颖性；但也**不赋予意义**：可计算而无相干产出的原语仍是标签（叶数奇偶即此类）。
+
+**二分结论**：要求局部性（FRC）⟹ 原语新颖性不可能；不要求（UEC）⟹ 原语沦为 oracle 或标签（软化：仅相对**当前原语集**是 oracle，非 FRC 泛函是否可解释入某计算型基线成员**从未验证**）。⟹ **计算新颖性在原语层面两个方向都不成立——它只能住在接口层（访问模型/索引）**，除非有人独立论证非 FRC 原语的实现手段。
+
+# 任务 7：N1 的量词修正
+
+两个命题严格分层：
+- 弱：$S$ 在 $(\nu G,f)$ **单一结构**中不可定义；
+- 强（N1 的正确形式）：¬∃$\mathcal B(O)$-成员 $B$：理论可解释入 $B$。
+
+弱 ⟹̸ 强：$S$ 可能在某个可定义 expansion（如加 cut-族的 $(\nu G,f,(\mathrm{cut}_n)_n)$——每支 cut_n 逐个可定义 ⟹ 该 expansion 经 B2 在基线内）中变得可定义。第 12 轮所有以“¬Def$_{(\nu G,f)}(P)$”作新颖性证据的结论**全部撤回**，降级为“¬∃B 可解释：未验证”。
+
+# 任务 8：$\mathrm{Th}_{\mathcal B}\vdash P$ 的类型错误
+
+$\mathrm{Th}_{\mathcal B}=\bigcap_{B}\mathrm{Th}(B)$ 是语义理论集，未必 r.e.，"$\vdash$"（语法后承）对它**类型错误**。修正：判定一律用**语义版**：
+- (e) 非平凡：∃$\mathcal B$-成员 $\models\neg\Phi$（逐实例可检验：出示反模型）；
+- (c) 产出：所有满足 $\Phi$ 的 $\mathcal B$-成员 $\models P$。
+需要具体证明时才选定显式公理化 $T_B$ 并**验证其相对 $\mathrm{Th}_{\mathcal B}$ 可靠**；$\vdash$ 只是证明手段，不是定义。第 12 轮所有 "$\mathrm{Th}_{\mathcal B}\vdash$" 表述改写为语义版，依赖语法产出的结论降级为“语义蕴涵成立、未给 r.e. 公理化”。
+
+# 任务 9：六个对象的重新分类（含撤回）
+
+| 对象 | 类别 | 说明 |
+|---|---|---|
+| A. semantic label $L:X\to\Lambda$ | **syntax/数据** | 无连接律 |
+| B. semantic interpretation function | **结构 iff 同态** | $\mathrm{Den}(f(x,y))=\lambda(\mathrm{Den}x,\mathrm{Den}y)$ 成立时才成为结构 |
+| C. semantic composition law $\lambda$ | **结构（升级律本身）** | 使 B 升级；可定义时为同态像 ⟹ 基线 |
+| D. matching relation（ground） | **数据** | ground 上退化为子树相等判定；无功能律则非结构 |
+| E. unification algorithm | **算法** | 无访问/成本模型则无计算意义——算法描述不是结构 |
+| F. mgu relation | **$\forall\exists!$-型定律（ICC 形状）** | **撤回第 12 轮结论**：“$T_\Sigma(X\cup V)$ 是初始代数 ⟹ unification 自动在基线内”不成立——**载体**在基线（初始代数构造），但 **mgu 关系/算法的基线成员资格需单独证明**（其图是否 FO-可解释：开放）。算法的存在不赋予基线资格——那正是 A/E 的混淆 |
+
+且 D/E/F **只有在访问/成本模型下才有计算意义**（E 尤其：同一算法在不同 AM 下成本不同）。
+
+# 任务 10：研究分叉的最终判定
+
+**当前 depth-Address 不能整体判 III。它分裂为两半：**
+
+**结构半边：III 已证（代数上坍缩）**[THEOREM，第 11–12 轮 + 本轮 N1 修正后从结论转为证据]：载体+运算 $\cong\nu G\in\mathcal B$（见证 $B_0$），$F$ 传输，$\pi_n/\theta_n$ FO-可定义 ⟹ N1 失败 ⟹ 结构上非新。代数坍缩是**定理**。
+
+**计算半边：II-候选，开放（计算坍缩未证）**。三个未决点：
+1. **输出约定未定**：引用式下 $O(1)$ vs $\Theta(2^n)$ 的候选分离存在；物化式下两端对称（任务 4 约定①④）——被审判的对象尚未固定；
+2. **“已知模式”未验**：判定计算坍缩需实际展出基线成员 + 解释（候选：前缀和/Fenwick 式层索引、hash-consing、level-linked 结构——很可能成立但 $\exists B\models$ 未证）；
+3. AM 公理本身未被证明在基线内 ⟹ 也不能判 I。
+
+**所以答案是 IV 的精确化：结构半边已判 III，计算半边仍是开放的 II-候选**——且其正向内容的正确表述不是“新计算模型”，而是“**地址结构参数化的经典索引权衡之查询复杂度**”（前缀和式模式：$O(n)$ build、$O(1)$ 查询 vs 无索引 $O(n)$ 查询——是否恰好归约到已知模式，是下轮的可判定问题）。
+
+# 对最终问题的回答
+
+**“原始研究真正应该寻找的，是新代数结构，还是新的 representation-sensitive computational model？”**
+
+**后者。** 依据三条，每条都是本轮已证的定理或审计结论：
+1. **代数已封**：结构半边的坍缩是定理（任务 10 / 第 11–12 轮）——新代数结构方向在当前框架内没有剩余空间；
+2. **原语路线已封**：FRC ⟹ 可定义定理（任务 6）——任何要求可实现性为局部性的新原语必然基线可约；非局部原语是 oracle，除非独立论证实现手段；
+3. **剩余空间在接口**：数学结构与计算接口正交（任务 3、5）；Address 唯一可能的真实产出是**计算接口**——访问模型、成本账、索引权衡——而这正是第 4 节第 5 轮曾被错误提问（合成层 O(1)、⊥-塔混塔）又从未在修正对象上正式分析的问题。
+
+原始设想的合理残余由此获得精确定位：**“有限原子 + 有限组合规则 → 巨大概念空间”在代数上是自由代数的平凡推论（第 11 轮审计）；它若还有研究价值，其价值只可能在“这个巨大空间的哪一种表示 + 访问接口使得概念上的计算任务获得真实成本优势”——这是一个 representation-sensitive computation 的问题，其第一形式化模型就是本轮任务 4 的 AM_A/AM_C，第一个待判问题就是：在固定输出约定与存储预算下，$q_n$ 的 $O(1)$-vs-$\Theta(2^n)$ 分离是真实分离，还是可归约为已知的索引数据结构。**
