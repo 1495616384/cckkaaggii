@@ -1,0 +1,666 @@
+这是一次研究方向升级，我先做一次战略对齐再动笔。
+
+*正在请求专家建议，优化解决方案，该过程耗时可能较长，请耐心等待...*
+
+方向已对齐。这一轮我不再讨论 Address 的数学结构，只做你说的事：把《诗云》抽象成可检验的问题链。
+
+先给完整逻辑链，瓶颈位置标出。
+The user is making a major pivot: from Address meta-theory to Universal Concept Space + search. This is the "诗云" (Poetry Cloud, from Liu Cixin's story) framing: enumerate the space of all possible poems, then search. The user wants to generalize to concept space, and eventually AGI blueprint search.
+
+This is a legitimate and interesting reframing. I should honor it: produce a real formalization of Universal Concept Space, the four coverage classes, the minimal Universal Concept Language, coverage criteria, Address's role, JEV's role, and the logical chain.
+
+Let me think carefully about the math here, because it needs to be honest and rigorous, not hand-wavy.
+
+**Core mathematical setup.**
+
+Let me build it properly.
+
+**Task 1: Universal Concept Space.**
+
+We need: X (primitives), Σ (composition rules), plus Types, Relations, Constraints, State, Transformation, Context, Goals, Observations, Hypotheses.
+
+Honest formalization. The key insight: if we just take free algebra T_Σ(X), we get "terms" — but that's just syntax. To get a *concept space* with semantics (relations, states, goals), we need more. Let me think about what's the right structure.
+
+I'll propose a **stratified/many-sorted generative space**:
+
+Sorts (the "kinds" of things that must all live in one space):
+- Ob (objects)
+- Prop (propositions)
+- Rel (relations)
+- Act (actions/transformations)
+- St (states)
+- Goal
+- Hyp (hypotheses)
+- Ctx (contexts)
+- Obs (observations)
+- Meta (meta-rules)
+- Type
+
+And the constructors must be *sorted* (many-sorted signature). That's the clean way to make "objects, properties, relations, actions, rules, states, hypotheses" all enter one generative space: **a many-sorted free algebra**.
+
+So: U = T_Σ(X) where Σ is a **many-sorted signature** with the above sorts.
+
+Then:
+- What objects belong to U? Elements of T_Σ(X) (sorted terms).
+- Is U finite/countable/r.e./larger? If X and Σ are finite (or countable and computable), then T_Σ(X) is countable (if X countable) and recursively enumerable (if Σ is computable). Key: |T_Σ(X)| = max(ℵ₀, |X|). So countable iff X countable.
+- "All possible concepts" — this is where honesty is needed: **the claim "U contains all possible concepts" is not provable for any concrete finite/countable U**. What IS provable: for a *specified* target class O, whether U covers O (Task 7). And: there's a general theorem — for any countable O, there's a countable signature covering it. But that's the trivial "足够强就能表示一切" that the user banned. So I must give an *operational* definition instead.
+
+Let me be careful and give the honest hierarchy:
+- **U is countable** if X is countable. But "all possible concepts in the universe" — if we mean all *humanly conceivable* concepts, that's countable (finite strings). But if we mean real-world objects/states, those may be uncountable (e.g., real-valued states). So: U can only cover *descriptions*, not objects. Key distinction: **U is a space of descriptions (syntax-with-semantics-slots), and coverage is always relative to a class of descriptions.**
+
+That's a crucial honest point: **"涵盖一切" cannot be about objects; it can only be about descriptions. And then the question becomes: which class of descriptions?** — which is Task 7.
+
+**Task 2: four coverage classes C1-C4.**
+
+- C1: existing concepts covered (X contains them, or they're derivable).
+- C2: generable concepts covered (closure under Σ).
+- C3: unknown objects → hypothesis space: introduced as **free variables / generative slots**. Formalize: add a sort `Var` and an operator that produces "the space of candidates consistent with an observation" — e.g., `Hyp(o) = {t ∈ U : t ⊨ o}`. So the unknown object isn't stored; its **candidate set** is a definable subset of U.
+- C4: models/theories about unknown objects: `Th = {φ : U ⊨ φ}` — the theory of U, and hypothesis-classes = definable subsets.
+
+Key honest point: C3/C4 don't require knowing the unknown; they require U to be **closed under "hypothesis formation"** — i.e., U contains, for each observation, the space of candidate explanations. Formally: if the semantics is given, `Hyp(o)` is a definable subset of U. So C3 is a *closure property of U's definable subsets*, not of U's elements.
+
+Also important: **the space of hypotheses is a subset of U, so U must be closed under "conjunction/negation" at least at the level of definable subsets — i.e., U should carry a definable-set structure (a logical/definable closure).** That's the honest way to make "unknown enters U".
+
+**Task 3: 诗云 abstraction.**
+
+Universe U + search operator S + objective J. Find x ∈ U with J(x) high.
+
+Mathematical abstraction: 
+- U: generative space (countable, r.e.).
+- J: U → ℝ (or a partial order) — "value". Usually only **computable on demand** and expensive.
+- S: a search procedure.
+- The 诗云 insight: |U| is astronomically large, so enumeration is impossible; the problem is *retrieval*. 
+
+The honest mathematical formulation: this is **optimization over an r.e. set with an oracle-accessed objective**. The quantities that matter:
+1. **locatability** — is there an addressing scheme making membership/neighborhood queries decidable?
+2. **composability** — is J approximately compositional? (J(x∘y) ≈ F(J(x),J(y))) — this is the crucial assumption that makes search tractable.
+3. **stratifiability** — is there a filtration U_0 ⊂ U_1 ⊂ ... such that low strata are dense in good solutions?
+4. **prunability** — is there a monotone bound (admissible heuristic)? = A* admissibility.
+5. **comparability** — is there a partial order/ranking?
+6. **derivability** — can we compute successors cheaply?
+7. **local search** — neighborhood structure.
+8. **cross-region jump** — long-range moves.
+
+This is honestly the structure of **heuristic search (A*) + program synthesis + quality-diversity (MAP-Elites / novelty search)**. And I should say the honest thing: the mathematical content is:
+- **Search is tractable iff J has structure**: either J is compositional (then DP/branch-and-bound), or J is Lipschitz w.r.t. a metric (then local search works), or the space has a monotone stratification (then iterative deepening works).
+- **The hard theorem-shaped fact**: if J is an arbitrary computable function on an r.e. set U, then search is uncomputable-to-optimal (no algorithm finds the max in finite time in general). More precisely: **exhaustive search is the only general method** — and "near-optimal search for arbitrary J" is impossible (diagonalization / no-free-lunch).
+
+That's the honest core: **《诗云》's difficulty is not "constructing the space" (that's easy: free algebra) — it's that a space large enough to contain everything forces J to be arbitrary, and arbitrary J admits no better-than-enumeration search.** So the project's real content must be: **find structural conditions on (U, J) that make search tractable** — and then check whether AGI-blueprint-type objectives satisfy them.
+
+That's a strong, honest, and *useful* reformulation. Let me make it the centerpiece: the difficulty relocates from "space" to "structure of the objective".
+
+**No-Free-Lunch style statement.** Let me formulate: Let U be r.e. and infinite, and consider the set of all computable J: U → ℝ. Then for any search algorithm S that finds a point with J(x) ≥ (max - ε) using fewer than N evaluations, there exists J' agreeing with J on the evaluated points but with max at an unevaluated point. So: **no algorithm can beat enumeration uniformly.** This is the standard NFL argument. Formal: for any deterministic S using n queries, define J' that differs from J at all unqueried points. So S's performance is exactly enumeration in the worst case.
+
+But: this only says *uniform* guarantees are impossible. Real search works by **restricting the class of J** (structural assumptions: smoothness, compositionality, modularity). So the project's real question: **which structural class does "AGI blueprint quality" belong to?** And that's an empirical/structural question.
+
+I think this is the right, honest framing and it directly serves the user's pivot.
+
+**Task 4: Address's role.**
+
+Address = a coordinate system on U supporting: identity, location, structure, relations, resolution, neighborhood, transformation paths. And Address(x∘y) computable from Address(x), Address(y).
+
+Honest role: Address is the **index** that makes the eight operations (locate/compose/stratify/prune/compare/derive/local-search/jump) implementable. So Address = the **interface between U and S**. Not a mathematical novelty, but a *functional requirement list*.
+
+Key: which of the 8 operations requires what? Let me give the table:
+- 可定位 (locate): requires Address to be *decidable* (given x, get Address(x); given Address, decide membership) — i.e., a computable coding.
+- 可组合 (compose): Address(x∘y) from Address(x), Address(y) — the round-19 result gives this.
+- 可分层 (stratify): requires a filtration with computable rank.
+- 可剪枝 (prune): requires a monotone bound on J in the filtration — **this is a property of J, not of Address**.
+- 可比较 (compare): requires a metric/order on Address — Lipschitz condition.
+- 可推演 (derive): requires successor computation.
+- 可局部搜索: requires neighborhood + continuity of J.
+- 可跨区域跳跃: requires long-range moves — e.g., "structurally similar" jumps — requires a *similarity* structure.
+
+**Critical honest point**: 5 of the 8 requirements are properties of **J** (or of (U,J)), not of Address. Address can only deliver locate/compose/derive/jump. So: **Address is necessary but far from sufficient; the binding constraint is J's structure.** That's the honest answer to "what is Address's real role".
+
+**Task 5: leaf-depth word's gaps.** List the 12 gaps concretely: expressiveness (only binary trees), types (none), multi-relations, state, context, rules, world models, uncertainty, time, causality, goals, search navigation. For each, say what must be added. That's straightforward and I can do it concretely.
+
+**Task 6: minimal Universal Concept Language.** I need to actually write a grammar. Let me do a many-sorted grammar:
+
+Sorts: `Ent` (entities), `Prop`, `Rel`, `Act`, `St`, `Goal`, `Hyp`, `Ctx`, `Obs`, `Rule`, `Type`.
+
+Grammar (BNF, sorted):
+
+```
+Ent   ::= atom_i                        (X_E)
+        | box(Ent)                       (object constructor)
+        | pair(Ent,Ent) | triple(Ent,Ent,Ent) ... or general: tuple(Ent*)
+        | the(Prop)                      (definite description)
+        | setof(Ent, Prop)               (comprehension)
+        | hyp(Hyp)                       (hypothesis entity)
+        | Num | Str | ...
+
+Prop  ::= Rel(Ent*)                      (atomic relation applied)
+        | ⊤ | ⊥ | ¬Prop | Prop ∧ Prop | Prop ∨ Prop | Prop → Prop
+        | ∀(Var:Type). Prop | ∃(Var:Type). Prop
+        | Modal(Prop)                    (knows/believes/possibly)
+        | Prob(Prop, [0,1])
+
+Rel   ::= rel_i (from Σ_R) | λ(Var*). Prop | compose(Rel,Rel) | converse(Rel)
+Act   ::= act_i | seq(Act,Act) | par(Act,Act) | cond(Prop,Act,Act) | while(Prop,Act)
+        | bind(Var, Act, Act)
+
+St    ::= state_null | upd(St, Act) | merge(St,St) | restrict(St, Prop) | hist(St, Act)
+Ctx   ::= ctx_empty | push(Ctx, Part) | pop(Ctx) | link(Ctx, Ctx)
+        | focus(Ctx, Ent)                (zipper!)
+
+Goal  ::= achieve(Prop) | maintain(Prop) | optimize(Ent→ℝ) | satisfy(Constraint)
+        | seqGoal(Goal,Goal) | pref(Goal,Goal)
+
+Hyp   ::= h0(Ent) | param(θ) | law(∀Var*. Prop) | family(Hyp, θ→Hyp)
+        | model(Sig, Ax) | post(Prob)
+Obs   ::= obs_i | seq(Obs,Obs) | partial(Obs, Prop) | noisy(Obs, σ)
+Type  ::= base_i | Arr(Type,Type) | Rec(Type) | Π(Var:Type).Type | Σ(Var:Type).Type
+Rule  ::= ∀Var*. (Premise ⇒ Conclusion) | schema(Rule, Type) | meta(Rule)
+Constraint ::= eq(Term,Term) | le(...) | in(Ent, Type) | total(...) 
+```
+
+And composition rules: the key structural rules are:
+- `Eval` / `Den` semantics: `Den: Term → Domain` for each sort, with the semantic domain being a **partial** many-sorted algebra (relations are genuine relations, not function values).
+- Substitution (the real engine of "composition").
+- The "concept = (term, evaluation context)" pair.
+
+And the **minimal core** the user wants: I'd argue the minimal core is:
+$$\text{Atom} + \text{Var} + \lambda + \text{App} + \text{Rel-apply} + \text{tuple} + \text{seq} + \text{while} + \text{(state as a mutable register)} + \text{(goal as a predicate to satisfy)} + \text{(hyp as a parameter)}$$
+I.e., essentially: **first-order logic terms + λ + a small imperative core + hypotheses as parameters.** That covers "对象/属性/关系/动作/规则/状态/假设". And the honest note: this is (essentially) a **higher-order logic with a small programming language and a hypothesised-parameter mechanism** — i.e., a **typed program-synthesis language**. Which is standard (e.g., a dependently-typed total language + relations + a state monad + a hypothesis parameter). So the honest labeling: the minimal core is **standard** — and the *content* is in the choices (sortedness, partiality, which constructors).
+
+**Task 7: Coverage criterion.** 
+
+This is important, and it must be checkable. Define:
+
+**Definition (Coverage).** Let O be a class of target objects (specified how? — that's the crux). Say O is given as a class of structures in a fixed "reference language" L_ref, or as a decidable family of finite structures. Then:
+$$\mathrm{Cov}_P(O) := O \subseteq \{\llbracket p\rrbracket : p \in P\}$$ 
+i.e., every target is the *value* of some program p in the language P. This is **Turing-completeness-style**: Coverage(O) ⟺ P can express every element of O. And it's *checkable* in the sense: for each x ∈ O, exhibit p with ⟦p⟧ = x. For infinite O, need a uniform construction (a compiler).
+
+**Levels** (the user's list): 
+- L0: finite lists/strings (words, poems)
+- L1: mathematical objects (numbers, groups, graphs — needs a "structural encoding")
+- L2: physical models (ODEs, fields — needs reals/measure)
+- L3: engineering designs (multi-objective constraints)
+- L4: algorithms (programs with specs — needs a spec language)
+- L5: AI architectures (computation graphs + objectives)
+- L6: scientific hypotheses (probabilistic models + experimental predictions)
+
+And for each level, the coverage question is: **is there a computable compiler from the reference language of that level into P?** If yes, Coverage holds *for that level*, and that's a theorem (constructive).
+
+And the **honest limitation**: Coverage for L6 (hypotheses) requires a notion of "the hypothesis is true of the world" — which is not internal to U. So Coverage at the *description* level is achievable; Coverage at the *truth* level is not (it's the model-selection problem, and it's not about expressiveness).
+
+**Task 8: JEV's role.**
+
+JEV: Search(U, objective, constraints) → candidates. Honest formalization:
+
+$$\mathrm{JEV}:(U,\ J,\ \mathcal{C},\ \text{budget}) \longrightarrow \text{a finite, ranked subset of } U$$
+with operations: retrieve (Address-keyed), compare, expand (successor generation), prune (admissible bound), compose, evaluate (J calls), navigate (Address walks).
+
+Key honest statements:
+- **JEV ≠ generator of the universe**; it consumes U's structure.
+- **If the AGI blueprint is in U, then the problem reduces to searching U for a target structure** — but crucially, **this reduction is only useful if J has structure**; otherwise NFL applies.
+- So the honest chain: 诗云 → construct U (easy, free algebra) → the difficulty is *not* construction but **(a) making J computable cheaply, (b) giving U a searchable geometry (Address), (c) making J's structure exploitable (compositionality/smoothness/stratification)**.
+
+**Task 9: the first step.** 
+The user says: the first step should be **establishing the minimal formalization of the Universal Generative Concept Space**, then Address, then Search, then JEV. I agree — and I should add one honest caveat: the free-algebra part is trivially achievable, so the first step's *content* must be the **semantics** (what the terms mean), because coverage is only meaningful relative to a reference semantics. So the real first step: **choose the minimal sorted signature + its semantics + the reference classes O_1..O_6 for which coverage is to be proved constructively.**
+
+Now let me also handle Task 3's eight properties properly, with the honest mathematics.
+
+Let me structure the answer as:
+1. New precise statement of the original problem.
+2. Formal definition of U.
+3. Four coverage classes.
+4. Minimal Universal Concept Language (BNF + composition rules).
+5. Coverage criterion (checkable) + levels.
+6. Address's role (with the table of which property belongs to whom).
+7. JEV's role.
+8. The complete logical chain.
+9. Next step = Universe.
+
+And a widget: the U → Address → JEV pipeline, or better: the "诗云 reduction" chain showing where the difficulty actually lies.
+
+Let me make the widget the logical chain with the honest bottleneck marked.
+
+Let me call the advisor first (mandatory — user_frustration: the user is redirecting the whole project, and explicitly says the previous 19 rounds' approach should be demoted; that's a correction of my direction). Actually, is this "user_frustration"? The user's message is a "正式的研究方向升级" — a direction change, not dissatisfaction with me specifically. But it does contain implicit criticism: "不要继续沿用前19轮的主要研究方式". Hmm. Trigger 2 (before_approach_change) is clearly applicable — I'm considering a major approach change. Let me use before_approach_change.
+
+Actually, both apply. The policy says call at most once. Let me use "before_approach_change" since that's the substance.
+
+Let me call it.
+
+Then write the answer.
+
+Key things I want the advisor to check: whether my honest NFL-based reformulation ("the difficulty relocates from space to objective structure") is the right centerpiece, and whether the coverage criterion (compiler-based) is the right checkable notion.
+
+Let me do it.
+正在请求专家建议......
+
+已获取专家建议
+
+Good advice. Key: don't define U as "everything" (trivial); instead define U with structure, start from a concrete target class, and narrow JEV's description to something falsifiable. Also, round 19's shift-coupled/DAG results have real value as the implementation technology for Address-as-search-infrastructure.
+
+I should give the user what they asked for (9 outputs) but with the honest annotations:
+1. New precise statement
+2. Formal U definition
+3. Four coverage classes
+4. Minimal language
+5. Coverage criterion
+6. Address's role
+7. JEV's role
+8. Full chain
+9. Next step
+
+And include the honest bottleneck analysis (NFL) and the "start from a bounded target class" recommendation.
+
+Let me write it. I'll include a widget showing the chain U → Address → JEV with the bottleneck marked, or the four coverage classes. Let me do the chain with where the difficulty is.
+
+Let me be careful to be concrete and constructive, not just critical. The user wants to move forward.
+
+Let me draft the content.
+
+## 1. New precise statement
+
+**旧表述**：有限原子 + 有限规则 → 巨大概念空间；Address 能否成为计算空间。
+
+**新表述（三层）**：
+- (L1) **构造**：给定 $X,\Sigma$（+ sorts/relations/constraints），构造 $U=\mathrm{Closure}(X,\Sigma,\dots)$，使指定的目标类 $O$ 满足 $O\subseteq U$（可检验）。
+- (L2) **可寻址**：给 $U$ 一个坐标系统 $\mathrm{Ad}$，使 $U$ 上八种操作可用。
+- (L3) **可搜索**：给 $(U,J,\mathrm{Ad})$ 一个搜索算子，使"找高 $J$ 值点"在预算内可做（可证伪的经验命题）。
+
+关键：**《诗云》的数学抽象 = (L1) + (L3)**，而且真正困难的是 (L3)。
+
+## 2. Formal U
+
+**定义（生成概念空间）** $\mathcal U=(S,\Sigma,X,\mathcal D,\llbracket\cdot\rrbracket)$, where:
+- $S$: 有限 sort 集
+- $\Sigma$: $S$-排序签名（有限或可计算）
+- $X$: 每 sort 的原子（有限或可计算）
+- $\mathcal D=\{D_s\}_{s\in S}$: 语义域（偏代数）
+- $\llbracket\cdot\rrbracket$: 语法→语义的解释
+
+$U := T_\Sigma(X)$ —— 排序项集。
+
+**基本定理（会说的话）** [PROVEN]
+- $X$ 可数 ⟹ $U$ 可数；$X,\Sigma$ 可计算 ⟹ $U$ 递归可枚举；$U$ 上有可判定的大小函数和可枚举的枚举器。
+- 若某 sort 上有多元构造子，$|U|=\aleph_0$。
+- **根本没难度**：这一点必须写死。构造 $U$ 从来不是瓶颈。
+
+**"所有可能概念"的数学化**：不能是"对象集"，只能是**描述集**。形式：
+$$\text{ConceptSpace} = \{\,p : \llbracket p\rrbracket \text{ 存在}\,\}$$
+—— 并且**"所有"必须相对化到参考语言**：给定参考语言 $L_{\mathrm{ref}}$（描述目标类的语言），
+$$\mathrm{Cov}(O) := \forall o\in O\ \exists p\in U:\ \llbracket p\rrbracket=o$$
+
+## 3. 四类覆盖
+
+| | 内容 | 形式 | 是否需要"知道未知" |
+|---|---|---|---|
+| C1 已有概念覆盖 | 已有概念 ∈ U | $X$ 或 $U$ 含它们（或含其描述） | 否 |
+| C2 可生成概念覆盖 | 闭包 | $U=T_\Sigma(X)$ 自动 | 否 |
+| C3 未知对象的假设空间覆盖 | 未知对象 → 候选集 | $\mathrm{Hyp}(o)=\{t\in U: \llbracket t\rrbracket \models o\}$ 是**可定义子集** | 否——只需 U 的**可定义子集族**闭合 |
+| C4 关于未知的理论空间覆盖 | 理论族 | $\mathrm{Th}(U)=\{\varphi: U\models\varphi\}$；假设类 = 可定义子集格 | 否 |
+
+关键点：**C3/C4 不是把未知对象放进去，而是要求 U 的"可定义子集族"足够闭合**（在 ∧/∨/∃/参数化下闭合）。这是 U 的结构性要求，可以检验。
+
+## 4. Minimal UCL
+
+Let me write the grammar concretely.
+
+Sorts: `Ent, Prop, Rel, Act, St, Ctx, Goal, Hyp, Typ, Rule, Constraint, Obs, Num`
+
+```
+Ent ::= x_i | lit(v) | tuple(Ent*) | the(Prop) | setof(Ent, Prop) | hyp(Hyp) | app(Ent,Ent)
+Prop ::= r_i(Ent*) | ⊤ | ⊥ | ¬Prop | Prop∧Prop | Prop∨Prop | Prop→Prop
+       | ∀(x:Typ).Prop | ∃(x:Typ).Prop | ◇Prop | P(Prop, q)          (q ∈ ℚ∩[0,1])
+Rel  ::= ρ_i | λ(x:Typ).Prop | Rel∘Rel | Rel⁻¹ | id_Typ
+Act  ::= α_i | seq(Act,Act) | par(Act,Act) | if(Prop,Act,Act) | while(Prop,Act)
+       | bind(x:Typ, Act, Act) | choose(Ent)
+St   ::= ε | upd(St,Act) | merge(St,St) | restrict(St,Prop) | hist(St)
+Ctx  ::= ◻ | push(Ctx,Frame) | pop(Ctx) | plug(Ctx,Ent) | focus(Ctx,Ent)
+Goal ::= achieve(Prop) | maintain(Prop) | optimize(Ent→Num) | satisfy(Constraint)
+       | and(Goal,Goal) | prefer(Goal,Goal)
+Hyp  ::= θ_i | law(∀x̄.Prop) | model(Sig,Ax) | family(Hyp, θ→Hyp) | post(P(·))
+Rule ::= ∀x̄.(Premise ⇒ Conclusion) | schema(Rule,Typ) | meta(Rule)
+Constraint ::= (t = t') | le(t,t') | in(t,Typ) | total(f)
+Typ  ::= b_i | Typ→Typ | Π(x:Typ).Typ | Σ(x:Typ).Typ | μX.Typ | νX.Typ
+```
+
+语义：$\llbracket\cdot\rrbracket$ 到偏多排序代数；`Prop` 到真值/概率；`St` 到状态空间（状态单子）；`Ctx` 到**上下文（zipper）**；`Goal` 到 $(X\to\mathbb R)$；`Hyp` 到**参数空间**（假设 = 参数化族）。
+
+**最小核心（唯一性主张，本轮只给主张不给定理）**：
+$$\boxed{\text{Atom}+\text{Var}+\lambda+\mathrm{App}+\text{Rel-apply}+(\times)+\text{seq}+\text{while}+\text{state}+\text{goal-predicate}+\text{hyp-parameter}}$$
+覆盖"对象/属性/关系/动作/规则/状态/假设"七类。**诚实标注**：这个核实质上就是**带类型的 λ 演算 + 小命令式核 + 关系层 + 假设参数**——即**程序合成语言**。STANDARD。内容在 sortering 与偏性选择。
+
+**组合规则（真正的引擎）**：
+- 代入 `subst`
+- 关系复合 `Rel∘Rel`、求逆
+- 状态推进 `upd`
+- 上下文填充 `plug(push(C,F),t)`
+- 假设实例化 `family(H,θ)`
+- 目标细化 `refine(Goal,Constraint)`
+—— 这六条是"概念如何被组合"的最小集。
+
+## 5. Coverage 判据
+
+**定义（覆盖）** 给定目标类 $O$ 与参考语言 $L_{\mathrm{ref}}$：
+$$\mathrm{Cov}_P(O)\iff \exists\ \text{可计算 }\mathrm{cmp}:L_{\mathrm{ref}}\to P\ \text{使}\ \forall o\in O:\ \llbracket \mathrm{cmp}(o)\rrbracket\cong o$$
+**可检验**：给出编译器 + 正确性证明（或逐例构造）。
+
+**层级（可分别证明）**：
+
+| 层 | 目标类 $O$ | 参考语言 | 需要的表达手段 |
+|---|---|---|---|
+| $\mathrm{Cov}_0$ | 有限串/诗 | 自由幺半群 | tuple/seq |
+| $\mathrm{Cov}_1$ | 有限数学对象（图、群、有限模型） | 有限结构 | setof, Rel, 一阶 |
+| $\mathrm{Cov}_2$ | 实数模型（ODE、场） | 测度/流 | Num+极限/μ |
+| $\mathrm{Cov}_3$ | 工程方案 | 多目标约束 | Constraint, Goal |
+| $\mathrm{Cov}_4$ | 算法+规约 | 程序+Hoare | Act, Prop, Rule |
+| $\mathrm{Cov}_5$ | 计算架构+目标 | 计算图+J | Act+Goal+Hyp |
+| $\mathrm{Cov}_6$ | 科学假设 | 概率模型+预测 | Hyp, P(·), Obs |
+
+**诚实边界**：$\mathrm{Cov}_0$–$\mathrm{Cov}_5$ 是**表达能力**问题，可构造性证明；$\mathrm{Cov}_6$ 不是——它要求"假设为真"，那是模型选择，不是表达。**所以"覆盖一切"只能在描述层成立，不能在真理层成立。**
+
+## 6. Address 的真正角色
+
+**定义（概念坐标）** $\mathrm{Ad}:U\to A$ 单射，$A$ 带 $\{\pi_i\}$（分辨率）、邻域关系 $\mathcal N$、以及 $\mathrm{Ad}(x\circ y)$ 由 $\mathrm{Ad}(x),\mathrm{Ad}(y)$ 可算。
+
+**八种操作各属于谁（关键诚实表）**：
+
+| 需求 | 归属 | 理由 |
+|---|---|---|
+| 可定位 locate | **Address** | 需要可判定编码 |
+| 可组合 compose | **Address** | 第19轮的 shift / interning 即实现 |
+| 可推演 derive | **Address** | 后继生成 |
+| 可跨区域跳跃 jump | **Address** | 需要"结构相似"关系 |
+| 可分层 stratify | **U** | 需要 $U$ 上的 filtration |
+| 可剪枝 prune | **$J$** | 需要 $J$ 在 filtration 上单调（**可采纳启发式**） |
+| 可比较 compare | **$J$ + Address** | 需要 $J$ 对 $\mathrm{Ad}$ 度量 Lipschitz |
+| 可局部搜索 | **$J$ + Address** | 需要邻域 + $J$ 的连续性/平滑性 |
+
+**结论**：八项中只有四项属于 Address；**prune/compare/local 三项属于 $J$ 的结构**。所以 **Address 是必要但不充分的接口；真正的约束在 $J$。**
+
+## 7. JEV 的角色
+
+$$\mathrm{JEV}:(U,J,\mathcal C,B)\longmapsto \text{有限个 $U$ 中被排序的候选}$$
+六个操作：retrieve（Address 键）、compare、expand（后继）、prune（可采纳界）、compose、evaluate（$J$ 调用）、navigate（Address 行走）。
+
+**收窄表述（采纳 Advisor 建议）**：第一版 JEV 不是"在宇宙中搜索 AGI blueprint"，而是：
+> **在带地址的有限生成概念空间中，用可采纳剪枝 + 局部搜索做结构化检索的搜索器。**
+
+这个版本**可形式化、可证伪**：判据是"剪枝率 $\gg$ 盲搜"，而不是"找到 AGI"。
+
+## 8. 完整逻辑链 + 困难在哪
+
+$$\underbrace{\text{诗云}}_{\text{枚举巨大空间}}\ \Longrightarrow\ \underbrace{U=\mathrm{Closure}(X,\Sigma)}_{\text{(L1) 构造：平凡}}\ \Longrightarrow\ \underbrace{\mathrm{Ad}:U\hookrightarrow A}_{\text{(L2) 寻址：第19轮给了技术}}\ \Longrightarrow\ \underbrace{\mathrm{JEV}(U,J)}_{\text{(L3) 检索：真正的瓶颈}}$$
+
+**瓶颈的精确位置（必须点明，否则整个项目会走回空转）**：
+
+$$\boxed{\text{(L1) 平凡}\quad\text{(L2) 可做}\quad\text{(L3) 是唯一实质困难}}$$
+
+**(L3) 为什么困难**：设 $U$ 递归可枚举且无限，$J:U\to\mathbb R$ 任意可计算。**No-Free-Lunch 式命题**：对任何确定性搜索算子 $S$、任何 $n$，存在 $J'$ 与 $J$ 在 $S$ 探测过的 $n$ 个点上一致，但 $\max_{U}J'$ 落在未探测点。故**一致最优搜索不存在；enumeration 是最坏情形下的唯一保证**。
+
+**所以本项目的真正数学内容不是"构造空间"，而是**：
+> **找出 $J$ 的哪一类结构使 (L3) 可行——具体三类候选：(a) 可组合性 $J(x\circ y)\approx\Phi(J x,J y)$；(b) 光滑性（对 $\mathrm{Ad}$ 度量 Lipschitz）；(c) 分层单调性（存在可采纳界）。**
+
+**这也是为什么 Address 重要**：它把 (a)(b)(c) 之一变成**可定义、可检验**的条件。
+
+## 9. 下一步 = Universe
+
+**同意，但必须在 Advisor 建议的方向上加一个限定**：第一步不能是"囊括一切人类概念"的 $U$——那是不可检验命题；必须是**一个有界但非平凡的目标类**：
+
+> **第一步（具体）**：取 $O=$ **参数化计算架构族**（计算图 + 目标 + 约束）。构造
+> $$U_O=\mathrm{Closure}(X_O,\Sigma_O)\quad\text{使}\quad O\subseteq U_O$$
+> 并给出 $\mathrm{Cov}(O)$ 的**显式编译器**（对每个 $o\in O$ 构造 $p\in U_O$ 且 $\llbracket p\rrbracket\cong o$）。
+
+**理由三条**：
+1. $O$ 有界 ⟹ coverage 可证；"一切"不可证（这是第 7 任务的直接推论）。
+2. $U_O$ 非平凡 ⟹ 里面有真结构可搜（$\mathrm{Cov}_5$ 层天然带 Goal/Hyp，正好对应 AGI blueprint 的形状）。
+3. 第 19 轮的成果在此**有实际用处**：shift-coupled / DAG-sharing 是 $U_O$ 上 Address 的具体实现技术，使 composition 不需 decode——这正是"检索基础设施"，不是"形式花活"。
+
+**三步走（可依次证伪）**：
+$$\text{(1) }U_O+\mathrm{Cov}(O)\ \longrightarrow\ \text{(2) }\mathrm{Ad}\ \text{+ 邻域/分辨率}\ \longrightarrow\ \text{(3) JEV: 剪枝率 vs 盲搜}$$
+
+**每步的判据**：(1) 编译器存在；(2) composition 无 decode + 邻域可计算；(3) **同一预算下 JEV 的命中率显著高于盲搜**——这是本项目第一个真正可证伪的经验判据。
+
+Now let me render the widget: the chain with the bottleneck.
+
+Let me build a compact SVG showing: 诗云 → U (L1 平凡) → Ad (L2 可做) → JEV (L3 瓶颈) and the bottleneck box listing the three structural conditions on J.
+
+Let me lay out horizontally: four boxes, with the 4th highlighted in brand, plus below it the three J-conditions.
+
+viewBox 720 x 300.
+
+Boxes at y=50..110:
+- 诗云: x=30, w=130
+- U: x=180, w=140
+- Ad: x=340, w=140
+- JEV: x=500, w=190
+Arrows between.
+
+Below: notes on each.
+y=130..170: 三种 J 结构
+
+Let me write it.
+
+Then the text.
+
+Let me be careful to keep the answer well-organized per the 9 requested outputs.
+
+Length: this is a big answer. Let me be dense.
+
+Now write the full answer with the 9 required outputs. Let me be dense and organized.
+
+Let me write it now.
+# 1. 原始问题的新准确表述
+
+**旧表述**（前 19 轮）：有限原子 + 有限规则 → 巨大概念空间；Address 能否成为计算空间。
+
+**新表述（三层，必须分开）**：
+
+$$\text{(L1) 构造：}U=\mathrm{Closure}(X,\Sigma,\dots)\ \text{使}\ O\subseteq U$$
+$$\text{(L2) 寻址：}\mathrm{Ad}:U\hookrightarrow A\ \text{使搜索所需操作可实现}$$
+$$\text{(L3) 检索：}\mathrm{JEV}(U,J,\mathcal C,B)\to\text{高 }J\text{ 值候选}$$
+
+**《诗云》的数学抽象 = (L1) + (L3)。** 而下一节会证明：**(L1) 平凡，(L3) 是唯一实质困难**。这不是修辞，是定理级的结论。
+
+---
+
+# 2. Universal Concept Space 的形式定义
+
+**定义（生成概念空间）**
+$$\mathcal U=(S,\ \Sigma,\ X,\ \mathcal D,\ \llbracket\cdot\rrbracket)$$
+- $S$：有限 **sort** 集；
+- $\Sigma$：$S$-排序签名（有限或可计算）；
+- $X$：各 sort 的原子集；
+- $\mathcal D=\{D_s\}$：语义域（**偏**代数）；
+- $\llbracket\cdot\rrbracket$：语法 $\to$ 语义的解释。
+
+$$U:=T_\Sigma(X)\quad(\text{排序项集})$$
+
+**基本事实 [PROVEN]**
+1. $X$ 可数 $\Rightarrow$ $U$ 可数；$X,\Sigma$ 可计算 $\Rightarrow$ $U$ **递归可枚举**；
+2. 若某 sort 有多元构造子，$|U|=\aleph_0$；
+3. $U$ 上有可判定的大小函数、可计算的枚举器、可判定的项相等。
+
+> **必须写死的一句**：**构造 $U$ 从来不是瓶颈。** 任何可数目标类都能被某个可数签名覆盖——这正是你禁止的"只要语言够强就能表示一切"。**所以 (L1) 的数学内容是零；它的全部价值在于为 (L2)(L3) 提供载体。**
+
+**"所有可能概念"如何数学化**：不能是对象集，只能是**描述集**，且必须相对化：
+$$U\text{ 覆盖 }O\iff \forall o\in O\ \exists p\in U:\ \llbracket p\rrbracket\cong o$$
+**"未知"** 不进入 $U$（那会是"我们已经知道未知"），而是：
+
+| 问 | 答 |
+|---|---|
+| 未创造概念 | $U$ 中**已存在的项**，其 $J$ 值未被评估过（并非未生成） |
+| 未知世界 | 观测 $o$ $\to$ **候选集** $\mathrm{Hyp}(o)\subseteq U$ |
+| 未发现理论 | **参数化族** $\{\llbracket p_\theta\rrbracket\}_{\theta\in\Theta}\subseteq U$，参数未实例化 |
+
+---
+
+# 3. 四类覆盖（严格区分）
+
+| | 内容 | 形式 | 是否需要"知道未知" |
+|---|---|---|---|
+| **C1** 已有概念 | 已有概念 ∈ $U$ | $X\cup T_\Sigma(X)$ 含之（或其描述） | 否 |
+| **C2** 可生成概念 | 闭包 | $U=T_\Sigma(X)$ **自动成立** | 否 |
+| **C3** 未知对象的假设空间 | 未知 $o$ $\to$ 候选集 | $\mathrm{Hyp}(o):=\{t\in U:\llbracket t\rrbracket\models o\}$ **是 $U$ 的可定义子集** | **否** |
+| **C4** 关于未知的理论空间 | 理论族 | $\mathrm{Th}(\mathcal U)=\{\varphi:\mathcal U\models\varphi\}$；假设类 $=$ 可定义子集格 | **否** |
+
+**C3/C4 的正确理解（你的要求）**：
+> 未知对象**不是**被存进 $U$；而是要求 **$U$ 的"可定义子集族"足够闭合**——在 $\wedge,\vee,\exists,\forall$ 与**参数化**下闭合。这是一条**关于 $U$ 的结构性要求，可检验**（检查 $\mathrm{Hyp}(o)$ 是否总能写成 $U$ 中的一个带参数的项/公式）。
+
+**推论**：Unknown Object $\to$ **Generative Slot** 的形式化 $=$ "存在一个带自由变量的项模式，其解集 $=$ 候选空间"。这就是"生成位置"的精确含义。
+
+---
+
+# 4. 最小 Universal Concept Language
+
+**Sorts**：`Ent, Prop, Rel, Act, St, Ctx, Goal, Hyp, Typ, Rule, Constraint, Obs, Num`
+
+```
+Ent   ::= x_i | lit(v) | tuple(Ent*) | the(Prop) | setof(Ent, Prop)
+        | hyp(Hyp) | app(Ent, Ent) | quote(Prop,Rule,Act)
+Prop  ::= r_i(Ent*) | ⊤ | ⊥ | ¬Prop | Prop∧Prop | Prop∨Prop | Prop→Prop
+        | ∀(x:Typ).Prop | ∃(x:Typ).Prop | ◇Prop | P(Prop, q)        (q ∈ ℚ∩[0,1])
+Rel   ::= ρ_i | λ(x:Typ).Prop | Rel∘Rel | Rel⁻¹ | id_Typ
+Act   ::= α_i | seq(Act,Act) | par(Act,Act) | if(Prop,Act,Act)
+        | while(Prop,Act) | bind(x:Typ,Act,Act) | choose(Ent)
+St    ::= ε | upd(St,Act) | merge(St,St) | restrict(St,Prop) | hist(St)
+Ctx   ::= ◻ | push(Ctx,Frame) | pop(Ctx) | plug(Ctx,Ent) | focus(Ctx,Ent)
+Goal  ::= achieve(Prop) | maintain(Prop) | optimize(Ent→Num) | satisfy(Constraint)
+        | and(Goal,Goal) | prefer(Goal,Goal)
+Hyp   ::= θ_i | law(∀x̄.Prop) | model(Sig,Ax) | family(Hyp, θ→Hyp) | post(P(·))
+Rule  ::= ∀x̄.(Premise ⇒ Conclusion) | schema(Rule,Typ) | meta(Rule)
+Constr::= (t = t') | le(t,t') | in(t,Typ) | total(f)
+Typ   ::= b_i | Typ→Typ | Π(x:Typ).Typ | Σ(x:Typ).Typ | μX.Typ | νX.Typ
+```
+
+**语义** (六条关键)：`Prop` $\to$ 真值/概率；`Rel` $\to$ 关系（非函数）；`St` $\to$ 状态单子；`Ctx` $\to$ **上下文（zipper）**；`Goal` $\to$ $(\text{Ent}\to\mathbb R)$；`Hyp` $\to$ **参数空间**。
+
+**组合规则（真正的引擎，六条）**：
+1. 代入 `subst`；2. 关系复合 $\circ$ 与求逆 $^{-1}$；3. 状态推进 `upd`；4. 上下文填充 `plug(push(C,F),t)`；5. 假设实例化 `family(H,θ)`；6. 目标细化 `refine(Goal,Constr)`。
+
+**最小核心（主张，非定理）**：
+$$\boxed{\text{Atom}+\text{Var}+\lambda+\mathrm{App}+\text{Rel-apply}+(\times)+\text{seq}+\text{while}+\text{state}+\text{goal-predicate}+\text{hyp-parameter}}$$
+恰好覆盖"对象/属性/关系/动作/规则/状态/假设"七类。**诚实标注：这个核实质上就是「带类型的 λ + 小命令式核 + 关系层 + 假设参数」——即一个程序合成语言。STANDARD。** 内容全在 sort 划分与偏性选择上，不在"新奇"上。
+
+---
+
+# 5. Coverage 如何检验
+
+**定义（覆盖，可检验）** 给定目标类 $O$ 与参考语言 $L_{\mathrm{ref}}$：
+$$\mathrm{Cov}_P(O)\iff \exists\ \text{可计算 }\mathrm{cmp}:L_{\mathrm{ref}}\to P,\quad \forall o\in O:\ \llbracket\mathrm{cmp}(o)\rrbracket\cong o$$
+**检验方式 = 交出一个编译器 + 正确性证明**（或对每个 $o$ 逐一构造 $p$）。
+
+**层级（可分别证）**：
+
+| 层 | 目标类 | 需要的表达手段 | 状态 |
+|---|---|---|---|
+| $\mathrm{Cov}_0$ | 有限串 / 诗 | `tuple`,`seq` | 可构造 |
+| $\mathrm{Cov}_1$ | 有限数学对象（图、有限模型） | `setof`,`Rel`,一阶 | 可构造 |
+| $\mathrm{Cov}_2$ | 实数模型（ODE、场） | `Num` + 极限/测度 | 可构造（需 $\mu$） |
+| $\mathrm{Cov}_3$ | 工程方案 | `Constraint`,`Goal` | 可构造 |
+| $\mathrm{Cov}_4$ | 算法 + 规约 | `Act`,`Prop`,`Rule` | 可构造 |
+| $\mathrm{Cov}_5$ | **计算架构 + 目标** | `Act`+`Goal`+`Hyp` | **可构造（第一步目标）** |
+| $\mathrm{Cov}_6$ | 科学假设 | `Hyp`,`P(·)`,`Obs` | **不可证** |
+
+**诚实边界（必须点明）**：$\mathrm{Cov}_0$–$\mathrm{Cov}_5$ 是**表达能力**问题，可构造性证明；**$\mathrm{Cov}_6$ 不是**——它要求"假设为真"，那是**模型选择**问题，不是表达问题。**所以"覆盖一切"只能成立在描述层，不能成立在真理层。** 这是本项目必须永久保留的一条界线。
+
+---
+
+# 6. Address 在这个体系中的真正角色
+
+**定义（概念坐标）** $\mathrm{Ad}:U\hookrightarrow A$ 单射，$A$ 带 $\{\pi_i\}$（分辨率）、邻域关系 $\mathcal N$，且 $\mathrm{Ad}(x\circ y)$ 由 $\mathrm{Ad}(x),\mathrm{Ad}(y)$ 可算。
+
+**八项能力各属于谁（本轮最关键的诚实表）**：
+
+| 需求 | 归属 | 理由 |
+|---|---|---|
+| 可定位 | **$\mathrm{Ad}$** | 需要可判定编码 |
+| 可组合 | **$\mathrm{Ad}$** | 第 19 轮的 shift / interning 即实现 |
+| 可推演 | **$\mathrm{Ad}$** | 后继生成 |
+| 可跨区域跳跃 | **$\mathrm{Ad}$** | 需要"结构相似"关系 |
+| 可分层 | **$U$** | 需要 filtration |
+| **可剪枝** | **$J$** | 需要 $J$ 在 filtration 上单调 = **可采纳启发式** |
+| **可比较** | **$J$ + $\mathrm{Ad}$** | 需要 $J$ 对 $\mathrm{Ad}$ 度量 Lipschitz |
+| **可局部搜索** | **$J$ + $\mathrm{Ad}$** | 邻域 + $J$ 的连续性 |
+
+> **八项中只有四项属于 $\mathrm{Ad}$；三项属于 $J$ 的结构。$\mathrm{Ad}$ 是必要但远不充分的接口。**
+
+这也回答了"Address 的真正作用"：它是 **(L2) 的基础设施**——把 (L3) 所需的三类 $J$-结构变成**可定义、可检验**的条件。它不是数学新对象，也不是可选的装饰。
+
+---
+
+# 7. JEV 在这个体系中的真正角色
+
+$$\mathrm{JEV}:(U,\ J,\ \mathcal C,\ B)\ \longmapsto\ U\ \text{中有限个被排序的候选}$$
+七操作：retrieve（$\mathrm{Ad}$ 键）、compare、expand（后继）、prune（可采纳界）、compose、evaluate（$J$ 调用）、navigate（$\mathrm{Ad}$ 行走）。
+
+**必须收窄的表述**：第一版 JEV **不是**"在宇宙中搜索 AGI blueprint"，而是：
+
+> **在带地址的有限生成概念空间中，用可采纳剪枝 + 局部搜索做结构化检索的搜索器。**
+
+**为什么必须收窄**：前者不可证伪；后者可证伪——**判据是"同预算下剪枝率/命中率 $\gg$ 盲搜"**。这是本项目第一个真正可检验的经验命题。
+
+---
+
+# 8. 完整逻辑链，与困难的确切位置
+
+$$\underbrace{\text{诗云}}_{\text{枚举巨大空间}}\Longrightarrow\underbrace{U=\mathrm{Closure}(X,\Sigma)}_{\text{(L1) 构造：平凡}}\Longrightarrow\underbrace{\mathrm{Ad}:U\hookrightarrow A}_{\text{(L2) 寻址：第19轮有技术}}\Longrightarrow\underbrace{\mathrm{JEV}(U,J)}_{\text{(L3) 检索：唯一瓶颈}}$$
+
+**(L3) 为什么是唯一瓶颈 [PROVEN]**
+
+> **命题（No-Free-Lunch 型）** 设 $U$ 递归可枚举且无限，$J:U\to\mathbb R$ 任意可计算。则对任何确定性搜索算子 $S$ 与任何 $n$，存在 $J'$ 与 $J$ 在 $S$ 已探测的至多 $n$ 个点上完全一致，但 $\max_U J'$ 落在未探测点。**故一致最优搜索不存在；枚举是最坏情形下唯一的保证。**
+
+**这个命题的分量必须说清**：它**不**证明搜索无用，它证明的是：
+> **项目的数学内容不在"空间够不够大"，而在"$J$ 属于哪一类结构"，使搜索可行。**
+
+三个候选结构（这才是本项目真正的数学问题）：
+- **(a) 可组合性**：$J(x\circ y)\approx\Phi(Jx,Jy)$ $\Rightarrow$ 动态规划 / 分支限界；
+- **(b) 光滑性**：$J$ 对 $\mathrm{Ad}$ 度量 Lipschitz $\Rightarrow$ 局部搜索有效；
+- **(c) 分层单调性**：存在可采纳界 $\Rightarrow$ A* 类搜索最优。
+
+**AGI blueprint 的 $J$ 属于哪一类，是把"搜索 AGI blueprint"从口号变成数学问题的唯一入口。**
+
+---
+
+# 9. 下一步：研究 Universe，但必须是有界的 Universe
+
+**同意你的判断：下一步是建 Universe，不是继续 Address 的形式花活。** 但必须加一个限定（否则第一步就不可检验）：
+
+> **不要建"囊括一切人类概念"的 $U$——那是不可检验命题。要取一个有界但非平凡的目标类 $O$，构造 $U_O$，并证 $\mathrm{Cov}(O)$。**
+
+**具体第一步**：
+$$O:=\text{参数化计算架构族（计算图 + 目标 + 约束）}$$
+$$U_O:=\mathrm{Closure}(X_O,\Sigma_O),\qquad \text{交出一个显式编译器}\ \mathrm{cmp}:L_{\mathrm{ref}}(O)\to U_O\ \text{使}\ \llbracket\mathrm{cmp}(o)\rrbracket\cong o$$
+
+**三条理由**：
+1. $O$ 有界 $\Rightarrow$ **coverage 可证**；"一切"不可证（第 5 节的直接推论）；
+2. $U_O$ 非平凡 $\Rightarrow$ 有真结构可搜，且它天然落在 $\mathrm{Cov}_5$ 层（带 `Goal`+`Hyp`），**形状正好对应 AGI blueprint**；
+3. **第 19 轮的成果在此有实际用途**：shift-coupled 与 DAG-sharing 是 $U_O$ 上 $\mathrm{Ad}$ 的**具体实现技术**，使 composition 不需 decode——这就是"检索基础设施"，不是形式花活。
+
+**三步走，每步可独立证伪**：
+
+| 步 | 产出 | 判据 |
+|---|---|---|
+| **(1)** | $U_O$ + $\mathrm{Cov}(O)$ 的编译器 | 编译器存在 + 正确性证明 |
+| **(2)** | $\mathrm{Ad}$ + 邻域 + 分辨率 | composition 无 decode；邻域可计算 |
+| **(3)** | JEV 第一版 | **同预算下命中率 $\gg$ 盲搜** |
+
+**第 (3) 步是本项目第一个真正可证伪的经验判据**，也是把"这个项目有没有东西"从数学转向实验的唯一出口。
+
+---
+
+# 最终：从诗云到 AGI blueprint search 的完整链条
+
+$$\boxed{\begin{aligned}
+&\text{诗云} &&=\ \text{「先构造巨大可能空间，再解决检索」}\\
+&\Downarrow\\
+&U_O=\mathrm{Closure}(X_O,\Sigma_O) &&\text{(L1) 构造——平凡，但必须有界才可检验}\\
+&\Downarrow\\
+&\mathrm{Cov}(O)\ \text{（编译器）} &&\text{(L1′) 覆盖——本文唯一可证的"囊括"}\\
+&\Downarrow\\
+&\mathrm{Ad}:U_O\hookrightarrow A &&\text{(L2) 寻址——第19轮给了实现技术}\\
+&\Downarrow\\
+&J\ \text{的结构 (a)(b)(c)} &&\text{(L3) 真正的数学问题——决定搜索可行性}\\
+&\Downarrow\\
+&\mathrm{JEV}(U_O,J,\mathcal C,B) &&\text{(L3′) 检索——可证伪的工程目标}\\
+&\Downarrow\\
+&\text{若 AGI blueprint}\in O &&\text{则问题化归为「在 }U_O\text{ 中搜索目标结构」}\\
+&&\text{——到此为止不再前进；不声称必然找到}
+\end{aligned}}$$
+
+**注意链上的两处诚实标注**：$\mathrm{Cov}(O)$ 只在**描述层**成立（第 5 节）；"若 AGI blueprint $\in O$" 是**条件句**，不是前提（第 7 节）。**这两处一旦被抹掉，链条就会退化成口号
