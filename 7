@@ -1,0 +1,832 @@
+*正在请求专家建议，优化解决方案，该过程耗时可能较长，请耐心等待...*
+
+
+The user is right about the terminology: Ψ = γ∘Φ∘(α⁻¹×β⁻¹) is **isotopy** (of binary operations), not conjugacy. Conjugacy would require α = β and γ related. Let me correct that.
+
+Actually, let me be precise:
+- **Conjugacy** of operations: Ψ = γ∘Φ∘(γ⁻¹×γ⁻¹) (same bijection used consistently).
+- **Isotopy**: Ψ = γ∘Φ∘(α⁻¹×β⁻¹) with three independent bijections. This is the standard notion for quasigroups/Latin squares ("isotopy").
+- The user says it's "closer to operation isotopy / 3-sorted relational isomorphism". Correct. Isotopy = isomorphism of the graph as a 3-sorted relation. ✓
+
+So: correct the term. Isotopy. And the graph view: G_Φ = {(u,v,w) : Φ(u,v)=w} ⊆ D×D×D. Isotopy = isomorphism of (D,D,D; G_Φ) as a 3-sorted structure. ✓
+
+Now the main question: **is there a genuine, non-eliminable structural difference between "Address as computation structure" and "ordinary term encoding"?**
+
+Let me think hard and honestly.
+
+### Step 1: The core reduction argument
+
+Let me try to prove the NO answer rigorously, because I believe that's where the truth is.
+
+**Setup**: 
+- T = T_Σ(X), free term algebra.
+- A = address domain.
+- M = (A, F, Π, R, ...) an "enriched structure".
+
+**The key question**: is M isomorphic (in the structure-preserving sense) to (im ρ, F_ρ, Π_ρ, ...) for some encoding ρ: T → A with the projections being *transported* from T?
+
+Hmm. Let me think about the fundamental issue.
+
+**Fundamental observation**: For M to be a "structure-preserving representation of T", we need ρ: T ↪ A with F(ρ(x),ρ(y)) = ρ(g(x,y)). This means (im ρ, F) ≅ T as Σ-algebras (if ρ surjective onto im ρ). **So im ρ is a copy of T.**
+
+Now: Π = {π_i: A → A_i}. The coherence says π_i is a homomorphism.
+
+**So: M = (T-copy, Π) where Π is a family of homomorphisms out of the T-copy.**
+
+**And: the family of homomorphisms out of T is determined by T!** Because a homomorphism T → A_i is determined by its values on X (the generators). So Hom(T, A_i) ≅ A_i^X.
+
+Hmm — but that's about homomorphisms *out of* T. The point is: **which homomorphisms are "intrinsic" to M?**
+
+Here's the crux: **any family of homomorphisms out of T can be added to T as extra structure. And whether it's "intrinsic" or "external" is a matter of declaration, not mathematics.**
+
+Hmm. So the honest answer might be: **NO, there's no non-eliminable difference, because "intrinsic" is not a mathematical property.**
+
+But let me try harder. Let me look for a formal obstruction.
+
+### Step 2: Let me think about what could make B ≠ A.
+
+**Attempt**: Suppose M has the property that Π is *not* derivable from T alone — i.e., M has projections that are not homomorphisms out of the term algebra. Then M ≠ "T + encoding".
+
+But coherence FORCES π_i to be homomorphisms. So all π_i ARE homomorphisms out of T. Hence derivable from T... in what sense?
+
+Hmm. Hom(T, A_i) is determined by A_i and X. But the *choice* of which homomorphisms are in Π is extra.
+
+Hmm. **So: M = (T, {π_i}) where π_i ∈ Hom(T, A_i). The data of M is: a choice of target algebras A_i and a choice of homomorphisms.**
+
+And that data is *additional* to T. So M ⊋ T. But is it "new structure" or just "extra metadata"?
+
+**Here's the key formalization**: Let me define the "enriched theory" precisely and ask whether it's a *conservative extension* of the term algebra theory.
+
+Hmm. Let me think about it differently.
+
+### Step 3: The decidability / classification angle
+
+Let me think about what a "genuine difference" would mean. Two structures are "essentially the same" if there's a structure-preserving iso. The question is whether B (enriched) is always structure-isomorphic to A (plain + encoding).
+
+**Let me try to construct the reduction explicitly.**
+
+Given M = (A, F, Π) with F(ρ(x),ρ(y)) = ρ(g(x,y)), ρ: T ↪ A.
+
+Claim: M is structure-isomorphic to (T, g, Π') where Π' = {π_i ∘ ρ}.
+
+Hmm — but that's just relabeling A as T. So M ≅ (T, g, {π_i∘ρ}). And that's "T + a family of homomorphisms".
+
+**So: M = T + extra homomorphisms.** And "extra homomorphisms" is metadata on top of T.
+
+Hmm. So: **B = A + metadata.** And the metadata is a family of homomorphisms out of T.
+
+**Is that "new structure"?** In one sense yes (it's additional data), in another sense no (it's not constrained by anything; it's a free choice).
+
+**And crucially**: the metadata can be *arbitrarily rich*. E.g., take A_i = T itself and π = id: then Π = {id}. Or take all endomorphisms of T.
+
+Hmm. **So: the "enriched structure" is T + an arbitrary family of homomorphisms. Since it's arbitrary, it's not "the structure of T".**
+
+Hmm. That's a strong argument for NO.
+
+### Step 4: But wait — is there a canonical choice?
+
+**Key idea**: Maybe the *canonical* enriched structure comes from T's own internal structure. E.g.:
+- The **subterm projections**: π_i(t) = the i-th immediate subterm.
+- The **depth projection**.
+- The **root symbol projection**.
+
+These are canonical (defined by T's construction).
+
+**And**: are these "homomorphisms"? Hmm. π_i(t) = i-th subterm of t. Is that a homomorphism? For the term algebra, the i-th subterm map is a **projection** but NOT a homomorphism (it doesn't preserve the operation). Hmm.
+
+Hmm — actually the *destructors* (root, child_i) are not homomorphisms. So they don't satisfy coherence.
+
+**So: the term algebra's natural projections (destructors) do NOT satisfy the coherence law.** They're the *inverse* direction — they're the operations of the initial algebra's "unfold".
+
+Hmm. **So: the natural intrinsic structure of T is the destructor/constructor duality, which is NOT of the form π∘F = F_0∘(π×π).**
+
+**AH — this is a real observation!** The coherence law π_i∘F = F_i∘(π_i×π_i) says π_i is a homomorphism, i.e., π_i *commutes with construction*. But the natural address structure — "read the root", "read the subterms" — *decomposes* rather than commutes.
+
+So: **the coherence law might be the wrong law for "intrinsic address structure".**
+
+Hmm! Let me think about this.
+
+The user's Π should be "resolution operators" — reading a coarser version. And the coherence π∘F = F_0∘(π×π) says: "compute coarsely = coarsely compute". That's a *commutation* law.
+
+But the natural "address structure" operations are:
+- **constructor**: cons_c: A^n → A
+- **destructors**: root: A → Σ, child_i: A → A
+- with laws: root(cons_c(x̄)) = c, child_i(cons_c(x̄)) = x_i.
+
+**These are the laws of an initial algebra / a "term algebra with destructors".** And this IS canonical.
+
+**Is this "just a term encoding"?** Hmm. Let's see. (A, cons, root, child) with those laws — this is exactly **the abstract data type of terms**. And it's determined up to isomorphism by T.
+
+**So: the "intrinsic structure" of an address system, if it's the constructor/destructor duality, is determined by T and adds nothing.**
+
+Hmm. So still NO.
+
+### Step 5: Let me try yet another angle.
+
+What if the "address structure" includes **decomposition/reconstruction relations** that are NOT functional? E.g., a relation R(x,y,z) meaning "z is a valid composition of x,y". 
+
+Hmm. In the term algebra, that's just z = g(x,y). Functional. So no.
+
+What if there are **multiple composition operators** (higher arity, different constructors)? Then it's a multi-sorted / multi-operator algebra. Still a term algebra (just a bigger signature).
+
+Hmm.
+
+What about **partial operations**? E.g., composition only defined when types match. That's **many-sorted** (or order-sorted) algebra. Still standard.
+
+### Step 6: So what's the honest answer?
+
+I believe the honest answer is **NO**, and the argument is:
+
+**Theorem (reduction).** Let M = (A, F, Π, {F_i}) satisfy coherence with ρ: T ↪ A structure-preserving. Then M is structure-isomorphic to (T, g, Π_T) where Π_T = {π_i ∘ ρ} ⊆ ∏_i Hom(T, A_i). 
+**Hence M = T + a choice of homomorphisms out of T.** Since Hom(T, ·) is determined by T and the targets, and the *choice* is free, M carries no structure beyond T except a freely-chosen family of homomorphisms.
+
+**And**: any two such choices are related by the induced maps, so the "enriched" content is: **the family Π is a subset of Hom(T, ·) — a free choice.**
+
+Hmm, but that's not quite a proof of "no difference" — it says the extra data is a free choice. Which means it's *metadata*, not *structure*.
+
+Hmm. Let me sharpen. What would make it "structure"? If the family Π were *forced* by T. I.e., if there's a canonical maximal family, or if the family is determined by some property.
+
+**Is there such a property?** E.g.: "Π is the set of ALL homomorphisms from T to a fixed algebra A_i"? Then Π is determined by A_i. Hmm, but A_i is chosen.
+
+Or: "Π is a *separating* family" — then T embeds into ∏ A_i (subdirect). And the *smallest* separating family / the "subdirectly irreducible" decomposition is canonical (Birkhoff). Hmm! 
+
+**Birkhoff's subdirect representation theorem**: every algebra is a subdirect product of subdirectly irreducible algebras, and the subdirectly irreducibles are determined (up to iso) by the algebra. **So: the canonical resolution structure of T is its subdirectly irreducible quotients!**
+
+Hmm. **That's a canonical "intrinsic resolution structure"!** And it's determined by T. So it's not extra data — it's a canonical decomposition of T.
+
+**And then**: the question "is the coarse layer splittable" becomes: "does the congruence lattice of T have complements", which is determined by T.
+
+**So: this gives a canonical, encoding-independent enriched structure: (T, Con(T)) — the term algebra with its congruence lattice.**
+
+And the question "is there Address-native structure beyond term encoding" becomes: **"does Con(T_Σ(X)) have a structure that matters?"** And that's determined by Σ, X — i.e., by the concept system, not by the encoding.
+
+Hmm. **So: the honest answer is that the ONLY encoding-independent enriched structure is (T, Con(T)), and it's standard universal algebra.**
+
+Hmm. OK.
+
+### Let me now think about whether there's ANY escape.
+
+Let me consider: what if the address structure is **not** a representation of T, but a *different* algebra that happens to generate the same objects?
+
+Hmm. E.g., **the "address" is a string over an alphabet, with concatenation as the composition.** Then A = Σ*, F = concatenation. This is the free monoid! And the free monoid on Σ is a term algebra (for the signature with one binary constructor, "append"). So still a term algebra.
+
+**What about A = the set of trees with a "grafting" operation?** Grafting (replace a leaf by a tree) is a partial operation. Still standard.
+
+**What about the "substitution" operation?** Substitution: given a tree t with a distinguished variable, and a tree s, get t[s]. That's a **partial** operation, and it's the operation of the **substitution monoid** / **clone**. Hmm!
+
+**Clones!** The set of terms with substitution forms a **clone** (in the sense of universal algebra / category theory). And clones are richer than term algebras! 
+
+Hmm. **This might be the residual.** Let me think.
+
+A **clone** is a graded structure: C = (C_n)_{n≥0} with composition operations ∘_i: C_n × C_m → C_{n+m-1}, satisfying associativity and unit laws. The clone of terms over Σ, X is the **free clone** on Σ.
+
+**And**: the free clone has more structure than the free term algebra — it has **substitution** (composition of operations), which is a *higher-arity, multi-sorted* structure with associativity.
+
+**Is this "Address-native"?** Hmm. It's the structure of "operations" rather than "terms". And it's canonical (determined by Σ).
+
+Hmm. But: it's still standard universal algebra (clones, Lawvere theories, operads).
+
+Hmm.
+
+OK. Let me step back and give the honest verdict.
+
+### Honest verdict
+
+**NO — we have not found a non-eliminable difference.** And here's the argument:
+
+**Theorem (化约定理).** 任何满足 coherence 的 enriched structure M = (A, F, Π, {F_i})，在结构保持同构下都等价于
+$$M \cong \big(T_\Sigma(X),\ g,\ \Pi_T\big),\qquad \Pi_T \subseteq \textstyle\prod_i \mathrm{Hom}\big(T_\Sigma(X), A_i\big).$$
+而 $\mathrm{Hom}(T_\Sigma(X), A_i) \cong A_i^{X}$ 由 $T$ 与目标代数决定。**所以 $M$ 相对 $T$ 多出来的全部内容，是"在 $\mathrm{Hom}(T,\cdot)$ 中挑一个子族"——一个自由选择。**
+
+**关键：自由选择不是结构。** 结构必须被公理约束。而 coherence 已经把所有约束用完了（它只约束"$\pi_i$ 是同态"，而这一点由 $\Pi_T \subseteq \mathrm{Hom}$ 自动满足）。
+
+**因此：**
+- 若 $\Pi$ 是自由选的 → 它是 metadata，不是结构 → **B = A + metadata**。
+- 若要求 $\Pi$ 是**典范的**（canonical），唯一可能的典范选择是 $T$ 自身的同余格 / 子直分解 / clone 结构 —— 而这些**全部由 $T$ 决定**，因此也不是额外结构，只是 $T$ 的标准不变量。
+
+**所以结论：NO。**
+
+And the reason all differences collapse:
+1. **image/range differences** → isotopy class of Φ (not structure — it's a relabeling question)
+2. **state-dependence of Φ** → forced by injectivity (finite Q) / isotopy-invariant (in general)
+3. **Π** → free choice of homomorphisms out of T
+4. **resolution maps** → congruences of T
+5. **coherence** → satisfied automatically by any homomorphism
+
+**So: every difference reduces to encoding / metadata / operation relabeling.** ✓
+
+### Let me make sure I address each of the user's 8 sections.
+
+一、重新定义"组合规则" via graph G_Φ = {(u,v,w) : Φ(u,v)=w}. And what makes two graphs "the same structure".
+
+**Answer**: G_Φ ⊆ D×D×D. The right equivalence is **isomorphism of the 3-sorted structure (D, D, D; G_Φ)**, i.e., (α,β,γ) with G_Ψ = (α×β×γ)(G_Φ). That's exactly **isotopy**. ✓ So the user is right about the terminology, and the graph view makes it precise.
+
+**And**: this is still "relabeling" — three bijections. So the isotopy class is the invariant. And image cardinality is one isotopy invariant (but not the only one).
+
+Hmm — actually, is image cardinality an isotopy invariant? |im Φ| is preserved by (α,β,γ)? γ is a bijection, so |γ(im Φ)| = |im Φ| ✓. And α,β don't affect the image. So yes ✓.
+
+**Are there other isotopy invariants?** Yes — e.g., the "shape" of the relation G_Φ. For finite D, Latin squares up to isotopy — there are many isotopy classes.
+
+**So for finite D, P3 is plentiful.** But we showed F injective forces... hmm, wait. If D is finite and F injective — impossible (D² → D injective needs |D|² ≤ |D|). So D must be infinite. Hmm.
+
+Hmm, but Φ_{a,b}: D² → D injective with D infinite. Are there many isotopy classes of injections D²→D for infinite D? 
+
+By my earlier lemma: for injections D²→D with D infinite, the isotopy class is determined by |D \ im Φ|. Hmm — is that right? Let me recheck. My lemma said: if |D\im f| = |D\im g| then ∃ γ with γ∘f = g (α=β=id). ✓ So yes, for *injections*, the isotopy class is determined by |D\im|.
+
+Hmm — but that lemma used α=β=id. Isotopy allows α,β ≠ id. Does that create more classes? With α,β free: γ∘f∘(α⁻¹×β⁻¹) = g. Hmm. My lemma gives a solution with α=β=id, which is a *special case* of isotopy. So the isotopy class is *at most* as fine as the "|D\im|" classification. And it's at least as coarse. So: **for injections, the isotopy class is determined by |D \ im Φ|** (or coarser). Since α=β=id works when |D\im| matches, the classification by |D\im| is exactly the isotopy classification (they're equal, or isotopy is coarser — but my lemma shows |D\im| equal ⟹ isotopy, and |D\im| is an isotopy invariant, so they're equal).
+
+**So: for injections on infinite D, isotopy class = |D \ im Φ|.** ✓ (My earlier analysis holds, just renamed.)
+
+**Hmm — but that means the "graph structure" is NOT richer than the range for injections!** Because the isotopy class is determined by the range's complement size. So the user's point is confirmed: **the graph/isotopy approach on injective operations only sees the range.**
+
+**That's exactly why the user says "不要再只研究 injective operation".** ✓ Good — I should confirm this: **for injective Φ on infinite D, isotopy class ≡ |D\im Φ|. So the relational structure adds nothing beyond the range. The user is right that injective binary functions are too poor.**
+
+二、So: don't model Address as a single injective binary function. Model it as a **rich signature**.
+
+**Answer**: yes — and the natural rich signature is:
+- multiple constructors (arity-graded)
+- destructors
+- multiple sorts
+- substitution (clone structure)
+
+**And this is exactly the signature of the free clone / Lawvere theory on Σ.** Standard.
+
+三、M = (A, F, Π, R, C, ...). Intrinsic requirement.
+
+**Answer**: the formal criterion for "intrinsic" is: **the operator is in the signature, and all isomorphisms must preserve it.** And the key test: **is the operator determined by the rest of the structure, or is it free?**
+
+- If determined → it's a derived operation → adds nothing.
+- If free → it's metadata.
+
+**And: there's no third option.** Either an operator is definable from the others (→ derived, no new structure) or it's independent (→ free choice, metadata).
+
+**Hmm — is that right?** An operator can be *independent but constrained by axioms*. E.g., a group operation vs. a semigroup operation — the axioms constrain it. Hmm.
+
+But here: coherence is the only axiom linking Π to F. And coherence says π_i ∈ Hom. Which is a constraint... 
+
+Hmm. Let me think again. Is "π ∈ Hom(T, A_i)" a real constraint that creates structure? 
+
+Consider: (T, g, π) with π ∈ Hom(T, A). Two such structures (T,g,π_1), (T,g,π_2). When are they isomorphic? Need h: T→T with h∘g = g∘(h×h) (i.e., h ∈ End(T)) and h∘π_1 = π_2∘h... hmm.
+
+**So: the enriched structure is (T, g, π), and its automorphism group is {h ∈ Aut(T) : h∘π = π∘h}.** And the "structure" is the homomorphism π up to Aut(T)-conjugacy.
+
+**So: the invariant is the Aut(T)-orbit of π in Hom(T, A).** And that's determined by T and A.
+
+Hmm. So: **the enriched structure is determined by (T, A, [π]) — where [π] is an Aut(T)-orbit.** And A is chosen. So the extra data is A and [π].
+
+Hmm. Still "free choice of target + orbit".
+
+**Unless**: A is required to be "small" or "canonical". Hmm.
+
+OK. Let me just commit to the honest answer: **NO**, with the reduction theorem.
+
+四、Structure-preserving isomorphism definition.
+
+Define: M_1 ≅ M_2 iff ∃ bijection h: A_1 → A_2 preserving F, all Π, all resolution maps, all distinguished operators, all coherence relations.
+
+And: **the test for "is the field part of the axiom system"** — answer: it's part of the structure iff all isomorphisms must preserve it. And that's a *declaration*, not a mathematical fact.
+
+五、A vs B comparison.
+
+**Answer**: B = A + encoding, in the precise sense of the reduction theorem. Proof given.
+
+六、Forbidden: "give more observers".
+
+**Answer**: the formal distinction is: **intrinsic = declared in the signature + preserved by all isomorphisms; external = a function defined on top.** And the test: if the operator is *definable* from the others, it's derived (not new); if *independent*, it's a free choice (metadata). **Neither is "structure".**
+
+七、P2/P3.
+
+**Answer**: drop the terms. The base question: does an state-indexed operation family have non-eliminable structural differences? 
+
+**Answer: the only invariant for injective operations is |D \ im Φ_{a,b}| (isotopy class). And that IS eliminable (it's a range property, hence encoding-dependent). So: NO.** → **停止这条 Φ_{a,b} 路线。** ✓ (The user said: if the answer is no, stop this route.)
+
+八、Final answer: NO, with reasons.
+
+**And the one next task**: prove that there's no non-eliminable difference. Which I've essentially done (the reduction theorem).
+
+Let me now also double check: is the reduction theorem airtight?
+
+**Reduction Theorem.** Let T = T_Σ(X), A a set, ρ: T ↪ A injective, F: A×A→A with F(ρ(x),ρ(y)) = ρ(g(x,y)) for all x,y ∈ T. Let Π = {π_i: A → A_i} with π_i ∘ F = F_{i} ∘ (π_i × π_i) for some F_i.
+
+Claim: M = (A, F, Π, {F_i}) is structure-isomorphic to M' = (T, g, Π', {F_i'}) where Π' = {π_i ∘ ρ}, F_i' = F_i (restricted appropriately).
+
+Proof: h = ρ^{-1}: im ρ → T. Need: 
+- h(F(ρx,ρy)) = g(h(ρx), h(ρy)) ✓ by definition of F.
+- h must preserve π_i: π_i ∘ ρ = π'_i ✓ (definition of π'_i).
+- Need π'_i ∘ g = F'_i ∘ (π'_i × π'_i): π_i(ρ(g(x,y))) = π_i(F(ρx,ρy)) = F_i(π_i ρx, π_i ρy) ✓.
+So M ≅ M'. ✓
+
+**And**: Π' ⊆ ∏_i Hom(T, A_i) since π'_i ∘ g = F'_i ∘ (π'_i × π'_i) means π'_i is a homomorphism T → A_i. ✓
+
+**So: M ≅ (T, g, {π'_i}) with π'_i ∈ Hom(T, A_i).** ✓
+
+**And**: Hom(T, A_i) ≅ A_i^X (a homomorphism from a free algebra is determined by its values on generators). So Π' is a choice of |X|-tuples.
+
+**So: M's extra content over T = a choice of targets A_i and a choice of tuples.** = free choice. ✓
+
+**Conclusion: M = T + freely chosen homomorphisms.** ✓
+
+Good. That's the reduction theorem, and it's clean.
+
+Hmm — but one caveat: the theorem assumes ρ is injective and F is defined on all of A (including junk outside im ρ). On im ρ, F is forced. Outside im ρ, F is free. So: **F's behavior on junk is also free metadata.** ✓ Another source of non-canonicity.
+
+**So: M = (T, g) + free choices: (a) the encoding ρ (i.e., what the elements of A \ im ρ are), (b) F on junk, (c) the targets A_i, (d) the homomorphisms π_i.** All free. ✓
+
+**So: every difference is either encoding, metadata, or relabeling.** ✓ **NO.**
+
+Great. Let me write this up.
+
+Now — one more consideration. Is there a *canonical* enriched structure? I mentioned: Con(T), subdirect irreducibles, clone. Let me note that these ARE determined by T, hence not extra structure — they're standard invariants of T.
+
+**So: the answer is definitively NO.**
+
+And the "next task" the user asks for: "找出或证明不存在 Address-native composition 相对于普通 term encoding 的不可消除结构差异". I've essentially proven the NO. So I should present the reduction theorem as that proof.
+
+Let me also be careful: the user says "如果是 NO：明确指出为什么当前所有差异都还能化约成 encoding / metadata / operation relabeling." ✓ That's exactly what I'll do.
+
+Let me now write. And I should correct the terminology (isotopy) prominently.
+
+Let me also think about whether to render a widget. A diagram showing the reduction: M → T + free choices. That would be useful.
+
+Let me do: a diagram showing
+- M = (A, F, Π, {F_i}) 
+- 化约 → (T, g, {π'_i})
+- 剩余 = 4 项自由选择
+
+Or a "reduction ladder". Let me do a compact one.
+
+Design: 
+Left: M = (A, F, Π, {F_i}) with coherence
+Arrow right: 结构保持同构
+Right: (T, g, Π') where Π' ⊆ ∏ Hom(T, A_i)
+Below: 多出来的内容 = 4 项自由选择:
+  ① 编码 ρ（A \ im ρ 的元素）
+  ② F 在 junk 上的取值
+  ③ 目标代数 A_i
+  ④ 同态 π_i 的选择
+
+Let me build it.
+
+viewBox 0 0 720 320
+
+Box L: x=40, y=60, w=280, h=80. Text lines: "M = (A, F, Π, {F_i})" y=88, "π_i ∘ F = F_i ∘ (π_i × π_i)" y=110, "（enriched structure）" y=130. Hmm, 3 lines in 80 height: 88, 110, 130. Box 60..140. OK.
+
+Arrow: (322,100) → (396,100), label above "结构保持同构" at (359, 88)? That overlaps. Let me put label below at (359, 118).
+
+Hmm, gap is only 74px. "结构保持同构" at 12px ≈ 72px. Tight. Let me use "≅" only, or put the label above the arrow at y=90 with small font.
+
+Let me widen the gap: Box L x=40 w=250 (40..290), Box R x=430 w=250 (430..680). Gap 290..430 = 140px. Arrow from 300 to 420. Label centered at 360.
+
+Box L: x=40, y=60, w=250, h=80.
+Box R: x=430, y=60, w=250, h=80.
+
+Arrow: M300,100 H418 with marker.
+
+Label: "结构保持同构" at (360, 90) centered — above the arrow. Arrow at y=100, label at y=90. OK.
+
+Box L texts (centered at x=165): 
+y=88: "M = (A, F, Π, {F_i})"
+y=110: "π_i ∘ F = F_i ∘ (π_i × π_i)"
+y=130: "enriched structure"
+
+Box R texts (centered at x=555):
+y=88: "(T, g, Π′)"
+y=110: "Π′ ⊆ ∏ Hom(T, A_i)"
+y=130: "term algebra + homomorphisms"
+
+Below, the "free choices" box: x=40, y=180, w=640, h=110? Let me list 4 items in 2 columns.
+
+Box: x=40, y=176, w=640, h=104, rounded.
+Title at (360, 198): "M 相对 T 多出来的全部内容 = 四项自由选择"
+Items:
+left col x=70:
+  y=224: "① 编码 ρ（即 A \\ im ρ 的元素）"
+  y=248: "② F 在 im ρ 之外的取值"
+right col x=380:
+  y=224: "③ 目标代数 A_i"
+  y=248: "④ 同态 π_i 的选取"
+
+Bottom note at (360, 306): "自由选择不是结构 ⟹ M = T + metadata"
+
+H = 330.
+
+Let me check widths: "M 相对 T 多出来的全部内容 = 四项自由选择" ≈ 20 chars ≈ 210px ✓
+"① 编码 ρ（即 A \\ im ρ 的元素）" ≈ 16 chars ≈ 170px, at x=70 → 70..240 ✓
+"② F 在 im ρ 之外的取值" ≈ 150px → 70..220 ✓
+"③ 目标代数 A_i" → 380..490 ✓
+"④ 同态 π_i 的选取" → 380..500 ✓
+"自由选择不是结构 ⟹ M = T + metadata" ≈ 22 chars ≈ 210px centered → 255..465 ✓
+
+Good.
+
+Colors: Box L and R = muted + border. Box R = brand stroke (the reduced form). The free-choices box = muted + border.
+
+Let me write.
+
+OK now let me write the full text.
+
+Structure:
+- 术语修正 (isotopy)
+- 一、组合规则 = graph / 3-sorted relation
+- 二、不要只用 injective binary function（并证明为什么：对单射，isotopy 类 ≡ |D\im|，所以关系结构不增加任何东西）
+- 三、M 的形式 + intrinsic 的判据
+- 四、结构保持同构 + "字段是否公理组成部分"的判据
+- 五、A vs B → 化约定理
+- 六、禁止偷换 → intrinsic 的形式判据
+- 七、P2/P3 → 停止这条路线
+- 八、最终回答 NO + 理由
+
+And the one next task.
+
+Let me write it densely.
+
+I should call AdvisorTool? The user is correcting me ("先纠正术语...请不要继续混用术语"). That's a correction → mandatory trigger. Let me call it.
+
+Hmm, I've called it every turn. But the policy is explicit. Let me call it once.
+
+Actually — let me reconsider. The user's message is a correction, yes. Policy says mandatory. Let me comply.
+
+Let me call it.
+
+Actually, I realize I should think about whether my "reduction theorem" is really the right final answer, or whether there's a subtlety I'm missing that the advisor could catch. Let me call it.
+
+Let me write a good reason.
+
+Hmm, one thing I should double-check before calling: is the claim "for injective Φ on infinite D, isotopy class ≡ |D\im Φ|" correct?
+
+Isotopy: Ψ = γ∘Φ∘(α⁻¹×β⁻¹). 
+- |im Ψ| = |γ(im(Φ∘(α⁻¹×β⁻¹)))| = |im(Φ∘(α⁻¹×β⁻¹))|. Now Φ∘(α⁻¹×β⁻¹) — since α,β are bijections of D, (α⁻¹×β⁻¹) is a bijection of D×D, so im(Φ∘(α⁻¹×β⁻¹)) = im Φ. So |im Ψ| = |im Φ| ✓. So |D\im| is an isotopy invariant ✓.
+- Conversely: if |D\im Φ| = |D\im Ψ|, is there an isotopy? Take α=β=id. Then need γ with γ∘Φ = Ψ. Since Φ injective, define γ(Φ(u,v)) := Ψ(u,v) on im Φ; this is well-defined and injective im Φ → im Ψ. Extend to a bijection D → D using |D\im Φ| = |D\im Ψ|. ✓
+So yes, isotopy class ≡ |D\im Φ| for injections. ✓
+
+**And this is exactly the user's point**: for injective operations, the graph/relational structure carries no more than the range. ✓ 
+
+So: "不要把 injective binary function 当作 Address 的完整模型" — the user is right, and I can prove WHY: for injections, isotopy ≡ range. ✓
+
+Good, that's a nice confirmation of the user's instinct with a proof.
+
+Let me write.
+
+Let me call the advisor first.
+正在请求专家建议.....................
+
+已获取专家建议
+
+Now write the final answer. Let me be rigorous and honest.
+
+Key content:
+1. Terminology fix: isotopy, not conjugacy.
+2. **Theorem**: for injective Φ on infinite D, isotopy class ≡ |D\im Φ|. Hence the relational/graph structure adds nothing for injective operations. This CONFIRMS the user's instinct and explains why the Φ route must stop.
+3. **Reduction theorem**: M ≅ (T, g, Π') with Π' ⊆ ∏ Hom(T, A_i), and the surplus is 4 free choices.
+4. **Intrinsic criterion**: an operator is "structure" iff it's in the signature AND preserved by all isos; but formally, a signature element is either (a) definable from the rest → derived, no new content, or (b) independent → free choice → metadata. No third option.
+5. **A vs B**: B = A + metadata. Proof.
+6. **P2/P3**: stop.
+7. **Final: NO.**
+8. The one next task / the only unclosed exit.
+
+Let me write the widget first.
+
+Then the text.
+
+Let me make the widget show the reduction.
+
+Let me write.
+
+For the "one unclosed exit" — the advisor suggests: the distinction "which operations are primitive in the signature" is computationally effective but not algebraically invariant. And the user's own words: "换 primitive observer 应视为换计算模型". So the only unclosed exit is: (algebra + fixed interface signature) as a hybrid object.
+
+Hmm — but the user forbade complexity this round. So I should mention it as "the only exit, but it's outside this round's scope and was excluded by you".
+
+Actually, the user's 八 asks: NO → explain why all differences reduce to encoding/metadata/relabeling. So I'll do that, and mention the one exit briefly.
+
+Let me write.
+
+Let me make sure the reduction theorem is stated correctly and the proof is clean.
+
+**化约定理**
+设 T = T_Σ(X)，ρ: T ↪ A 单射，F: A×A→A 满足 F(ρ(x),ρ(y)) = ρ(g(x,y))（对 x,y ∈ T），Π = {π_i: A→A_i} 满足 coherence π_i∘F = F_i∘(π_i×π_i)。
+
+则 M = (A,F,Π,{F_i}) 与 M' = (T, g, Π', {F_i'}) 结构保持同构，其中 Π' = {π_i∘ρ}，且 π'_i ∈ Hom(T, A_i)。
+
+证明: h := ρ^{-1}|_{im ρ}. 
+- h(F(ρx,ρy)) = h(ρ(g(x,y))) = g(x,y) = g(h(ρx), h(ρy)) ✓
+- h 保持 π: (π_i∘ρ)(h(ρx)) = π_i(ρx) = π'_i(ρx) ✓
+- coherence: π'_i(g(x,y)) = π_i(ρ(g(x,y))) = π_i(F(ρx,ρy)) = F_i(π_i ρx, π_i ρy) = F_i(π'_i ρx, π'_i ρy) ✓
+∎
+
+**推论**: Hom(T, A_i) ≅ A_i^X（自由代数的万有性质：同态由生成元上的取值唯一决定）。所以 Π' 只是"在 A_i^X 中挑一个子族"。
+
+**推论**: M 相对 T 多出的全部内容是四项自由选择。
+
+Good.
+
+Now, the "intrinsic" criterion. Let me state it cleanly:
+
+**判据（intrinsic vs external）**: 一个运算 o 是结构的一部分，当且仅当它被声明在签名中，且所有结构保持同构都必须保持它。
+
+**但**: 对任何被声明的 o，只有两种可能：
+(a) o 可由其余运算**定义**（derived operation）⟹ 加上它不产生新结构，只是记号；
+(b) o 与其余运算**独立** ⟹ 它的取值是自由选择 ⟹ 是 metadata。
+
+**没有第三种。** 因为"在签名中"与"可定义"是互补的：若 o 不可定义，则存在两个模型在其余运算上一致而在 o 上不同，即 o 的取值未被约束。
+
+Hmm, let me be careful: (b) means o is not determined by the rest. But o could still be *constrained by axioms* (e.g., a group operation is not determined by... hmm, in a group the operation determines everything).
+
+Hmm. Let me refine: the question is whether the *axioms* (coherence) constrain o. Coherence says π_i ∈ Hom. Given T and A_i, Hom(T, A_i) is a specific set. So Π ⊆ ∏ Hom is a constraint, but a weak one (any subset allowed).
+
+**So: the constraint is "Π ⊆ ∏ Hom", which is satisfied by any choice.** Hence free. ✓
+
+Hmm — unless we require Π to be *all* of Hom, or *separating*, or *maximal*. Those are canonical conditions. Let me note:
+- Π = Hom(T, A_i) for all i → canonical given the targets.
+- Π separating → T embeds into ∏ A_i (subdirect).
+- **Maximal separating family** → subdirectly irreducible decomposition → **canonical** (Birkhoff).
+
+**So: the canonical enriched structure is (T, Con(T)) / the subdirectly irreducible decomposition.** And that's a standard invariant of T. ✓ So still no new structure.
+
+Good — that closes the loop.
+
+Let me write.
+
+Also I should handle 二 explicitly: "不要只研究 injective operation". 
+
+**Answer**: confirmed, and here's the proof of why it's necessary:
+**定理**: 对无限 D 上的单射 Φ: D²→D，isotopy 类恰好由 |D\im Φ| 决定。
+**证明**: (⊆) |D\im| 是 isotopy 不变量。(⊇) 若 |D\im Φ| = |D\im Ψ|，取 α=β=id，在 im Φ 上定义 γ(Φ(u,v)) := Ψ(u,v)（良定义，Φ 单射），再延拓为双射 D→D。∎
+**推论**: 对单射运算，graph G_Φ 的关系结构不携带超出 range 的任何信息。**所以"把 Address 建模为单个 injective 二元函数"确实是贫乏的——你的判断正确，而且这是可证的。**
+
+Good.
+
+And: what's the fix? A rich signature: multiple constructors (arity-graded), destructors, substitution (clone). But — those are all standard (free clone / Lawvere theory / operad).
+
+Let me include that.
+
+Hmm, and: is the clone structure "richer than term algebra"? Yes in a sense — the clone has substitution (higher-arity composition). But it's still determined by Σ. So it's a standard invariant of the concept system, not "address-native extra structure".
+
+**Actually** — hmm, let me think about this more. The clone of T_Σ(X) is determined by Σ (and X). So: (T, clone) is determined by Σ, X. No extra structure. ✓
+
+**And**: substitution is an *operation* on terms, so it's "composition of compositions" — genuinely higher-order. But it's a *derived* operation (definable from the constructors). So it adds nothing by the criterion (a). ✓
+
+Good.
+
+Now let me write. Let me keep it focused and not too long.
+
+Let me write the widget.
+
+Actually, let me reconsider the widget. Maybe a simpler and more decisive visual: the reduction + the 4 free choices. Yes, as planned.
+
+Let me write it.
+
+Let me finalize coordinates:
+viewBox 0 0 720 330
+
+Box L: x=40, y=60, w=250, h=80
+  texts centered at x=165: y=88, 110, 130
+Box R: x=430, y=60, w=250, h=80
+  texts centered at x=555: y=88, 110, 130
+Arrow: M300,100 H418, marker
+Label: (360, 88) "结构保持同构" centered
+
+Hmm, label at y=88 and arrow at y=100 — the label is above the arrow. But the boxes span y 60..140, and the label at (360,88) is in the gap horizontally (300..430), so no overlap with boxes. ✓
+
+Box: free choices, x=40, y=176, w=640, h=104
+  title (360, 200) centered
+  items: (70, 228), (70, 252), (380, 228), (380, 252)
+Note: (360, 306) centered
+
+H = 330.
+
+Let me write.
+
+Text contents:
+Box L:
+  "M = (A, F, Π, {F_i})"
+  "π_i ∘ F = F_i ∘ (π_i × π_i)"
+  "enriched structure"
+Box R:
+  "(T, g, Π′)"
+  "Π′ ⊆ ∏ Hom(T, A_i)"
+  "term algebra + 同态"
+
+Hmm "term algebra + 同态" is a bit odd. Let me use "T + 同态族". Or "(im ρ ≅ T)". Let me use:
+  y=88: "(T, g, Π′)"
+  y=110: "Π′ ⊆ ∏ Hom(T, A_i)"
+  y=130: "T + 一个同态族"
+
+OK.
+
+Free choices box title: "M 相对 T 多出来的全部内容 = 四项自由选择"
+items:
+  "① 编码 ρ（A \\ im ρ 的元素）"
+  "② F 在 im ρ 之外的取值"
+  "③ 目标代数 A_i 的选取"
+  "④ 同态 π_i 的选取"
+
+Note: "自由选择不是结构 ⟹ M = T + metadata"
+
+Good. Let me write.
+
+Escaping: "A \\ im ρ" — in SVG text, backslash is fine. Let me just write "A \\ im ρ" as literal "A \ im ρ". Actually in the JSON I need to escape backslash as \\. Let me write "A \\ im ρ" in the JSON which becomes "A \ im ρ". Good.
+
+Now the text.
+
+Let me write it.
+
+I'll be direct and conclusive.
+
+Now write the final answer. Let me be concise but complete.
+
+Structure:
+0. 术语修正
+1. 组合规则 = graph（并证明：对单射，isotopy ≡ range）
+2. 不要只用 injective binary function（确认 + 可证）
+3. M 的形式 + intrinsic 判据
+4. 结构保持同构 + 字段是否公理组成
+5. A vs B → 化约定理
+6. 禁止偷换 → 形式判据
+7. P2/P3 → 停止
+8. 最终回答 NO
+
+Let me write it.
+# 0. 术语修正
+
+**你正确，我撤回用词。**
+
+$$\Psi=\gamma\circ\Phi\circ(\alpha^{-1}\times\beta^{-1})$$
+
+这是 **operation isotopy**（Albert / Bruck 意义），**不是 conjugacy**。conjugacy 要求 $\alpha=\beta=\gamma$（同一个双射），是严格更强的条件。我用 isotopy 却叫它 conjugacy，**术语错误，撤回。**
+
+在 graph 语言下它是精确的：$\Phi$ 的 graph $G_\Phi=\{(u,v,w):\Phi(u,v)=w\}\subseteq D\times D\times D$。两个 $\Phi$ 同型 $\iff$ 三排序结构 $(D,D,D;G_\Phi)$ 同构 $\iff$ 存在 $(\alpha,\beta,\gamma)$ 使 $G_\Psi=(\alpha\times\beta\times\gamma)(G_\Phi)$。**这正是你说的 3-sorted relational isomorphism。**
+
+---
+
+# 一、组合规则应定义在关系结构上——而且这恰好证明它不够
+
+**定义.** $G_\Phi\subseteq D^3$，两个组合规则的"同结构"$:=$ $(D,D,D;G_\Phi)\cong(D,D,D;G_\Psi)$。
+
+**但这里有一个必须立即说清的定理：**
+
+**定理 R（对单射运算，isotopy 只看见 range）**
+设 $D$ 无限，$\Phi,\Psi:D^2\to D$ **单射**。则
+$$(D,D,D;G_\Phi)\cong(D,D,D;G_\Psi)\iff \big|D\setminus\mathrm{im}\,\Phi\big|=\big|D\setminus\mathrm{im}\,\Psi\big|.$$
+
+**证明.**
+$(\Rightarrow)$ $\gamma$ 是双射 ⟹ $|\mathrm{im}\,\Psi|=|\gamma(\mathrm{im}\,\Phi)|=|\mathrm{im}\,\Phi|$。
+$(\Leftarrow)$ 取 $\alpha=\beta=\mathrm{id}$，在 $\mathrm{im}\,\Phi$ 上定义 $\gamma(\Phi(u,v)):=\Psi(u,v)$。因 $\Phi$ 单射，此定义**良定义**且 $\gamma|_{\mathrm{im}\,\Phi}:\mathrm{im}\,\Phi\to\mathrm{im}\,\Psi$ 是双射；由 $|D\setminus\mathrm{im}\,\Phi|=|D\setminus\mathrm{im}\,\Psi|$ 延拓 $\gamma$ 为 $D\to D$ 的双射。则 $\gamma\circ\Phi=\Psi$。∎
+
+**推论（这是本轮的关键否定）**
+> **对 injective 运算，graph $G_\Phi$ 的关系结构不携带超出 range 的任何信息。**
+
+**所以：**
+1. **你的判断"不要只研究 injective operation"是正确的，而且现在是可证的** —— 在单射假设下，无论你把 $\Phi$ 写成函数、graph、还是三排序关系，可区分的东西只有 $|D\setminus\mathrm{im}\,\Phi|$ 这一个量。
+2. **上一轮的 "P3" 确实只是在区分 range**，不是"state 改变了组合规则"。**撤回 P3 这个命名与这个判据。**
+
+---
+
+# 二、因此：Address 不能建模为单个 injective 二元函数
+
+这一点你要求我认真对待，我接受。**但必须同时说清"改成 rich signature"之后会发生什么。**
+
+若把 Address 建模为 rich signature 下的结构，候选结构只有：
+
+| 候选 | 身份 |
+|---|---|
+| 多构造子（arity-graded）+ 析构子 | **initial algebra / ADT of terms** —— 由 $\Sigma$ 唯一决定 |
+| 多 sort + 类型化运算 | **many-sorted algebra** |
+| 部分运算（类型不匹配时未定义） | **order-sorted / partial algebra** |
+| substitution（"运算的运算"） | **free clone / Lawvere theory / operad** —— 由 $\Sigma$ 唯一决定 |
+| 多投影 + resolution | **同余族 $\mathrm{Con}(T)$** |
+
+**关键事实：以上每一项都由 $T_\Sigma(X)$ 唯一决定。** substitution 是**可定义的**（由构造子定义），析构子是构造子的**逆**，clone 是 $T$ 的标准不变量。
+
+**所以"改成 rich signature"不会产生新结构 —— 它只是把 $T$ 的标准不变量显式写出来。** 这直接引出下一节的判据。
+
+---
+
+# 三、$M$ 的形式，与 "intrinsic" 的判据
+
+$$M=(A,F,\Pi,R,C,\dots)$$
+
+**判据（intrinsic vs external）** 一个运算 $o$ 是**结构的一部分**，当且仅当：
+1. $o$ 被声明在**签名**中；
+2. **所有**结构保持同构都必须保持 $o$。
+
+**但对任何被声明的 $o$，只有两种可能：**
+
+| | 条件 | 后果 |
+|---|---|---|
+| **(a) 派生** | $o$ 可由其余运算**定义** | 加上它**不产生新结构**，只是记号。例：substitution、析构子、clone 运算 |
+| **(b) 独立** | $o$ 不被其余运算决定 | 存在两个模型在其余运算上一致而在 $o$ 上不同 ⟹ $o$ 的取值**未被约束** ⟹ **metadata** |
+
+**没有第三种。** 因为"在签名中"与"可定义"互补：若 $o$ 不可定义，则它的取值是自由选择。
+
+**这就是你第六节要求的区分的形式化：**
+- **intrinsic** $=$ 在签名中 **且** 被公理约束 **且** 被所有同构保持。
+- **external** $=$ 在对象之外定义的函数。
+
+**而 coherence 恰好把约束用完了**：它只说了"$\pi_i$ 是同态"。对给定的 $T$ 与目标 $A_i$，满足这一点的 $\pi_i$ 构成集合 $\mathrm{Hom}(T,A_i)$，而**从中挑哪个子族是完全自由的**。所以 $\Pi$ 落在 (b)。
+
+---
+
+# 四、结构保持同构
+
+**定义.** $M_1\cong M_2$，若存在双射 $h:A_1\to A_2$ 同时保持：$F$、所有 $\pi_i$、resolution maps、所有 distinguished operators、所有 coherence relations。
+
+**你要求的那个判据的回答：**
+
+> "这个字段是否是整个结构的公理组成部分，并且所有同构都必须保持它？"
+
+**答案：这个问题的答案由【三】的判据给出，而不是由"是否多写了一个字段"给出。** 字段分两类：可定义的（派生，无新内容）与不可定义的（自由选择，metadata）。**两者都不是新结构。** 所以"多一个字段"永远不构成新结构 —— **除非该字段同时（i）不可定义且（ii）被一条真正的公理约束到唯一值。** 而目前不存在这样的字段。
+
+---
+
+# 五、A vs B：化约定理
+
+**定理（化约）**
+设 $T=T_\Sigma(X)$，$\rho:T\hookrightarrow A$ 单射，$F:A\times A\to A$ 满足 $F(\rho x,\rho y)=\rho(g(x,y))$，$\Pi=\{\pi_i:A\to A_i\}$ 满足 coherence。则 $M$ 与
+$$M'=\big(T,\ g,\ \Pi'\big),\qquad \Pi'=\{\pi_i\circ\rho\}$$
+**结构保持同构**，且 $\pi'_i\in\mathrm{Hom}(T,A_i)$。
+
+**证明.** 取 $h:=\rho^{-1}|_{\mathrm{im}\,\rho}$。
+- $h(F(\rho x,\rho y))=h(\rho(g(x,y)))=g(x,y)=g(h\rho x,h\rho y)$ ✓
+- $h$ 保持 $\Pi$：$(\pi_i\circ\rho)(h(\rho x))=\pi_i(\rho x)$ ✓
+- coherence 保持：$\pi'_i(g(x,y))=\pi_i(\rho(g(x,y)))=\pi_i(F(\rho x,\rho y))=F_i(\pi_i\rho x,\pi_i\rho y)$ ✓ ∎
+
+**推论 1.** $\mathrm{Hom}(T,A_i)\cong A_i^{X}$（自由代数的万有性质：同态由生成元上的取值唯一决定）。**所以 $\Pi'$ 只是"在 $A_i^{X}$ 中挑一个子族"。**
+
+**推论 2.** $M$ 相对 $T$ 多出来的**全部**内容是四项自由选择：
+① 编码 $\rho$（即 $A\setminus\mathrm{im}\,\rho$ 的元素是什么）；② $F$ 在 $\mathrm{im}\,\rho$ 之外的取值；③ 目标代数 $A_i$；④ 同态 $\pi_i$ 的选取。
+
+**所以：B $=$ A $+$ metadata。** 证明完毕。
+
+**唯一可能的补救是要求 $\Pi$ 典范**，例如 $\Pi=\mathrm{Hom}(T,A_i)$（全体）、或 $\Pi$ 分离（则 $T$ 是子直积）、或取**极大分离族**。而最后一种给出 Birkhoff 的子直不可分解分解 —— **那是 $T$ 的标准不变量，仍然不是新结构。** 所以补救失败。
+
+---
+
+# 六、禁止偷换：形式判据
+
+你禁止"给更多 primitive observers 就拥有更多结构"。**形式判据如下：**
+
+| | 定义 | 是否构成结构 |
+|---|---|---|
+| **intrinsic** | 在签名中 + 被公理约束 + 被所有同构保持 | 是，但须满足【三】的判据 |
+| **external** | 在对象之外定义的函数（如 $\pi(n)=n\bmod 2$） | 否 |
+
+**关键**：coherence **不区分**这两者。因为任何 $\pi\in\mathrm{Hom}(T,A_i)$ 都自动满足 coherence，而 $\pi$ 是否"在签名中"是**声明**，不是数学事实。**所以"给更多 observers"在代数上永远是免费的 —— 这一点无法用代数堵住。**
+
+---
+
+# 七、P2/P3：停止这条路线
+
+**放弃 P2/P3 这两个词。** 只问基础问题：
+
+> **两个 state-indexed operation family 是否真的存在不可消除的结构差异？**
+
+**答案：没有。** 理由是定理 R：
+
+- 在 $F$ 单射下每个 $\Phi_{a,b}$ 单射（上一轮定理 J）；
+- 对单射运算，isotopy 类 $=$ $|D\setminus\mathrm{im}\,\Phi_{a,b}|$；
+- 而由定理 J(ii)，同一 $F_0$-纤维内的像两两不交，故 $|D\setminus\mathrm{im}\,\Phi_{a,b}|$ 被 $F_0$ 的纤维结构强制；
+- 且这个量在换编码下不保持（它是 range 性质）。
+
+**所以 $\Phi_{a,b}$ 路线到此结束。按你的授权，停止。**
+
+---
+
+# 八、最终回答
+
+## **NO。**
+
+**我们尚未找到"Address 本身作为计算结构"与"普通 term encoding"之间不可消除的数学差异。理由如下，逐项闭合：**
+
+| 差异来源 | 化归为 | 依据 |
+|---|---|---|
+| $\Phi_{a,b}$ 的 state-dependence | **operation relabeling**（isotopy，只看见 range） | 定理 R |
+| 非乘积 / 无同余补元 | **encoding metadata**（$\Pi$ 的自由选择） | 化约定理 |
+| $\Pi$ 的存在 | **metadata**（$\mathrm{Hom}(T,A_i)$ 中的自由子族） | 推论 1 |
+| 分层 / resolution | **$\mathrm{Con}(T)$ 的元素**（$T$ 的标准不变量） | 化约定理 |
+| rich signature（clone、substitution、析构子） | **$T$ 的派生运算 / 标准不变量** | 【二】 |
+| coherence | **自动满足**（不约束任何东西） | 【六】 |
+
+**因此：当前所有差异都能化约成 encoding / metadata / operation relabeling。**
+
+**并且这不是"还没找到"，而是一个否定性定理：**
+
+> **化约定理**：任何满足 coherence 的 enriched structure，在结构保持同构下都等于 $(T,g)$ 加上四项自由选择。
+> **推论**：$M$ 中**没有**任何内容是 $T$ 的结构的函数 —— 它全部是选择。
+
+**所以"Address-native composition"这个词，在纯代数层面是空的。**
+
+---
+
+# 唯一的下一个任务
+
+**你指定的任务：找出或证明不存在"Address-native composition"相对普通 term encoding 的不可消除结构差异。**
+
+**结果：已证明不存在。** 证明就是上面的化约定理 + 定理 R。**这条线可以关闭了。**
+
+**但必须诚实标出唯一未被关闭的出口**（否则是隐瞒）：
+
+> 化约定理的第四项自由选择是 **"同态 $\pi_i$ 的选取"**，在代数上是免费的。**但在计算上，把哪个运算指定为 primitive（$O(1)$）是有后果的** —— 这正是你自己说过的"换 primitive observer 应视为换计算模型"。
+>
+> **所以：如果存在差异，它只能存在于"代数 + 固定接口签名"这个混合对象里，而不能存在于纯代数结构里。** 而这一点在本轮被明确排除（你禁止讨论 complexity / access model）。
+
+**结论：本轮范围内，答案是 NO，且已给出证明。剩下的不是"找一个新结构"，而是决定是否要把研究对象从"纯代数结构"改成"代数 + 接口签名"的混合对象 —— 而那是另一个问题，不是这一轮的问题
